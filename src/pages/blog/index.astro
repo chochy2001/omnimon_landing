@@ -12,7 +12,175 @@ const posts = [
 		slug: 'v6-4-1-release',
 		title: 'OmniMon v6.4.1 — Reality Fix Release',
 		date: '11 Mar 2026',
-		summary: 'Solid colors across all themes, Lucide SVG icons, real AI streaming via SSE, full i18n with 531 keys, Pro Mode, 87% coverage and CVE quinn-proto resolved.'
+		summary: 'Solid UI colors across all themes, Lucide SVG icons replacing 35+ emojis, real AI streaming via SSE, full i18n with 531 keys, Pro Mode, and 87% coverage.'
+	},
+	{
+		slug: 'v6-4-0-release',
+		title: 'OmniMon v6.4.0 — Pro AI Mode, Split Layouts & Final Hardening',
+		date: '10 Mar 2026',
+		summary: 'Professional AI workflows, Ask AI dashboard actions, real token streaming, split layouts, stronger i18n, and safer runtime paths across the app.'
+	},
+	{
+		slug: 'v6-3-0-release',
+		title: 'OmniMon v6.3.0 — Redesigned Profiles, E2E Validation & Hardening',
+		date: '10 Mar 2026',
+		summary: 'Redesigned user profiles, Playwright E2E coverage, post-sprint audit findings closed, and product quality raised across the stack.'
+	},
+	{
+		slug: 'v6-2-0-release',
+		title: 'OmniMon v6.2.0 — Advanced Network Analysis, Alerts & AI Actions',
+		date: '9 Mar 2026',
+		summary: 'Active connection capture, live network dashboards, configurable alerts, and contextual AI investigation actions.'
+	},
+	{
+		slug: 'v6-1-0-release',
+		title: 'OmniMon v6.1.0 — Security Hardening, AI Streaming & Grouped Alerts',
+		date: '9 Mar 2026',
+		summary: 'Verifiable distribution, safer key handling, better contextual analysis, and less noisy operational alerts.'
+	},
+	{
+		slug: 'v6-0-1-release',
+		title: 'OmniMon v6.0.1 — Unified Button Design System, IPC Fixes & ConfirmDialog',
+		date: '7 Mar 2026',
+		summary: 'Unified Button.svelte design system replacing inline styles across 7 components, relaxed IPC rate limits, deferred AI kill confirmation, and toast notifications.'
+	},
+	{
+		slug: 'v6-0-0-release',
+		title: 'OmniMon v6.0.0 — Real-Time TUI & Embedded Lua Plugin Ecosystem',
+		date: '7 Mar 2026',
+		summary: 'Full htop/btop-style TUI mode, embedded Lua plugin ecosystem with sandboxed VMs, AI chat in terminal, and global native distribution.'
+	},
+	{
+		slug: 'v5-3-0-release',
+		title: 'OmniMon v5.3.0 — Extreme Profiling: mimalloc, Virtualized Table & Fuzz Testing',
+		date: '2 Mar 2026',
+		summary: 'Performance-focused release: mimalloc global allocator, zero-allocation hot paths, virtualized process table, AI response caching, and fuzz testing.'
+	},
+	{
+		slug: 'v5-2-0-release',
+		title: 'OmniMon v5.2.0 — CrabNebula Cloud, Rust 1.93 Optimizations & Accessibility',
+		date: '24 Feb 2026',
+		summary: 'CrabNebula Cloud integration, Rust 1.93 clippy compliance, focus trap accessibility, O(1) process lookups, and 198 tests with 85% coverage.'
+	},
+	{
+		slug: 'v5-1-0-release',
+		title: 'OmniMon v5.1.0 — Smart Health Alerts, User Profiles & Complete UI Overhaul',
+		date: '14 Feb 2026',
+		summary: 'AI-powered smart health alerts, 4 user profiles, Basic/Pro workspace modes, IPC rate limiting, complete UI overhaul, and 198 tests.'
+	},
+	{
+		slug: 'sre-automations',
+		title: 'Automated SRE: The Automations Engine',
+		date: '9 Feb 2026',
+		summary: 'Define rules to automatically manage runaway processes. OmniMon\'s automations engine monitors CPU and RAM thresholds with configurable actions.'
+	},
+	{
+		slug: 'v5-0-2-release',
+		title: 'OmniMon v5.0.2 — In-App Help Center, Persistent Preferences & Context-Aware AI',
+		date: '4 Feb 2026',
+		summary: 'Built-in Help Center, persistent user preferences with theme and AI provider customization, and a reusable context-aware AI chat component.'
+	},
+	{
+		slug: 'v5-0-1-release',
+		title: 'OmniMon v5.0.1 — Smarter AI Chat, Conversation History & Real Network Data',
+		date: '27 Jan 2026',
+		summary: 'AI chat overhaul with conversation history, clickable PIDs, multi-provider support, and real per-process network telemetry from the Rust backend.'
+	},
+	{
+		slug: 'v5-0-0-release',
+		title: 'OmniMon v5.0.0 — Agentic AI, Ed25519 Security & Deep OS Telemetry',
+		date: '19 Jan 2026',
+		summary: 'Agentic AI with Ollama, Ed25519-signed releases, deep OS telemetry, SRE automations, system tray, and CLI parity.'
+	},
+	{
+		slug: 'system-tray',
+		title: 'Background Monitoring: System Tray & Auto-Start',
+		date: '14 Jan 2026',
+		summary: 'OmniMon now runs silently in your menu bar. Native system tray integration, background mode, and auto-start on login.'
+	},
+	{
+		slug: 'zero-copy-ipc',
+		title: 'Performance Engineering: Zero-Copy IPC Optimization',
+		date: '9 Jan 2026',
+		summary: 'How we reduced heap allocations by 80% in OmniMon\'s hot path using zero-copy IPC, Arc caching, and reference-based sorting.'
+	},
+	{
+		slug: 'v4-5-0-release',
+		title: 'OmniMon v4.5.0 — Enterprise Consolidation & Security Hardening',
+		date: '4 Jan 2026',
+		summary: 'Enterprise-grade security hardening, consolidated CI/CD pipelines, and production-ready stability improvements across all platforms.'
+	},
+	{
+		slug: 'ai-chat-ollama',
+		title: 'Local AI is Here: Ollama Integration in OmniMon',
+		date: '19 Dec 2025',
+		summary: 'Chat with your system using natural language. OmniMon\'s AI module supports Ollama for private, local inference with tool calling capabilities.'
+	},
+	{
+		slug: 'v4-3-0-release',
+		title: 'OmniMon v4.3.0 — Responsive UI, Safari Parity & OpenRouter Chat',
+		date: '14 Dec 2025',
+		summary: 'Fully responsive UI across all views, Safari browser parity for tab tracking, and OpenRouter integration for AI chat.'
+	},
+	{
+		slug: 'v4-2-0-release',
+		title: 'OmniMon v4.2.0 — i18n Support & Network Traffic Monitoring',
+		date: '30 Nov 2025',
+		summary: 'Full internationalization support and per-process network traffic monitoring with DPI Lite collectors.'
+	},
+	{
+		slug: 'v4-1-0-release',
+		title: 'OmniMon v4.1.0 — AI Chat, System Tray & SRE Automations',
+		date: '14 Nov 2025',
+		summary: 'Local AI chat with Ollama, native system tray integration, and an automated SRE engine for proactive system management.'
+	},
+	{
+		slug: 'v4-0-7-release',
+		title: 'OmniMon v4.0.7 — Docs Refresh, Compliance Mapping & Version Alignment',
+		date: '5 Mar 2026',
+		summary: 'Refreshes documentation, captures compliance and audit status, and aligns runtime-visible version strings across desktop, CLI, and TUI.'
+	},
+	{
+		slug: 'v4-0-6-release',
+		title: 'OmniMon v4.0.6 — Homebrew Cask, Cross-Platform Packages & Release Automation',
+		date: '5 Mar 2026',
+		summary: 'Homebrew Cask distribution, cross-platform desktop packages, a universal web installer, and CI/CD refinements.'
+	},
+	{
+		slug: 'v4-0-4-release',
+		title: 'OmniMon v4.0.4 — Resilience Tests, Benchmarks & CLI Coverage Pipeline',
+		date: '5 Mar 2026',
+		summary: 'Core resilience validation with micro-benchmarks, CLI integration tests, and llvm-cov coverage reporting.'
+	},
+	{
+		slug: 'v4-0-2-release',
+		title: 'OmniMon v4.0.2 — Kill Safety, IPC Hardening & Accessibility',
+		date: '5 Mar 2026',
+		summary: 'Process-kill identity checks, IPC safety improvements, accessibility enhancements, and system architecture documentation.'
+	},
+	{
+		slug: 'v4-0-0-release',
+		title: 'OmniMon v4.0.0 — Full Rewrite in Rust, Tauri & Svelte 5',
+		date: '5 Mar 2026',
+		summary: 'Complete rewrite with Rust core, Tauri + Svelte 5 desktop UI, Rust CLI, AI optimization flow, and secure native APIs.'
+	},
+	{
+		slug: 'v1-2-0-release',
+		title: 'OmniMon v1.2.0 — Menu Bar Monitor, MVVM Refactor & Release Workflow',
+		date: '3 Mar 2026',
+		summary: 'Menu bar monitor, MVVM model layer refactor, Homebrew formula, and automated GitHub Releases via CI.'
+	},
+	{
+		slug: 'v1-1-0-release',
+		title: 'OmniMon v1.1.0 — Daemon Detection, Disk I/O & Export Flow',
+		date: '3 Mar 2026',
+		summary: 'Orphan build daemon detection, per-process disk I/O metrics, JSON/CSV export, and stronger input validation.'
+	},
+	{
+		slug: 'v1-0-0-release',
+		title: 'OmniMon v1.0.0 — First Open-Source Release',
+		date: '3 Mar 2026',
+		summary: 'Initial release with background daemon, native AppKit process picker, CLI, YAML config, and LaunchAgent auto-start.'
 	}
 ];
 ---

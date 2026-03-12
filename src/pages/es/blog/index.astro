@@ -6,13 +6,181 @@ const posts = [
 		slug: 'v6-5-0-release-es',
 		title: 'OmniMon v6.5.0 — Kill Inteligente y Graficas Corregidas',
 		date: '12 Mar 2026',
-		summary: 'Dialogo de kill inteligente con pestanas del navegador, boton de consulta IA, graficas dinamicas corregidas, sistema de temas unificado y pestanas visibles en modo basico.'
+		summary: 'Dialogo de kill inteligente con nombres de pestanas, boton de consulta IA, graficas dinamicas corregidas, sistema de temas unificado y pestanas visibles en modo basico.'
 	},
 	{
 		slug: 'v6-4-1-release-es',
 		title: 'OmniMon v6.4.1 — Reality Fix Release',
 		date: '11 Mar 2026',
-		summary: 'Colores solidos en los 3 temas, iconos Lucide SVG, streaming real de IA via SSE, i18n completo con 531 keys, Modo Profesional, coverage al 87% y CVE quinn-proto resuelto.'
+		summary: 'Colores solidos en todos los temas, iconos Lucide SVG reemplazando 35+ emojis, streaming real SSE, i18n completo con 531 keys, Modo Pro y 87% de cobertura.'
+	},
+	{
+		slug: 'v6-4-0-release-es',
+		title: 'OmniMon v6.4.0 — Modo Pro IA, Layouts Divididos y Endurecimiento Final',
+		date: '10 Mar 2026',
+		summary: 'Flujos de trabajo profesionales con IA, acciones Ask AI en dashboard, streaming real de tokens, layouts divididos, i18n reforzado y rutas mas seguras.'
+	},
+	{
+		slug: 'v6-3-0-release-es',
+		title: 'OmniMon v6.3.0 — Perfiles Rediseñados, Validacion E2E y Endurecimiento',
+		date: '10 Mar 2026',
+		summary: 'Perfiles de usuario rediseñados, cobertura E2E con Playwright, hallazgos de auditoria cerrados y calidad elevada en todo el stack.'
+	},
+	{
+		slug: 'v6-2-0-release-es',
+		title: 'OmniMon v6.2.0 — Analisis de Red Avanzado, Alertas y Acciones IA',
+		date: '9 Mar 2026',
+		summary: 'Captura de conexiones activas, dashboards de red en vivo, alertas configurables y acciones de investigacion contextual con IA.'
+	},
+	{
+		slug: 'v6-1-0-release-es',
+		title: 'OmniMon v6.1.0 — Endurecimiento de Seguridad, Streaming IA y Alertas Agrupadas',
+		date: '9 Mar 2026',
+		summary: 'Distribucion verificable, manejo mas seguro de claves, mejor analisis contextual y alertas operativas menos ruidosas.'
+	},
+	{
+		slug: 'v6-0-1-release-es',
+		title: 'OmniMon v6.0.1 — Sistema de Diseño Button Unificado, Correcciones IPC y ConfirmDialog',
+		date: '7 Mar 2026',
+		summary: 'Sistema de diseño Button.svelte unificado en 7 componentes, rate limits IPC relajados, confirmacion diferida de kills IA y notificaciones toast.'
+	},
+	{
+		slug: 'v6-0-0-release-es',
+		title: 'OmniMon v6.0.0 — TUI en Tiempo Real y Ecosistema de Plugins Lua Embebido',
+		date: '7 Mar 2026',
+		summary: 'Modo TUI completo estilo htop/btop, ecosistema de plugins Lua embebido con VMs en sandbox, chat IA en terminal y distribucion nativa global.'
+	},
+	{
+		slug: 'v5-3-0-release-es',
+		title: 'OmniMon v5.3.0 — Profiling Extremo: mimalloc, Tabla Virtualizada y Fuzz Testing',
+		date: '2 Mar 2026',
+		summary: 'Release enfocado en rendimiento: asignador mimalloc, rutas hot sin asignaciones, tabla virtualizada, cache de respuestas IA y fuzz testing.'
+	},
+	{
+		slug: 'v5-2-0-release-es',
+		title: 'OmniMon v5.2.0 — CrabNebula Cloud, Optimizaciones Rust 1.93 y Accesibilidad',
+		date: '24 Feb 2026',
+		summary: 'Integracion CrabNebula Cloud, cumplimiento Rust 1.93 clippy, accesibilidad con focus trap, busquedas O(1) y 198 tests con 85% cobertura.'
+	},
+	{
+		slug: 'v5-1-0-release-es',
+		title: 'OmniMon v5.1.0 — Alertas IA Inteligentes, Perfiles de Usuario y Rediseño UI',
+		date: '14 Feb 2026',
+		summary: 'Alertas inteligentes con IA, 4 perfiles de usuario, modos Basico/Pro, rate limiting IPC, rediseño completo de UI y 198 tests.'
+	},
+	{
+		slug: 'sre-automations-es',
+		title: 'SRE Automatizado: El Motor de Automatizaciones',
+		date: '9 Feb 2026',
+		summary: 'Define reglas para gestionar automaticamente procesos descontrolados con umbrales de CPU y RAM configurables.'
+	},
+	{
+		slug: 'v5-0-2-release-es',
+		title: 'OmniMon v5.0.2 — Centro de Ayuda, Preferencias Persistentes e IA Contextual',
+		date: '4 Feb 2026',
+		summary: 'Centro de Ayuda integrado, preferencias persistentes con personalizacion de tema y proveedor IA, y chat IA contextual reutilizable.'
+	},
+	{
+		slug: 'v5-0-1-release-es',
+		title: 'OmniMon v5.0.1 — Chat IA Mejorado, Historial y Telemetria de Red Real',
+		date: '27 Ene 2026',
+		summary: 'Chat IA renovado con historial, PIDs clicables, soporte multi-proveedor y telemetria de red real por proceso desde el backend Rust.'
+	},
+	{
+		slug: 'v5-0-0-release-es',
+		title: 'OmniMon v5.0.0 — IA Agéntica, Seguridad Ed25519 y Telemetria Profunda',
+		date: '19 Ene 2026',
+		summary: 'IA agéntica con Ollama, releases firmados Ed25519, telemetria profunda del SO, automatizaciones SRE, system tray y paridad CLI.'
+	},
+	{
+		slug: 'system-tray-es',
+		title: 'Monitoreo en Segundo Plano: System Tray y Auto-Inicio',
+		date: '14 Ene 2026',
+		summary: 'OmniMon se ejecuta silenciosamente en tu barra de menu. Integracion nativa con system tray, modo background y auto-inicio al login.'
+	},
+	{
+		slug: 'zero-copy-ipc-es',
+		title: 'Ingenieria de Rendimiento: Optimizacion Zero-Copy IPC',
+		date: '9 Ene 2026',
+		summary: 'Como redujimos las asignaciones de heap en un 80% usando IPC zero-copy, cache con Arc y ordenamiento por referencia.'
+	},
+	{
+		slug: 'v4-5-0-release-es',
+		title: 'OmniMon v4.5.0 — Consolidacion Enterprise y Endurecimiento de Seguridad',
+		date: '4 Ene 2026',
+		summary: 'Seguridad enterprise, pipelines CI/CD consolidados y mejoras de estabilidad en todas las plataformas.'
+	},
+	{
+		slug: 'ai-chat-ollama-es',
+		title: 'IA Local: Integracion de Ollama en OmniMon',
+		date: '19 Dic 2025',
+		summary: 'Chatea con tu sistema usando lenguaje natural. Ollama para inferencia privada y local con capacidades de tool calling.'
+	},
+	{
+		slug: 'v4-3-0-release-es',
+		title: 'OmniMon v4.3.0 — UI Responsiva, Paridad Safari y Chat OpenRouter',
+		date: '14 Dic 2025',
+		summary: 'UI completamente responsiva, paridad de Safari para seguimiento de pestanas e integracion OpenRouter para chat con IA.'
+	},
+	{
+		slug: 'v4-2-0-release-es',
+		title: 'OmniMon v4.2.0 — Soporte i18n y Monitoreo de Trafico de Red',
+		date: '30 Nov 2025',
+		summary: 'Soporte completo de internacionalizacion y monitoreo de trafico de red por proceso con colectores DPI Lite.'
+	},
+	{
+		slug: 'v4-1-0-release-es',
+		title: 'OmniMon v4.1.0 — Chat IA, System Tray y Automatizaciones SRE',
+		date: '14 Nov 2025',
+		summary: 'Chat local con Ollama, integracion nativa con system tray y motor automatizado de SRE para gestion proactiva del sistema.'
+	},
+	{
+		slug: 'v4-0-7-release-es',
+		title: 'OmniMon v4.0.7 — Documentacion, Compliance y Alineacion de Versiones',
+		date: '5 Mar 2026',
+		summary: 'Documentacion renovada, mapeo de compliance y alineacion de strings de version en desktop, CLI y TUI.'
+	},
+	{
+		slug: 'v4-0-6-release-es',
+		title: 'OmniMon v4.0.6 — Homebrew Cask, Paquetes Cross-Platform y Automatizacion',
+		date: '5 Mar 2026',
+		summary: 'Distribucion Homebrew Cask, paquetes desktop cross-platform, instalador web universal y refinamientos CI/CD.'
+	},
+	{
+		slug: 'v4-0-4-release-es',
+		title: 'OmniMon v4.0.4 — Tests de Resiliencia, Benchmarks y Pipeline de Cobertura',
+		date: '5 Mar 2026',
+		summary: 'Validacion de resiliencia con micro-benchmarks, tests de integracion CLI y reporte de cobertura llvm-cov.'
+	},
+	{
+		slug: 'v4-0-2-release-es',
+		title: 'OmniMon v4.0.2 — Seguridad en Kill, Endurecimiento IPC y Accesibilidad',
+		date: '5 Mar 2026',
+		summary: 'Verificacion de identidad en kills, seguridad IPC reforzada, mejoras de accesibilidad y documentacion de arquitectura.'
+	},
+	{
+		slug: 'v4-0-0-release-es',
+		title: 'OmniMon v4.0.0 — Reescritura Completa en Rust, Tauri y Svelte 5',
+		date: '5 Mar 2026',
+		summary: 'Reescritura completa con core Rust, UI desktop Tauri + Svelte 5, CLI Rust, flujo de optimizacion IA y APIs nativas seguras.'
+	},
+	{
+		slug: 'v1-2-0-release-es',
+		title: 'OmniMon v1.2.0 — Monitor Menu Bar, Refactor MVVM y Workflow de Release',
+		date: '3 Mar 2026',
+		summary: 'Monitor en barra de menu, refactor del modelo hacia MVVM, formula Homebrew y GitHub Releases automatizados via CI.'
+	},
+	{
+		slug: 'v1-1-0-release-es',
+		title: 'OmniMon v1.1.0 — Deteccion de Daemons, Disk I/O y Flujo de Exportacion',
+		date: '3 Mar 2026',
+		summary: 'Deteccion de daemons huerfanos, metricas de disk I/O por proceso, exportacion JSON/CSV y validacion de entrada reforzada.'
+	},
+	{
+		slug: 'v1-0-0-release-es',
+		title: 'OmniMon v1.0.0 — Primer Release Open-Source',
+		date: '3 Mar 2026',
+		summary: 'Release inicial con daemon en background, process picker nativo AppKit, CLI, config YAML y auto-inicio con LaunchAgent.'
 	}
 ];
 ---
