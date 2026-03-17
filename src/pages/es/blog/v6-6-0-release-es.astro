@@ -1,0 +1,102 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const releaseUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
+const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/main/scripts/install-web.sh';
+---
+
+<Layout
+	title="OmniMon v6.6.0 — Tabs Nativos en Windows y Herramientas de Desarrollo | Blog"
+	description="OmniMon v6.6.0 agrega deteccion nativa de pestanas en Windows sin CDP, integracion Bun, scripts automaticos de desarrollo, estabilidad CI mejorada y correcciones multiplataforma."
+>
+	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		<article class="space-y-10">
+			<header class="space-y-4">
+				<div class="flex items-center gap-3 text-sm text-slate-400">
+					<a href="/es/blog/" class="transition hover:text-white">&larr; Blog</a>
+					<span>|</span>
+					<a href="/blog/v6-6-0-release/" class="transition hover:text-sky-300">Read in English</a>
+				</div>
+				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.6.0 — Tabs Nativos en Windows y Herramientas de Desarrollo</h1>
+				<div class="flex items-center gap-4 text-sm text-slate-400">
+					<time>17 Mar 2026</time>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Nuevo release</span>
+				</div>
+			</header>
+
+			<section class="space-y-6 text-lg leading-8 text-slate-300">
+				<p>
+					La version 6.6.0 trae <strong class="text-white">deteccion nativa de pestanas de navegador en Windows</strong> usando UI Automation (sin necesidad de CDP), integracion completa de Bun reemplazando npm, scripts automaticos de desarrollo y varias correcciones de estabilidad multiplataforma.
+				</p>
+
+				<h2 class="text-2xl font-bold text-white">Deteccion Nativa de Tabs en Windows</h2>
+				<p>OmniMon ahora detecta pestanas de navegador en Windows sin requerir Chrome DevTools Protocol:</p>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">API UI Automation.</strong> Utiliza el arbol de accesibilidad de Windows para recorrer las pestanas del navegador y extraer titulos nativamente, sin flags especiales del navegador.</li>
+					<li><strong class="text-white">Fallback por titulo de ventana.</strong> Cuando UI Automation no esta disponible, lee la pestana activa desde el titulo de la ventana.</li>
+					<li><strong class="text-white">Soporte multi-navegador.</strong> Funciona con Chrome, Edge, Brave y Arc en Windows.</li>
+					<li><strong class="text-white">Instrucciones CDP.</strong> Para navegadores que lo soportan, OmniMon muestra instrucciones especificas por plataforma sobre como habilitar CDP para acceso completo a pestanas.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Experiencia de Desarrollo</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Bun en todo el proyecto.</strong> Se reemplazo npm con Bun en todos los scripts de build, flujos CI y comandos de desarrollo para una resolucion de dependencias mas rapida.</li>
+					<li><strong class="text-white">Scripts automaticos.</strong> Nuevos scripts de ejecucion que detectan la plataforma y configuran el entorno de desarrollo automaticamente.</li>
+					<li><strong class="text-white">Documentacion completa.</strong> Se agrego documentacion detallada de prerequisitos para las tres plataformas (macOS, Windows, Linux).</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Estabilidad Multiplataforma</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Subprocesos en Windows.</strong> Se corrigieron ventanas visibles de PowerShell y netstat durante el monitoreo usando flags <code>CREATE_NO_WINDOW</code>.</li>
+					<li><strong class="text-white">Compatibilidad Clippy 1.94.</strong> Corregido nuevo lint <code>manual_contains</code> de Rust 1.94, asegurando que CI pase en todas las plataformas.</li>
+					<li><strong class="text-white">Race conditions en tests.</strong> Corregida condicion de carrera en tests de AIChat y strings i18n desincronizados entre locales.</li>
+					<li><strong class="text-white">Cierre de app en Windows.</strong> Mejorado el cierre completo de la aplicacion y agregado logging de debug para seguimiento de conexiones.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">README Actualizado</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Screenshot de la app.</strong> Se agrego captura de pantalla real de la aplicacion al README del repositorio.</li>
+					<li><strong class="text-white">Documentacion de arquitectura.</strong> Revisada con descripcion actualizada de la arquitectura y detalles precisos del stack.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Descargar</h2>
+				<div class="grid gap-4 sm:grid-cols-3">
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-orange-200">macOS</p>
+						<p class="mt-2 font-semibold text-white">Universal DMG</p>
+					</a>
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-sky-200">Windows</p>
+						<p class="mt-2 font-semibold text-white">MSI Installer</p>
+					</a>
+					<a href={installScriptUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-emerald-200">Linux</p>
+						<p class="mt-2 font-semibold text-white">.deb / .AppImage</p>
+					</a>
+				</div>
+				<p class="text-sm text-slate-400">Siempre verifica las descargas contra <code>SHA256SUMS.txt</code> publicado en el release de GitHub.</p>
+
+				<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
+					<p class="text-sm uppercase tracking-[0.24em] text-slate-500">Homebrew</p>
+					<pre class="mt-3 overflow-x-auto text-sm text-slate-300"><code>brew tap chochy2001/omnimon
+brew install --cask omnimon</code></pre>
+				</div>
+			</section>
+		</article>
+
+		<div class="flex items-center gap-4 text-sm text-slate-400">
+			<a href="/es/blog/" class="transition hover:text-white">&larr; Todos los posts</a>
+		</div>
+	</main>
+
+	<footer class="mt-12 border-t border-slate-800/80 py-8 text-sm text-slate-400">
+		<div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+			<p>&copy; {new Date().getFullYear()} OmniMon. Open source under MIT.</p>
+			<div class="flex flex-wrap items-center gap-4">
+				<a href="https://github.com/chochy2001/omnimon" target="_blank" rel="noreferrer" class="transition hover:text-white">GitHub</a>
+				<a href="/" class="transition hover:text-white">Inicio</a>
+				<a href="/es/blog/" class="transition hover:text-white">Blog</a>
+			</div>
+		</div>
+	</footer>
+</Layout>

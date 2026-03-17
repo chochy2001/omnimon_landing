@@ -1,0 +1,102 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const releaseUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
+const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/main/scripts/install-web.sh';
+---
+
+<Layout
+	title="OmniMon v6.6.0 — Windows Native Tabs & Dev Tooling | Blog"
+	description="OmniMon v6.6.0 adds native Windows tab detection without CDP, Bun integration, automated dev scripts, improved CI stability, and cross-platform fixes."
+>
+	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		<article class="space-y-10">
+			<header class="space-y-4">
+				<div class="flex items-center gap-3 text-sm text-slate-400">
+					<a href="/blog/" class="transition hover:text-white">&larr; Blog</a>
+					<span>|</span>
+					<a href="/es/blog/v6-6-0-release-es/" class="transition hover:text-sky-300">Leer en espanol</a>
+				</div>
+				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.6.0 — Windows Native Tabs &amp; Dev Tooling</h1>
+				<div class="flex items-center gap-4 text-sm text-slate-400">
+					<time>17 Mar 2026</time>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">New release</span>
+				</div>
+			</header>
+
+			<section class="space-y-6 text-lg leading-8 text-slate-300">
+				<p>
+					Version 6.6.0 brings <strong class="text-white">native Windows browser tab detection</strong> using UI Automation (no CDP required), full Bun integration replacing npm across the toolchain, automated development scripts, and several cross-platform stability fixes.
+				</p>
+
+				<h2 class="text-2xl font-bold text-white">Windows Native Tab Detection</h2>
+				<p>OmniMon now detects browser tabs on Windows without requiring Chrome DevTools Protocol:</p>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">UI Automation API.</strong> Uses the Windows accessibility tree to walk browser tab strips and extract tab titles natively, with no special browser flags needed.</li>
+					<li><strong class="text-white">Window title fallback.</strong> When UI Automation isn't available, falls back to reading the active tab from the window title.</li>
+					<li><strong class="text-white">Multi-browser support.</strong> Works with Chrome, Edge, Brave, and Arc on Windows.</li>
+					<li><strong class="text-white">CDP help instructions.</strong> For browsers that support it, OmniMon now shows platform-specific instructions on how to enable CDP for full tab access.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Developer Experience</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Bun everywhere.</strong> Replaced npm with Bun across all build scripts, CI workflows, and development commands for faster dependency resolution and builds.</li>
+					<li><strong class="text-white">Automated dev scripts.</strong> New run scripts that detect the platform and set up the development environment automatically.</li>
+					<li><strong class="text-white">Comprehensive install docs.</strong> Added detailed prerequisite documentation for all three platforms (macOS, Windows, Linux).</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Cross-Platform Stability</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Windows subprocess handling.</strong> Fixed visible PowerShell and netstat windows appearing during process monitoring by using <code>CREATE_NO_WINDOW</code> flags.</li>
+					<li><strong class="text-white">Clippy 1.94 compliance.</strong> Fixed new <code>manual_contains</code> lint in Rust 1.94, ensuring CI passes on all platforms.</li>
+					<li><strong class="text-white">Test race conditions.</strong> Fixed race condition in AIChat component tests and corrected i18n string mismatches across locales.</li>
+					<li><strong class="text-white">App close behavior on Windows.</strong> Improved full application shutdown and added debug logging for connection tracking.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Updated README</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">App screenshot.</strong> Added a real screenshot of the application to the repository README.</li>
+					<li><strong class="text-white">Architecture docs.</strong> Revised with updated architecture description and accurate stack details.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Download</h2>
+				<div class="grid gap-4 sm:grid-cols-3">
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-orange-200">macOS</p>
+						<p class="mt-2 font-semibold text-white">Universal DMG</p>
+					</a>
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-sky-200">Windows</p>
+						<p class="mt-2 font-semibold text-white">MSI Installer</p>
+					</a>
+					<a href={installScriptUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-emerald-200">Linux</p>
+						<p class="mt-2 font-semibold text-white">.deb / .AppImage</p>
+					</a>
+				</div>
+				<p class="text-sm text-slate-400">Always verify downloads against <code>SHA256SUMS.txt</code> published in the GitHub release.</p>
+
+				<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
+					<p class="text-sm uppercase tracking-[0.24em] text-slate-500">Homebrew</p>
+					<pre class="mt-3 overflow-x-auto text-sm text-slate-300"><code>brew tap chochy2001/omnimon
+brew install --cask omnimon</code></pre>
+				</div>
+			</section>
+		</article>
+
+		<div class="flex items-center gap-4 text-sm text-slate-400">
+			<a href="/blog/" class="transition hover:text-white">&larr; All posts</a>
+		</div>
+	</main>
+
+	<footer class="mt-12 border-t border-slate-800/80 py-8 text-sm text-slate-400">
+		<div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+			<p>&copy; {new Date().getFullYear()} OmniMon. Open source under MIT.</p>
+			<div class="flex flex-wrap items-center gap-4">
+				<a href="https://github.com/chochy2001/omnimon" target="_blank" rel="noreferrer" class="transition hover:text-white">GitHub</a>
+				<a href="/" class="transition hover:text-white">Home</a>
+				<a href="/blog/" class="transition hover:text-white">Blog</a>
+			</div>
+		</div>
+	</footer>
+</Layout>

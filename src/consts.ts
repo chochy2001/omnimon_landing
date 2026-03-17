@@ -3,5 +3,5 @@
  * Update version here and all pages will pick it up.
  */
 
-export const OMNIMON_VERSION = '6.5.0';
-export const RELEASE_DATE = '12 Mar 2026';
+export const OMNIMON_VERSION = '6.6.0';
+export const RELEASE_DATE = '17 Mar 2026';
