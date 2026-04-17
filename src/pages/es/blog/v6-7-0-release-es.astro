@@ -1,0 +1,123 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const releaseUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
+const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/main/scripts/install-web.sh';
+---
+
+<Layout
+	title="OmniMon v6.7.0 — Zombie Killer y Endurecimiento de IA | Blog"
+	description="OmniMon v6.7.0 estrena el motor Zombie Killer, modo de privacidad de IA con redaccion seudonima estable, presupuesto diario de IA, endurecimiento del keyring, badge DPI de transparencia y un refactor con breaking change en el evaluador de alertas de red."
+>
+	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		<article class="space-y-10">
+			<header class="space-y-4">
+				<div class="flex items-center gap-3 text-sm text-slate-400">
+					<a href="/es/blog/" class="transition hover:text-white">&larr; Blog</a>
+					<span>|</span>
+					<a href="/blog/v6-7-0-release/" class="transition hover:text-sky-300">Read in English</a>
+				</div>
+				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.7.0 — Zombie Killer y Endurecimiento de IA</h1>
+				<div class="flex items-center gap-4 text-sm text-slate-400">
+					<time>17 Abr 2026</time>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Nuevo release</span>
+				</div>
+			</header>
+
+			<section class="space-y-6 text-lg leading-8 text-slate-300">
+				<p>
+					La version 6.7.0 estrena el <strong class="text-white">Zombie Killer</strong> — un motor en segundo plano que detecta procesos consumiendo CPU o RAM de forma sostenida y los ofrece para terminar con confirmacion del usuario — mas una segunda ronda de endurecimiento de la superficie de IA (modo de privacidad, presupuesto diario, confirmacion frontend de herramientas destructivas, borrado previo del keyring legacy) y un badge de transparencia DPI.
+				</p>
+
+				<h2 class="text-2xl font-bold text-white">Zombie Killer</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Deteccion de uso sostenido.</strong> Un nuevo motor vigila procesos cuyo CPU o RAM se mantiene por encima de un umbral durante una ventana configurable (defaults: 50% de CPU sostenido 1h, uptime mayor a 7 dias) y los ofrece como candidatos.</li>
+					<li><strong class="text-white">A salvo de reuso de PID.</strong> Cada candidato se identifica por <code>(pid, start_time)</code>, asi que un PID reciclado nunca se confunde con un zombie todavia vivo.</li>
+					<li><strong class="text-white">Tick a prueba de panic.</strong> El cuerpo del tick corre bajo <code>catch_unwind</code>; un proceso problematico no puede tumbar el hilo de fondo.</li>
+					<li><strong class="text-white">Modal con atajo de teclado.</strong> <code>Cmd/Ctrl+Shift+Z</code> abre <code>ZombieKiller.svelte</code>, que lista candidatos, permite matar uno o todos, ajustar los umbrales y mantener una blocklist <code>never_kill</code> — todo con i18n EN y ES.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Modo de Privacidad de IA</h2>
+				<p>Cuando se activa (<code>Settings.ai_privacy_mode</code>, default <code>false</code>), todo lo que se envia al LLM pasa por redaccion seudonima estable:</p>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Nombres de proceso, paths, URLs, titulos de pestana, hostnames.</strong> Se reemplazan por tokens SipHash de 24 bits para que el modelo pueda seguir razonando sobre identidad entre llamadas sin ver los strings reales.</li>
+					<li><strong class="text-white">IPs privadas colapsan a <code>&lt;lan&gt;</code>.</strong> RFC 1918, loopback, link-local, <code>fc00::/7</code>, <code>fe80::/10</code> — todas se aplanan a un solo bucket.</li>
+					<li><strong class="text-white">Controles visibles.</strong> El toggle, un contador de uso vivo y el input del presupuesto diario viven en la nueva seccion "AI Privacy &amp; Budget" de Profile Settings.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Presupuesto Diario de IA</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Tope por dia UTC.</strong> <code>Settings.ai_daily_limit</code> (default <code>200</code>, <code>0</code> = ilimitado) complementa el token bucket existente: el burst limita la tasa, el diario limita el gasto.</li>
+					<li><strong class="text-white">Compartido entre proveedores.</strong> La cubeta cubre <code>ai_chat</code>, <code>analyze_processes</code>, <code>analyze_context</code> y <code>validate_api_key</code>.</li>
+					<li><strong class="text-white">Observabilidad.</strong> Nuevo IPC <code>get_ai_daily_usage</code> que devuelve <code>(usado, limite)</code>; la UI muestra el contador con un boton de refresh.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Llamadas de IA Mas Seguras</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Las reglas de automatizacion requieren confirmacion.</strong> <code>add_automation_rule</code> y <code>remove_automation_rule</code> ya no se ejecutan server-side dentro de <code>ai_chat</code>; devuelven un plan y <code>AIChat.svelte</code> invoca el IPC real solo tras confirmacion explicita — mismo patron que <code>kill_process</code>, <code>kill_by_name</code>, <code>close_tabs</code> y <code>close_connection</code>.</li>
+					<li><strong class="text-white">Keyring con borrado previo.</strong> <code>get_api_key_with_fallback</code> borra el almacen legacy en texto plano antes de escribir al keyring seguro. Una interrupcion a mitad del flujo ya no puede dejar la API key legible en disco.</li>
+					<li><strong class="text-white">CSP con Ollama local.</strong> <code>tauri.conf.json</code> permite <code>http://localhost:11434</code> y <code>http://127.0.0.1:11434</code> sin relajar el resto de la politica.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Badge DPI de Transparencia</h2>
+				<p>Nuevo indicador en el StatusBar (icono Radar de lucide, <code>aria-live="polite"</code>) que aparece siempre que la telemetria DPI esta activa. El tooltip deja claro que OmniMon lee metadatos de paquete unicamente (nunca payload) y apunta al ajuste que desactiva DPI.</p>
+
+				<h2 class="text-2xl font-bold text-white">Breaking — <code>network_alerts::EvaluatorState</code></h2>
+				<p>El evaluador de alertas tenia sus contadores de debounce y el mapa de cooldown en un singleton de proceso <code>OnceLock&lt;RwLock&lt;EvaluatorState&gt;&gt;</code>, lo que causaba tests flaky cuando hilos paralelos se contaminaban el mapa <code>consecutive_matches</code>. El arreglo elimina el global y plumea <code>&amp;mut EvaluatorState</code> a traves de cada call site:</p>
+				<pre class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300"><code>// Antes
+let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history);
+
+// Ahora
+let mut state = network_alerts::EvaluatorState::new();
+let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history, &amp;mut state);
+// conservar `state` vivo entre ticks para preservar debounce + cooldown.</code></pre>
+				<p>Los call sites internos del workspace ya estan actualizados; los consumidores fuera del arbol deben instanciar su propio estado o envolver ambas funciones.</p>
+
+				<h2 class="text-2xl font-bold text-white">Calidad</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">458 tests Rust</strong> (288 core + 95 integration + 53 tauri + 18 + 4 tui) y <strong class="text-white">689 tests frontend</strong> con Vitest.</li>
+					<li><strong class="text-white">Branch coverage 70.37–70.80%</strong> (rango estable), statements / functions / lines al 86%.</li>
+					<li><strong class="text-white">Clippy limpio bajo Rust 1.95</strong> — diez call sites preexistentes arreglados para los nuevos lints <code>unnecessary_sort_by</code> y <code>collapsible_match</code>.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Descarga</h2>
+				<div class="grid gap-4 sm:grid-cols-3">
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-orange-200">macOS</p>
+						<p class="mt-2 font-semibold text-white">DMG Universal</p>
+					</a>
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-sky-200">Windows</p>
+						<p class="mt-2 font-semibold text-white">Instalador MSI</p>
+					</a>
+					<a href={installScriptUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-emerald-200">Linux</p>
+						<p class="mt-2 font-semibold text-white">.deb / .AppImage</p>
+					</a>
+				</div>
+				<p class="text-sm text-slate-400">Siempre verifica las descargas contra el <code>SHA256SUMS.txt</code> publicado en el release de GitHub.</p>
+
+				<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
+					<p class="text-sm uppercase tracking-[0.24em] text-slate-500">Homebrew</p>
+					<pre class="mt-3 overflow-x-auto text-sm text-slate-300"><code>brew tap chochy2001/omnimon
+brew install --cask omnimon</code></pre>
+				</div>
+			</section>
+		</article>
+
+		<div class="flex items-center gap-4 text-sm text-slate-400">
+			<a href="/es/blog/" class="transition hover:text-white">&larr; Todos los posts</a>
+		</div>
+	</main>
+
+	<footer class="mt-12 border-t border-slate-800/80 py-8 text-sm text-slate-400">
+		<div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+			<p>&copy; {new Date().getFullYear()} OmniMon. Codigo abierto bajo MIT.</p>
+			<div class="flex flex-wrap items-center gap-4">
+				<a href="https://github.com/chochy2001/omnimon" target="_blank" rel="noreferrer" class="transition hover:text-white">GitHub</a>
+				<a href="/es/" class="transition hover:text-white">Inicio</a>
+				<a href="/es/blog/" class="transition hover:text-white">Blog</a>
+			</div>
+		</div>
+	</footer>
+</Layout>

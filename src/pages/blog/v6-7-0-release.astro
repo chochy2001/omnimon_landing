@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const releaseUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
+const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/main/scripts/install-web.sh';
+---
+
+<Layout
+	title="OmniMon v6.7.0 — Zombie Killer & AI Safety Hardening | Blog"
+	description="OmniMon v6.7.0 ships the Zombie Killer engine, AI privacy mode with stable pseudonymous redaction, a daily AI budget, keyring hardening, a DPI transparency badge, and a breaking refactor of the network-alerts evaluator state."
+>
+	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		<article class="space-y-10">
+			<header class="space-y-4">
+				<div class="flex items-center gap-3 text-sm text-slate-400">
+					<a href="/blog/" class="transition hover:text-white">&larr; Blog</a>
+					<span>|</span>
+					<a href="/es/blog/v6-7-0-release-es/" class="transition hover:text-sky-300">Leer en espanol</a>
+				</div>
+				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.7.0 — Zombie Killer &amp; AI Safety Hardening</h1>
+				<div class="flex items-center gap-4 text-sm text-slate-400">
+					<time>17 Apr 2026</time>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">New release</span>
+				</div>
+			</header>
+
+			<section class="space-y-6 text-lg leading-8 text-slate-300">
+				<p>
+					Version 6.7.0 introduces the <strong class="text-white">Zombie Killer</strong> — a background engine that detects processes burning CPU or RAM for long stretches and offers them for user-confirmed termination — plus a second round of AI safety hardening (privacy mode, daily budget, frontend-confirmed automation tool calls, keyring delete-first) and a DPI transparency badge.
+				</p>
+
+				<h2 class="text-2xl font-bold text-white">Zombie Killer</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Sustained-usage detection.</strong> A new engine watches processes whose CPU or RAM stays above a threshold for a configurable window (defaults: 50% CPU sustained 1h, uptime over 7 days) and surfaces them as candidates.</li>
+					<li><strong class="text-white">PID-reuse safe.</strong> Every candidate is keyed by <code>(pid, start_time)</code>, so a recycled PID never gets mistaken for a still-running zombie.</li>
+					<li><strong class="text-white">Panic-safe tick.</strong> The per-tick body runs under <code>catch_unwind</code>; a single bad process can never crash the background thread.</li>
+					<li><strong class="text-white">Modal with keyboard shortcut.</strong> <code>Cmd/Ctrl+Shift+Z</code> opens <code>ZombieKiller.svelte</code>, which lists candidates, lets you kill one or all, tune thresholds, and maintain a <code>never_kill</code> blocklist — all in EN and ES.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">AI Privacy Mode</h2>
+				<p>When enabled (<code>Settings.ai_privacy_mode</code>, default <code>false</code>), everything sent to the LLM goes through stable pseudonymous redaction:</p>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Process names, paths, URLs, tab titles, hostnames.</strong> Replaced by 24-bit SipHash tokens so the model can still reason about identity across calls without ever seeing the raw strings.</li>
+					<li><strong class="text-white">Private IPs collapse to <code>&lt;lan&gt;</code>.</strong> RFC 1918, loopback, link-local, <code>fc00::/7</code>, <code>fe80::/10</code> — all flattened to a single bucket.</li>
+					<li><strong class="text-white">Visible controls.</strong> The toggle, a live usage counter, and the new budget input all live in a "AI Privacy &amp; Budget" section inside Profile Settings.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Daily AI Budget</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Per-UTC-day cap.</strong> <code>Settings.ai_daily_limit</code> (default <code>200</code>, <code>0</code> = unlimited) complements the existing burst token bucket: burst caps rate, daily caps spend.</li>
+					<li><strong class="text-white">Shared across providers.</strong> The bucket spans <code>ai_chat</code>, <code>analyze_processes</code>, <code>analyze_context</code>, and <code>validate_api_key</code>.</li>
+					<li><strong class="text-white">Observability.</strong> New IPC <code>get_ai_daily_usage</code> returns <code>(used, limit)</code>; the UI shows the counter with a refresh button.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Safer AI Tool Calls</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Automation rules now require confirmation.</strong> <code>add_automation_rule</code> and <code>remove_automation_rule</code> no longer execute server-side inside <code>ai_chat</code>; they return a plan and <code>AIChat.svelte</code> invokes the real IPC only after the user confirms — same pattern as <code>kill_process</code>, <code>kill_by_name</code>, <code>close_tabs</code>, and <code>close_connection</code>.</li>
+					<li><strong class="text-white">Keyring delete-first.</strong> <code>get_api_key_with_fallback</code> wipes the legacy plaintext store before writing to the secure keyring. A crash mid-flight can no longer leave the API key readable on disk.</li>
+					<li><strong class="text-white">CSP allows local Ollama.</strong> <code>tauri.conf.json</code> now permits <code>http://localhost:11434</code> and <code>http://127.0.0.1:11434</code> without loosening the rest of the policy.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">DPI Transparency Badge</h2>
+				<p>A new status indicator in the StatusBar (Radar icon from lucide, <code>aria-live="polite"</code>) appears whenever DPI telemetry is active. The tooltip makes clear OmniMon reads packet metadata only (never payload) and points to the setting that disables DPI.</p>
+
+				<h2 class="text-2xl font-bold text-white">Breaking — <code>network_alerts::EvaluatorState</code></h2>
+				<p>The alert evaluator used to hold its debounce counters and cooldown map in a process-global <code>OnceLock&lt;RwLock&lt;EvaluatorState&gt;&gt;</code>, which caused flaky tests when parallel threads contaminated each other's <code>consecutive_matches</code> map. The fix removes the global and plumbs <code>&amp;mut EvaluatorState</code> through every call site:</p>
+				<pre class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300"><code>// Before
+let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history);
+
+// After
+let mut state = network_alerts::EvaluatorState::new();
+let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history, &amp;mut state);
+// keep `state` alive for subsequent ticks to preserve debounce + cooldown.</code></pre>
+				<p>In-workspace callers were updated; out-of-tree consumers must instantiate their own state or wrap both functions.</p>
+
+				<h2 class="text-2xl font-bold text-white">Quality</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">458 Rust tests</strong> (288 core + 95 integration + 53 tauri + 18 + 4 tui) and <strong class="text-white">689 frontend tests</strong> with Vitest.</li>
+					<li><strong class="text-white">Branch coverage 70.37–70.80%</strong> (stable range), statements / functions / lines at 86%.</li>
+					<li><strong class="text-white">Clippy clean under Rust 1.95</strong> — ten pre-existing call sites fixed to satisfy the new <code>unnecessary_sort_by</code> and <code>collapsible_match</code> lints.</li>
+				</ul>
+
+				<h2 class="text-2xl font-bold text-white">Download</h2>
+				<div class="grid gap-4 sm:grid-cols-3">
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-orange-200">macOS</p>
+						<p class="mt-2 font-semibold text-white">Universal DMG</p>
+					</a>
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-sky-200">Windows</p>
+						<p class="mt-2 font-semibold text-white">MSI Installer</p>
+					</a>
+					<a href={installScriptUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
+						<p class="text-sm uppercase tracking-[0.24em] text-emerald-200">Linux</p>
+						<p class="mt-2 font-semibold text-white">.deb / .AppImage</p>
+					</a>
+				</div>
+				<p class="text-sm text-slate-400">Always verify downloads against <code>SHA256SUMS.txt</code> published in the GitHub release.</p>
+
+				<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
+					<p class="text-sm uppercase tracking-[0.24em] text-slate-500">Homebrew</p>
+					<pre class="mt-3 overflow-x-auto text-sm text-slate-300"><code>brew tap chochy2001/omnimon
+brew install --cask omnimon</code></pre>
+				</div>
+			</section>
+		</article>
+
+		<div class="flex items-center gap-4 text-sm text-slate-400">
+			<a href="/blog/" class="transition hover:text-white">&larr; All posts</a>
+		</div>
+	</main>
+
+	<footer class="mt-12 border-t border-slate-800/80 py-8 text-sm text-slate-400">
+		<div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+			<p>&copy; {new Date().getFullYear()} OmniMon. Open source under MIT.</p>
+			<div class="flex flex-wrap items-center gap-4">
+				<a href="https://github.com/chochy2001/omnimon" target="_blank" rel="noreferrer" class="transition hover:text-white">GitHub</a>
+				<a href="/" class="transition hover:text-white">Home</a>
+				<a href="/blog/" class="transition hover:text-white">Blog</a>
+			</div>
+		</div>
+	</footer>
+</Layout>
