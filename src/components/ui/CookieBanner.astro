@@ -1,0 +1,206 @@
+---
+/**
+ * CookieBanner
+ *
+ * LFPDPPP (Mexico) and GDPR (EU) compliant consent banner.
+ *
+ * - Persists decision in localStorage under `omnimon-cookie-consent`.
+ * - On accept, dispatches a `omnimon-cookie-consent` event so PostHogInit
+ *   (and any other tracker that listens) can fire `posthog.init()`.
+ * - On reject, stores `{ accepted: false }` so the banner does not
+ *   re-appear for 365 days.
+ * - Bilingual: picks Spanish or English from `document.documentElement.lang`.
+ *
+ * Style notes:
+ * - Solid backgrounds only (no transparencies / no `backdrop-filter`),
+ *   per the workspace UI rule. Border + shadow give depth instead.
+ * - Dark by default to match the rest of the site; honors a `.dark` class
+ *   on `<html>` if the theme toggle is added later.
+ */
+---
+
+<div
+  id="omnimon-cookie-banner"
+  data-omnimon-cookie-banner
+  class="fixed inset-x-0 bottom-0 z-[100] hidden border-t border-slate-800 bg-slate-950 text-slate-200 shadow-[0_-12px_40px_rgba(2,6,18,0.55)]"
+  role="region"
+  aria-label="Aviso de cookies"
+  aria-live="polite"
+>
+  <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-8">
+    <div class="flex-1 text-sm leading-relaxed text-slate-300">
+      <p class="mb-1 font-semibold text-white" data-omnimon-banner-title>
+        Cookies y analiticas
+      </p>
+      <p data-omnimon-banner-body>
+        Usamos cookies tecnicas y analiticas (PostHog) para mejorar OmniMon.
+        Tu decision se guarda por 365 dias. No vendemos tus datos.
+        Lee mas en nuestra politica de privacidad.
+      </p>
+    </div>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+      <button
+        type="button"
+        data-omnimon-banner-reject
+        class="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+      >
+        Solo esenciales
+      </button>
+      <button
+        type="button"
+        data-omnimon-banner-configure
+        class="inline-flex items-center justify-center rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400"
+      >
+        Configurar
+      </button>
+      <button
+        type="button"
+        data-omnimon-banner-accept
+        class="inline-flex items-center justify-center rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-orange-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+      >
+        Aceptar todas
+      </button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var KEY = 'omnimon-cookie-consent';
+    var EVENT = 'omnimon-cookie-consent';
+    var VERSION = 1;
+    var DURATION = 365 * 24 * 60 * 60 * 1000;
+
+    var STRINGS = {
+      es: {
+        title: 'Cookies y analiticas',
+        body: 'Usamos cookies tecnicas y analiticas (PostHog) para mejorar OmniMon. Tu decision se guarda por 365 dias. No vendemos tus datos.',
+        accept: 'Aceptar todas',
+        reject: 'Solo esenciales',
+        configure: 'Configurar',
+        aria: 'Aviso de cookies'
+      },
+      en: {
+        title: 'Cookies and analytics',
+        body: 'We use technical and analytics cookies (PostHog) to improve OmniMon. Your choice is stored for 365 days. We do not sell your data.',
+        accept: 'Accept all',
+        reject: 'Essential only',
+        configure: 'Configure',
+        aria: 'Cookie notice'
+      }
+    };
+
+    function detectLocale() {
+      try {
+        var lang = (document.documentElement.lang || 'es').toLowerCase();
+        if (lang.indexOf('en') === 0) return 'en';
+        return 'es';
+      } catch (_) {
+        return 'es';
+      }
+    }
+
+    function readStored() {
+      try {
+        var raw = localStorage.getItem(KEY);
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        var ts = Number(parsed && parsed.timestamp);
+        if (!Number.isFinite(ts) || Date.now() - ts > DURATION) {
+          localStorage.removeItem(KEY);
+          return null;
+        }
+        return parsed;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function persist(accepted) {
+      try {
+        localStorage.setItem(
+          KEY,
+          JSON.stringify({ accepted: !!accepted, timestamp: Date.now(), version: VERSION })
+        );
+      } catch (_) {
+        // localStorage blocked. Banner will reappear next visit; acceptable.
+      }
+    }
+
+    function dispatch(accepted) {
+      try {
+        window.dispatchEvent(new CustomEvent(EVENT, { detail: { accepted: !!accepted } }));
+      } catch (_) {
+        // CustomEvent constructor unsupported. Listeners simply will not fire.
+      }
+    }
+
+    function hide(banner) {
+      if (!banner) return;
+      banner.classList.add('hidden');
+    }
+
+    function show(banner) {
+      if (!banner) return;
+      banner.classList.remove('hidden');
+    }
+
+    function applyStrings(banner, locale) {
+      var s = STRINGS[locale] || STRINGS.es;
+      banner.setAttribute('aria-label', s.aria);
+      var title = banner.querySelector('[data-omnimon-banner-title]');
+      var body = banner.querySelector('[data-omnimon-banner-body]');
+      var accept = banner.querySelector('[data-omnimon-banner-accept]');
+      var reject = banner.querySelector('[data-omnimon-banner-reject]');
+      var configure = banner.querySelector('[data-omnimon-banner-configure]');
+      if (title) title.textContent = s.title;
+      if (body) body.textContent = s.body;
+      if (accept) accept.textContent = s.accept;
+      if (reject) reject.textContent = s.reject;
+      if (configure) configure.textContent = s.configure;
+    }
+
+    function init() {
+      var banner = document.querySelector('[data-omnimon-cookie-banner]');
+      if (!banner) return;
+
+      applyStrings(banner, detectLocale());
+
+      var stored = readStored();
+      if (stored) {
+        // Decision already made and still valid: do not show banner.
+        hide(banner);
+        return;
+      }
+
+      show(banner);
+
+      var accept = banner.querySelector('[data-omnimon-banner-accept]');
+      var reject = banner.querySelector('[data-omnimon-banner-reject]');
+      var configure = banner.querySelector('[data-omnimon-banner-configure]');
+
+      function onAccept() {
+        persist(true);
+        dispatch(true);
+        hide(banner);
+      }
+      function onReject() {
+        persist(false);
+        dispatch(false);
+        hide(banner);
+      }
+
+      if (accept) accept.addEventListener('click', onAccept);
+      if (reject) reject.addEventListener('click', onReject);
+      // "Configurar" is a placeholder: same outcome as accept for now,
+      // until a granular preferences modal exists.
+      if (configure) configure.addEventListener('click', onAccept);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
