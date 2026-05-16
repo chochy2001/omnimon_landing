@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { OMNIMON_VERSION } from '../consts';
 import PostHogInit from '../components/analytics/PostHogInit.astro';
+import CookieBanner from '../components/ui/CookieBanner.astro';
 
 interface Props {
 	title: string;
@@ -13,12 +14,30 @@ const {
 	description = `OmniMon ${OMNIMON_VERSION}: observabilidad, seguridad activa y asistentes de IA para macOS, Windows y Linux.`
 } = Astro.props;
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.href;
+
+// Content Security Policy. PostHog endpoints are added only when a key
+// is configured at build time, so the policy stays tight by default.
+const POSTHOG_HOST = import.meta.env.PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com';
+const POSTHOG_ASSET_HOST = POSTHOG_HOST.replace('.i.posthog.com', '-assets.i.posthog.com');
+const POSTHOG_KEY = import.meta.env.PUBLIC_POSTHOG_KEY || '';
+const csp = [
+	"default-src 'self'",
+	`script-src 'self' 'unsafe-inline'${POSTHOG_KEY ? ' ' + POSTHOG_ASSET_HOST : ''}`,
+	"style-src 'self' 'unsafe-inline'",
+	"img-src 'self' data: https:",
+	"font-src 'self' data:",
+	`connect-src 'self'${POSTHOG_KEY ? ' ' + POSTHOG_HOST : ''}`,
+	"frame-ancestors 'self'",
+	"base-uri 'self'",
+	"form-action 'self'",
+].join('; ');
 ---
 
 <!doctype html>
 <html lang="es" class="dark">
 	<head>
 		<meta charset="UTF-8" />
+		<meta http-equiv="Content-Security-Policy" content={csp} />
 		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#0b1220" />
@@ -34,9 +53,6 @@ const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toStri
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<title>{title}</title>
-
-		<!-- PostHog Analytics -->
-		<PostHogInit />
 	</head>
 	<body class="bg-slate-950 text-slate-200 font-sans antialiased min-h-screen selection:bg-indigo-500/30 pt-16">
 		<nav class="fixed inset-x-0 top-0 z-50 h-16 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-sm">
@@ -51,5 +67,9 @@ const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toStri
 			</div>
 		</nav>
 		<slot />
+
+		<!-- Cookie banner first, then PostHogInit listens for its event. -->
+		<CookieBanner />
+		<PostHogInit />
 	</body>
 </html>
