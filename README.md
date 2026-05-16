@@ -1,6 +1,6 @@
 # OmniMon Landing Page
 
-Landing page oficial de [OmniMon](https://github.com/chochy2001/omnimon) — monitor de sistema de escritorio construido con Rust, Tauri 2 y Svelte 5.
+Landing page oficial de [OmniMon](https://github.com/chochy2001/omnimon): monitor de sistema de escritorio construido con Rust, Tauri 2 y Svelte 5.
 
 **URL:** [https://omnimon.com.mx](https://omnimon.com.mx)
 
