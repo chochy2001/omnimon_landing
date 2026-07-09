@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { OMNIMON_VERSION } from '../consts';
 import PostHogInit from '../components/analytics/PostHogInit.astro';
 import CookieBanner from '../components/ui/CookieBanner.astro';
+import { buildPostHogCspFragments } from '../lib/consent';
 
 interface Props {
 	title: string;
@@ -18,15 +19,15 @@ const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toStri
 // Content Security Policy. PostHog endpoints are added only when a key
 // is configured at build time, so the policy stays tight by default.
 const POSTHOG_HOST = import.meta.env.PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com';
-const POSTHOG_ASSET_HOST = POSTHOG_HOST.replace('.i.posthog.com', '-assets.i.posthog.com');
 const POSTHOG_KEY = import.meta.env.PUBLIC_POSTHOG_KEY || '';
+const posthogCsp = buildPostHogCspFragments(POSTHOG_KEY ? POSTHOG_HOST : null);
 const csp = [
 	"default-src 'self'",
-	`script-src 'self' 'unsafe-inline'${POSTHOG_KEY ? ' ' + POSTHOG_ASSET_HOST : ''}`,
+	`script-src 'self' 'unsafe-inline'${posthogCsp.scriptSrcExtra}`,
 	"style-src 'self' 'unsafe-inline'",
 	"img-src 'self' data: https:",
 	"font-src 'self' data:",
-	`connect-src 'self'${POSTHOG_KEY ? ' ' + POSTHOG_HOST : ''}`,
+	`connect-src 'self'${posthogCsp.connectSrcExtra}`,
 	"frame-ancestors 'self'",
 	"base-uri 'self'",
 	"form-action 'self'",

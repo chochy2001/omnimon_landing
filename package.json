@@ -6,7 +6,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "bun test src/lib",
+    "test:coverage": "bun test --coverage src/lib"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.1",
