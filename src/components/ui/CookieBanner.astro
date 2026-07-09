@@ -64,143 +64,110 @@
   </div>
 </div>
 
-<script is:inline>
-  (function () {
-    var KEY = 'omnimon-cookie-consent';
-    var EVENT = 'omnimon-cookie-consent';
-    var VERSION = 1;
-    var DURATION = 365 * 24 * 60 * 60 * 1000;
+<script>
+  import {
+    COOKIE_CONSENT_EVENT,
+    COOKIE_CONSENT_KEY,
+    buildConsentPayload,
+    detectLocale,
+    parseConsent,
+    resolveBannerStrings,
+    serializeConsent,
+  } from '../../lib/consent';
 
-    var STRINGS = {
-      es: {
-        title: 'Cookies y analiticas',
-        body: 'Usamos cookies tecnicas y analiticas (PostHog) para mejorar OmniMon. Tu decision se guarda por 365 dias. No vendemos tus datos.',
-        accept: 'Aceptar todas',
-        reject: 'Solo esenciales',
-        configure: 'Configurar',
-        aria: 'Aviso de cookies'
-      },
-      en: {
-        title: 'Cookies and analytics',
-        body: 'We use technical and analytics cookies (PostHog) to improve OmniMon. Your choice is stored for 365 days. We do not sell your data.',
-        accept: 'Accept all',
-        reject: 'Essential only',
-        configure: 'Configure',
-        aria: 'Cookie notice'
+  function readStored() {
+    try {
+      const raw = localStorage.getItem(COOKIE_CONSENT_KEY);
+      const parsed = parseConsent(raw);
+      if (!parsed && raw) {
+        localStorage.removeItem(COOKIE_CONSENT_KEY);
       }
-    };
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
 
-    function detectLocale() {
-      try {
-        var lang = (document.documentElement.lang || 'es').toLowerCase();
-        if (lang.indexOf('en') === 0) return 'en';
-        return 'es';
-      } catch (_) {
-        return 'es';
-      }
+  function persist(accepted: boolean) {
+    try {
+      localStorage.setItem(COOKIE_CONSENT_KEY, serializeConsent(buildConsentPayload(accepted)));
+    } catch {
+      // localStorage blocked. Banner will reappear next visit; acceptable.
+    }
+  }
+
+  function dispatch(accepted: boolean) {
+    try {
+      window.dispatchEvent(new CustomEvent(COOKIE_CONSENT_EVENT, { detail: { accepted: !!accepted } }));
+    } catch {
+      // CustomEvent constructor unsupported. Listeners simply will not fire.
+    }
+  }
+
+  function hide(banner: Element | null) {
+    if (!banner) return;
+    banner.classList.add('hidden');
+  }
+
+  function show(banner: Element | null) {
+    if (!banner) return;
+    banner.classList.remove('hidden');
+  }
+
+  function applyStrings(banner: Element, locale: 'es' | 'en') {
+    const s = resolveBannerStrings(locale);
+    banner.setAttribute('aria-label', s.aria);
+    const title = banner.querySelector('[data-omnimon-banner-title]');
+    const body = banner.querySelector('[data-omnimon-banner-body]');
+    const accept = banner.querySelector('[data-omnimon-banner-accept]');
+    const reject = banner.querySelector('[data-omnimon-banner-reject]');
+    const configure = banner.querySelector('[data-omnimon-banner-configure]');
+    if (title) title.textContent = s.title;
+    if (body) body.textContent = s.body;
+    if (accept) accept.textContent = s.accept;
+    if (reject) reject.textContent = s.reject;
+    if (configure) configure.textContent = s.configure;
+  }
+
+  function init() {
+    const banner = document.querySelector('[data-omnimon-cookie-banner]');
+    if (!banner) return;
+
+    applyStrings(banner, detectLocale(document.documentElement.lang));
+
+    const stored = readStored();
+    if (stored) {
+      hide(banner);
+      return;
     }
 
-    function readStored() {
-      try {
-        var raw = localStorage.getItem(KEY);
-        if (!raw) return null;
-        var parsed = JSON.parse(raw);
-        var ts = Number(parsed && parsed.timestamp);
-        if (!Number.isFinite(ts) || Date.now() - ts > DURATION) {
-          localStorage.removeItem(KEY);
-          return null;
-        }
-        return parsed;
-      } catch (_) {
-        return null;
-      }
+    show(banner);
+
+    const accept = banner.querySelector('[data-omnimon-banner-accept]');
+    const reject = banner.querySelector('[data-omnimon-banner-reject]');
+    const configure = banner.querySelector('[data-omnimon-banner-configure]');
+
+    function onAccept() {
+      persist(true);
+      dispatch(true);
+      hide(banner);
+    }
+    function onReject() {
+      persist(false);
+      dispatch(false);
+      hide(banner);
     }
 
-    function persist(accepted) {
-      try {
-        localStorage.setItem(
-          KEY,
-          JSON.stringify({ accepted: !!accepted, timestamp: Date.now(), version: VERSION })
-        );
-      } catch (_) {
-        // localStorage blocked. Banner will reappear next visit; acceptable.
-      }
-    }
+    if (accept) accept.addEventListener('click', onAccept);
+    if (reject) reject.addEventListener('click', onReject);
+    // "Configurar" is a placeholder: same outcome as accept for now,
+    // until a granular preferences modal exists.
+    if (configure) configure.addEventListener('click', onAccept);
+  }
 
-    function dispatch(accepted) {
-      try {
-        window.dispatchEvent(new CustomEvent(EVENT, { detail: { accepted: !!accepted } }));
-      } catch (_) {
-        // CustomEvent constructor unsupported. Listeners simply will not fire.
-      }
-    }
-
-    function hide(banner) {
-      if (!banner) return;
-      banner.classList.add('hidden');
-    }
-
-    function show(banner) {
-      if (!banner) return;
-      banner.classList.remove('hidden');
-    }
-
-    function applyStrings(banner, locale) {
-      var s = STRINGS[locale] || STRINGS.es;
-      banner.setAttribute('aria-label', s.aria);
-      var title = banner.querySelector('[data-omnimon-banner-title]');
-      var body = banner.querySelector('[data-omnimon-banner-body]');
-      var accept = banner.querySelector('[data-omnimon-banner-accept]');
-      var reject = banner.querySelector('[data-omnimon-banner-reject]');
-      var configure = banner.querySelector('[data-omnimon-banner-configure]');
-      if (title) title.textContent = s.title;
-      if (body) body.textContent = s.body;
-      if (accept) accept.textContent = s.accept;
-      if (reject) reject.textContent = s.reject;
-      if (configure) configure.textContent = s.configure;
-    }
-
-    function init() {
-      var banner = document.querySelector('[data-omnimon-cookie-banner]');
-      if (!banner) return;
-
-      applyStrings(banner, detectLocale());
-
-      var stored = readStored();
-      if (stored) {
-        // Decision already made and still valid: do not show banner.
-        hide(banner);
-        return;
-      }
-
-      show(banner);
-
-      var accept = banner.querySelector('[data-omnimon-banner-accept]');
-      var reject = banner.querySelector('[data-omnimon-banner-reject]');
-      var configure = banner.querySelector('[data-omnimon-banner-configure]');
-
-      function onAccept() {
-        persist(true);
-        dispatch(true);
-        hide(banner);
-      }
-      function onReject() {
-        persist(false);
-        dispatch(false);
-        hide(banner);
-      }
-
-      if (accept) accept.addEventListener('click', onAccept);
-      if (reject) reject.addEventListener('click', onReject);
-      // "Configurar" is a placeholder: same outcome as accept for now,
-      // until a granular preferences modal exists.
-      if (configure) configure.addEventListener('click', onAccept);
-    }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-  })();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 </script>
