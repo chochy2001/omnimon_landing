@@ -107,8 +107,9 @@ Cada blog post tiene su version EN y ES.
 
 ## Version
 
-La version de OmniMon se define en `src/consts.ts` y se usa en toda la landing.
-Para actualizar: cambiar `OMNIMON_VERSION` y `RELEASE_DATE` en ese archivo.
+La fuente de verdad de version/fecha es `src/consts.ts`.
+`src/lib/releases.ts` deriva de esas constantes para mantener alineados la home, el SEO y la tarjeta mas reciente de `/blog/` y `/es/blog/`.
+Para actualizar: cambiar `OMNIMON_VERSION`, `RELEASE_DATE` y `RELEASE_DATE_ES` en ese archivo.
 
 ## Relacion con el repo principal
 
