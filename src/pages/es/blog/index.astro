@@ -1,13 +1,9 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { latestReleasePostEs } from '../../../lib/releases';
 
 const posts = [
-	{
-		slug: 'v6-7-0-release-es',
-		title: 'OmniMon v6.7.0: Zombie Killer y Endurecimiento de IA',
-		date: '17 Abr 2026',
-		summary: 'Motor Zombie Killer para procesos que abusan de CPU/RAM sostenida, modo de privacidad de IA con redaccion seudonima estable, presupuesto diario de IA, keyring con borrado previo, badge DPI de transparencia, confirmacion frontend de herramientas destructivas y refactor breaking del estado del evaluador de alertas de red.'
-	},
+	latestReleasePostEs,
 	{
 		slug: 'v6-6-0-release-es',
 		title: 'OmniMon v6.6.0: Tabs Nativos en Windows y Herramientas de Desarrollo',

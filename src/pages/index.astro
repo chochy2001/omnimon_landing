@@ -35,20 +35,20 @@ const downloadArtifacts = [
 
 const releaseHighlights = [
 	{
-		title: 'Kill dialog inteligente',
-		description: 'Al terminar navegadores, el dialogo muestra las pestanas abiertas que se cerraran. Nuevo boton "Preguntar a la IA" para analizar si es seguro terminar un proceso.'
+		title: 'Zombie Killer en segundo plano',
+		description: 'Detecta procesos que consumen CPU o RAM de forma sostenida, los agrupa por identidad real `(pid, start_time)` y permite terminarlos con confirmacion del usuario.'
 	},
 	{
-		title: 'Graficas dinamicas corregidas',
-		description: 'Sparklines y modales de graficas ahora renderizan de forma confiable con escalado dinamico Y, reintentos automaticos y sincronizacion incremental de datos.'
+		title: 'Modo privacidad para IA',
+		description: 'Redaccion seudonima estable antes de enviar contexto a proveedores, para inspeccionar procesos sin exponer nombres reales fuera de tu equipo.'
 	},
 	{
-		title: 'Sistema de temas unificado',
-		description: 'Se elimino el sistema de temas duplicado que causaba conflictos. Un solo motor de temas (dark, light, cyberpunk) con auto-deteccion de preferencia del sistema.'
+		title: 'Presupuesto diario de IA',
+		description: 'Un bucket compartido limita `ai_chat`, `analyze_processes`, `analyze_context` y `validate_api_key` para evitar gasto o uso excesivo accidental.'
 	},
 	{
-		title: 'Detalles de proceso mejorados',
-		description: 'El modal de detalles ahora muestra pestanas del navegador en modo basico, no solo en modo Pro. Layout full-width responsive para todos los paneles.'
+		title: 'Hardening operativo',
+		description: 'Confirmacion frontend de herramientas destructivas, keyring legacy con borrado previo y badge DPI para dejar visible cuando la telemetria es parcial.'
 	}
 ];
 
@@ -96,7 +96,7 @@ const basicTutorial = [
 const faqs = [
 	{
 		question: `Que incluye la version ${releaseVersion}?`,
-		answer: 'Incluye kill dialog inteligente con pestanas del navegador y boton de IA, graficas dinamicas corregidas, sistema de temas unificado sin conflictos, y detalles de proceso mejorados con tabs visibles en modo basico.'
+		answer: 'Incluye el motor Zombie Killer, modo privacidad para IA con redaccion estable, presupuesto diario de IA, hardening del keyring y un refactor del evaluador de alertas de red.'
 	},
 	{
 		question: 'En que plataformas funciona OmniMon?',
@@ -177,9 +177,9 @@ const faqs = [
 					<div class="space-y-4 rounded-2xl bg-slate-950/80 p-4 font-mono text-sm text-slate-300">
 						<p><span class="text-emerald-300">$</span> omnimon status --format json</p>
 						<p class="text-sky-300">desktop: ready</p>
-						<p class="text-slate-400">security: signed releases, native keyring only</p>
-						<p class="text-slate-400">qa: frontend coverage gate + rust tests green</p>
-						<p class="text-slate-400">alerts: reality-fix applied</p>
+						<p class="text-slate-400">security: privacy mode, signed releases, keyring delete-first</p>
+						<p class="text-slate-400">ai: shared daily budget + frontend-confirmed tool calls</p>
+						<p class="text-slate-400">alerts: zombie killer + evaluator state refactor</p>
 						<p class="text-orange-300">version: {releaseVersion}</p>
 					</div>
 					<div class="mt-5 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
