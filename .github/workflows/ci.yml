@@ -17,7 +17,8 @@ concurrency:
 jobs:
   test-build:
     name: Test and build
-    runs-on: ubuntu-latest
+    # Public landing on edge web-tools (Mac/laptop/WSL/Windows) — self-hosted only.
+    runs-on: [self-hosted, ci-web-tools]
     timeout-minutes: 15
     steps:
       - name: Checkout
