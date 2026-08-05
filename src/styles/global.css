@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind v4 needs an explicit custom variant for class-based dark mode. */
+@variant dark (&:where(.dark, .dark *));
+
 :root {
 	color-scheme: dark;
 	--bg-base: #07111f;
