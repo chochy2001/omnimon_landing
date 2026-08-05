@@ -1,119 +1,53 @@
-# OmniMon Landing Page
+# OmniMon Landing
 
-Landing page oficial de [OmniMon](https://github.com/chochy2001/omnimon): monitor de sistema de escritorio construido con Rust, Tauri 2 y Svelte 5.
+Landing publica de OmniMon ubicada en `/Users/jorge/Documents/Apps/omnimon_apps/macmon/omnimon_landing`.
 
-**URL:** [https://omnimon.com.mx](https://omnimon.com.mx)
+## Ownership y alcance
 
-## Tech Stack
+- En este workspace la landing vive dentro del arbol `omnimon_apps/macmon`.
+- El `README` anterior la describia como si este checkout fuera solo el repo `chochy2001/omnimon_landing`; eso no refleja la ubicacion real del proyecto en `/Users/jorge/Documents/Apps`.
+- En este directorio existe ademas un `.git` local y el repo padre `omnimon_apps/macmon` lo ignora actualmente (`git status --ignored` lo reporta como `!! omnimon_landing/`). Eso es drift operativo de versionado local, no una instruccion para mover o separar archivos.
 
-- **Framework:** [Astro 5](https://astro.build) (generacion estatica)
-- **Estilos:** [Tailwind CSS 4](https://tailwindcss.com)
-- **Package Manager:** bun
-- **Hosting:** Hostinger (LiteSpeed, shared)
-- **Deploy:** FTP via `lftp` desde `.deploy/site_work/`
+## Estado verificado del checkout
 
-## Estructura del proyecto
+- Framework: Astro `^5.17.1`.
+- Estilos: Tailwind CSS `^4.2.1`.
+- Analytics cliente: `posthog-js ^1.369.0`.
+- Package manager: `bun`.
+- Site URL configurada: `https://omnimon.com.mx` en `astro.config.mjs`.
+- Scripts disponibles en `package.json`: `bun run dev`, `bun run build`, `bun run preview`, `bun run test`, `bun run test:coverage`.
+- Artefactos locales presentes: `dist/`, `.deploy/site_work/`, `.deploy/remote_snapshot/`, `.astro/`, `node_modules/`.
 
-```
-omnimon_landing/
-├── src/
-│   ├── assets/              # Imagenes y recursos estaticos
-│   ├── layouts/
-│   │   └── Layout.astro     # Layout base (head, nav, footer)
-│   ├── pages/
-│   │   ├── index.astro      # Landing page principal (EN)
-│   │   ├── blog/
-│   │   │   ├── index.astro          # Indice del blog (EN, 30 posts)
-│   │   │   ├── v6-5-0-release.astro # Blog post individual
-│   │   │   └── v6-4-1-release.astro
-│   │   └── es/
-│   │       └── blog/
-│   │           ├── index.astro              # Indice del blog (ES)
-│   │           ├── v6-5-0-release-es.astro
-│   │           └── v6-4-1-release-es.astro
-│   ├── styles/              # CSS global
-│   └── consts.ts            # Version y fecha de release centralizadas
-├── .deploy/                 # (gitignored) Staging area para FTP
-│   ├── site_work/           # Sitio completo pre-built (se sube a public_html/)
-│   └── remote_snapshot/     # Backup del sitio remoto
-├── astro.config.mjs         # Config de Astro (site URL, Tailwind plugin)
-├── tsconfig.json
-├── package.json
-└── .gitignore
-```
+## Fuentes reales de contenido
 
-## Desarrollo
+- Home y snapshot SEO: `src/consts.ts` define `OMNIMON_VERSION = '6.6.6'` y `RELEASE_DATE = '17 Mar 2026'`.
+- La home consume esas constantes en `src/pages/index.astro`.
+- Los metadatos por defecto tambien consumen `OMNIMON_VERSION` desde `src/layouts/Layout.astro`.
+- El blog editable vive en Astro source, no solo en HTML estatico:
+  `src/pages/blog/index.astro`, `src/pages/es/blog/index.astro`, `src/pages/blog/v6-4-1-release.astro`, `src/pages/blog/v6-5-0-release.astro`, `src/pages/blog/v6-6-0-release.astro`, `src/pages/blog/v6-7-0-release.astro`, y sus pares en `src/pages/es/blog/`.
+- Los enlaces de descarga de home y blog apuntan a `https://github.com/chochy2001/omnimon/releases/latest`.
+- `.deploy/site_work/` es un snapshot de despliegue/manual sync presente en el checkout; no debe asumirse como unica fuente editorial.
+
+## Drift documentado al 2026-07-22
+
+- La home/SEO y el copy principal siguen anclados a `6.6.6` con fecha `17 Mar 2026` porque dependen de `src/consts.ts`.
+- El blog fuente en `src/pages/blog/index.astro` y `src/pages/es/blog/index.astro` ya lista `v6.7.0` con fecha `17 Apr 2026` como release mas reciente.
+- `dist/blog/` y `dist/es/blog/` ya contienen `v6.6.0` y `v6.7.0`.
+- `.deploy/site_work/blog/` y `.deploy/site_work/es/blog/` llegan hasta `v6.5.0` en el snapshot local observado.
+- Mientras existan esas diferencias, no debe presentarse la version expuesta por SEO/home como unica verdad del release actual. La reconciliacion pendiente es alinear `src/consts.ts`, el copy de la home y el snapshot de despliegue/manual sync.
+
+## Workflows y automatizacion
+
+- Los workflows verificados en `../.github/workflows/omnimon-ci.yml` y `../.github/workflows/release-policy.yml` pertenecen al repo `macmon`.
+- Esos workflows validan y auditan principalmente `v4/`; no se verifico un workflow dedicado para build o deploy de `omnimon_landing` dentro de este checkout.
+- Cualquier proceso de publicacion de la landing sigue siendo, como minimo, parcialmente manual desde los artefactos presentes en este directorio.
+
+## Comandos locales utiles
 
 ```bash
-# Instalar dependencias
 bun install
-
-# Servidor de desarrollo (puerto 4322)
 bun run dev
-
-# Build estatico
 bun run build
-# Output en dist/
+bun run test
+bun run test:coverage
 ```
-
-## Deploy a produccion
-
-El sitio en produccion se sirve desde `.deploy/site_work/`, NO directamente desde `dist/`.
-
-Esto es porque `site_work/` contiene el sitio completo incluyendo 30 blog posts historicos que fueron creados antes de migrar a Astro. Los nuevos blog posts se generan con Astro y se copian a `site_work/`.
-
-### Flujo de deploy
-
-```bash
-# 1. Build con Astro (si hay cambios en src/)
-bun run build
-
-# 2. Copiar nuevos archivos del build a site_work
-#    CUIDADO: No sobreescribir blog posts historicos
-cp -r dist/_astro/* .deploy/site_work/_astro/
-# Copiar paginas nuevas selectivamente
-
-# 3. Deploy via FTP
-lftp -c "
-set ssl:verify-certificate no
-open -u USER,PASS HOST
-mirror --reverse --delete --parallel=4 site_work/ public_html/
-bye
-"
-
-# 4. Purgar cache de LiteSpeed desde hPanel > Performance > Cache Manager
-```
-
-### Notas importantes sobre el deploy
-
-- **LiteSpeed cache:** Hostinger usa cache agresivo. Los cambios NO se reflejan inmediatamente. Hay que purgar desde hPanel > Performance > Cache Manager.
-- **Cache de 404:** Si una URL se pide antes de que exista el archivo, LiteSpeed cachea la 404. Solo se arregla purgando cache.
-- **NUNCA deployar solo `dist/`:** Eso borraria los 28 blog posts historicos que no estan en el source de Astro.
-- **Credenciales FTP:** En `.env.local` (gitignored).
-
-## Blog
-
-El blog tiene 30 posts (EN + ES). Los posts mas recientes (v6.4.1+) tienen source Astro en `src/pages/blog/`. Los posts historicos (v1.0.0 a v6.4.0) solo existen como HTML estatico en `.deploy/site_work/blog/`.
-
-El indice del blog (`src/pages/blog/index.astro`) lista TODOS los 30 posts con links a cada uno.
-
-## i18n
-
-El sitio soporta dos idiomas:
-- **Ingles:** `/` y `/blog/`
-- **Español:** `/es/` y `/es/blog/`
-
-Cada blog post tiene su version EN y ES.
-
-## Version
-
-La fuente de verdad de version/fecha es `src/consts.ts`.
-`src/lib/releases.ts` deriva de esas constantes para mantener alineados la home, el SEO y la tarjeta mas reciente de `/blog/` y `/es/blog/`.
-Para actualizar: cambiar `OMNIMON_VERSION`, `RELEASE_DATE` y `RELEASE_DATE_ES` en ese archivo.
-
-## Relacion con el repo principal
-
-- **App:** [chochy2001/omnimon](https://github.com/chochy2001/omnimon) (Tauri + Rust + Svelte)
-- **Landing:** [chochy2001/omnimon_landing](https://github.com/chochy2001/omnimon_landing) (este repo)
-
-Son repos independientes. La landing NO debe estar en el repo de la app.
