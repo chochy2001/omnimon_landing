@@ -3,21 +3,28 @@ import '../styles/global.css';
 import { OMNIMON_VERSION } from '../consts';
 import PostHogInit from '../components/analytics/PostHogInit.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import CookieBanner from '../components/ui/CookieBanner.astro';
+import { legalHref, legalLinkLabel } from '../lib/legal';
+import type { ConsentLocale } from '../lib/consent';
 
 interface Props {
 	title: string;
 	description?: string;
+	lang?: ConsentLocale;
 }
 
 const {
 	title,
-	description = `OmniMon ${OMNIMON_VERSION}: observabilidad, seguridad activa y asistentes de IA para macOS, Windows y Linux.`
+	description = `OmniMon ${OMNIMON_VERSION}: observabilidad, seguridad activa y asistentes de IA para macOS, Windows y Linux.`,
+	lang = 'es',
 } = Astro.props;
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.href;
+const privacyHref = legalHref(lang, 'privacy');
+const termsHref = legalHref(lang, 'terms');
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
@@ -69,5 +76,13 @@ const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toStri
 			</div>
 		</nav>
 		<slot />
+		<div class="border-t border-slate-800/80 py-4 text-xs text-slate-500">
+			<div class="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 sm:px-6 lg:px-8">
+				<a href={privacyHref} class="transition hover:text-white">{legalLinkLabel(lang, 'privacy')}</a>
+				<span aria-hidden="true">·</span>
+				<a href={termsHref} class="transition hover:text-white">{legalLinkLabel(lang, 'terms')}</a>
+			</div>
+		</div>
+		<CookieBanner />
 	</body>
 </html>

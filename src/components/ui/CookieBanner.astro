@@ -35,7 +35,23 @@
       <p data-omnimon-banner-body>
         Usamos cookies tecnicas y analiticas (PostHog) para mejorar OmniMon.
         Tu decision se guarda por 365 dias. No vendemos tus datos.
-        Lee mas en nuestra politica de privacidad.
+      </p>
+      <p class="mt-2 text-sm">
+        <a
+          data-omnimon-banner-privacy
+          href="/es/privacy"
+          class="font-medium text-orange-200 underline-offset-2 transition hover:text-white hover:underline"
+        >
+          Politica de privacidad
+        </a>
+        <span class="mx-2 text-slate-600" aria-hidden="true">·</span>
+        <a
+          data-omnimon-banner-terms
+          href="/es/terms"
+          class="font-medium text-orange-200 underline-offset-2 transition hover:text-white hover:underline"
+        >
+          Terminos
+        </a>
       </p>
     </div>
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
@@ -122,11 +138,21 @@
     const accept = banner.querySelector('[data-omnimon-banner-accept]');
     const reject = banner.querySelector('[data-omnimon-banner-reject]');
     const configure = banner.querySelector('[data-omnimon-banner-configure]');
+    const privacy = banner.querySelector('[data-omnimon-banner-privacy]');
+    const terms = banner.querySelector('[data-omnimon-banner-terms]');
     if (title) title.textContent = s.title;
     if (body) body.textContent = s.body;
     if (accept) accept.textContent = s.accept;
     if (reject) reject.textContent = s.reject;
     if (configure) configure.textContent = s.configure;
+    if (privacy instanceof HTMLAnchorElement) {
+      privacy.textContent = s.privacy;
+      privacy.setAttribute('href', s.privacyHref);
+    }
+    if (terms instanceof HTMLAnchorElement) {
+      terms.textContent = s.terms;
+      terms.setAttribute('href', s.termsHref);
+    }
   }
 
   function init() {
@@ -160,9 +186,14 @@
 
     if (accept) accept.addEventListener('click', onAccept);
     if (reject) reject.addEventListener('click', onReject);
-    // "Configurar" is a placeholder: same outcome as accept for now,
-    // until a granular preferences modal exists.
-    if (configure) configure.addEventListener('click', onAccept);
+    if (configure) {
+      configure.addEventListener('click', () => {
+        const privacy = banner.querySelector('[data-omnimon-banner-privacy]');
+        const href =
+          privacy instanceof HTMLAnchorElement ? privacy.getAttribute('href') : '/es/privacy';
+        if (href) window.location.assign(href);
+      });
+    }
   }
 
   if (document.readyState === 'loading') {

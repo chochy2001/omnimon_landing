@@ -9,6 +9,7 @@ import {
   serializeConsent,
   COOKIE_CONSENT_DURATION_MS,
 } from './consent';
+import { legalHref } from './legal';
 
 describe('detectLocale', () => {
   test('defaults to es', () => {
@@ -60,6 +61,17 @@ describe('banner strings and CSP fragments', () => {
   test('resolveBannerStrings falls back to es', () => {
     expect(resolveBannerStrings('es').accept).toContain('Aceptar');
     expect(resolveBannerStrings('en').accept).toContain('Accept');
+  });
+
+  test('banner strings include privacy and terms hrefs that match legal routes', () => {
+    const es = resolveBannerStrings('es');
+    const en = resolveBannerStrings('en');
+    expect(es.privacyHref).toBe(legalHref('es', 'privacy'));
+    expect(es.termsHref).toBe(legalHref('es', 'terms'));
+    expect(en.privacyHref).toBe(legalHref('en', 'privacy'));
+    expect(en.termsHref).toBe(legalHref('en', 'terms'));
+    expect(es.privacy).toContain('privacidad');
+    expect(en.privacy).toContain('Privacy');
   });
 
   test('buildPostHogCspFragments is empty without host', () => {

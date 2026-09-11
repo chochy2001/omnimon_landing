@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import type { ConsentLocale } from '../lib/consent';
+import { legalHref, legalLinkLabel, resolveLegalStrings, type LegalPage } from '../lib/legal';
+
+interface Props {
+  locale: ConsentLocale;
+  page: LegalPage;
+}
+
+const { locale, page } = Astro.props;
+const copy = resolveLegalStrings(locale);
+const title = page === 'privacy' ? copy.privacyTitle : copy.termsTitle;
+const body = page === 'privacy' ? copy.privacyBody : copy.termsBody;
+const otherPage: LegalPage = page === 'privacy' ? 'terms' : 'privacy';
+const otherLocale: ConsentLocale = locale === 'es' ? 'en' : 'es';
+---
+
+<Layout title={`${title} | OmniMon`} description={body[0]} lang={locale}>
+  <main class="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+    <header class="space-y-3">
+      <p class="text-sm text-slate-400">
+        <a href={legalHref(otherLocale, page)} class="transition hover:text-sky-300">
+          {otherLocale === 'en' ? 'English' : 'Espanol'}
+        </a>
+      </p>
+      <h1 class="section-title text-4xl font-black tracking-tight text-white">{title}</h1>
+      <p class="text-sm text-slate-400">Actualizado / Updated: {copy.updated}</p>
+    </header>
+    <article class="space-y-4 text-sm leading-7 text-slate-300">
+      {body.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </article>
+    <p class="text-sm text-slate-400">
+      <a href={legalHref(locale, otherPage)} class="transition hover:text-white">
+        {legalLinkLabel(locale, otherPage)}
+      </a>
+    </p>
+  </main>
+</Layout>

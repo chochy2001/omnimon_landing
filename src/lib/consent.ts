@@ -25,6 +25,10 @@ export const CONSENT_STRINGS: Record<
     reject: string;
     configure: string;
     aria: string;
+    privacy: string;
+    terms: string;
+    privacyHref: string;
+    termsHref: string;
   }
 > = {
   es: {
@@ -34,6 +38,10 @@ export const CONSENT_STRINGS: Record<
     reject: 'Solo esenciales',
     configure: 'Configurar',
     aria: 'Aviso de cookies',
+    privacy: 'Politica de privacidad',
+    terms: 'Terminos',
+    privacyHref: '/es/privacy',
+    termsHref: '/es/terms',
   },
   en: {
     title: 'Cookies and analytics',
@@ -42,6 +50,10 @@ export const CONSENT_STRINGS: Record<
     reject: 'Essential only',
     configure: 'Configure',
     aria: 'Cookie notice',
+    privacy: 'Privacy policy',
+    terms: 'Terms',
+    privacyHref: '/privacy',
+    termsHref: '/terms',
   },
 };
 
