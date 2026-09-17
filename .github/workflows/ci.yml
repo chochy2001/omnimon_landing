@@ -17,8 +17,8 @@ concurrency:
 jobs:
   test-build:
     name: Test and build
-    # Public landing on edge web-tools (Mac/laptop/WSL/Windows) — self-hosted only.
-    runs-on: [self-hosted, ci-web-tools]
+    # Public repo: GitHub-hosted free minutes, frees self-hosted capacity.
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout
