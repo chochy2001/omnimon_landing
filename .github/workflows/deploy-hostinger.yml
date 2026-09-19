@@ -1,0 +1,685 @@
+name: Deploy landing (Hostinger FTP)
+
+# Pipeline de publicacion de https://omnimon.com.mx.
+#
+# Por que existe. Hasta hoy este repositorio no tenia ningun workflow que
+# publicara: solo "Landing CI", que instala, prueba y construye, y nada mas.
+# La landing se subia a mano por FTP, y el 2026-09-19 el origen publico servia
+# "OmniMon 6.3.0" mientras el fuente ya iba por 6.7.0, y /privacy, /terms,
+# /es/privacy y /es/terms respondian 404 aunque existen en main desde ed56bcc.
+# Un despliegue manual no deja rastro de que SHA quedo publicado, asi que nadie
+# podia responder "produccion es main" sin adivinar.
+#
+# Las tres piezas que dan la garantia de paridad, tomadas del unico workflow de
+# la flota que hoy la sostiene, CapdesisWebLanding
+# .github/workflows/deploy-hostinger-public.yml:
+#
+#  1. Encadenado por workflow_run sobre "Landing CI". Solo promociona un commit
+#     cuyo CI concluyo en success y cuyo run vino de un push a main, y hace
+#     checkout de ese SHA exacto, no de la punta de la rama. Un CI de
+#     pull_request o un CI rojo no despliegan nada.
+#  2. Estampa el SHA en el artefacto. El build recibe PUBLIC_BUILD_SHA y
+#     Layout.astro lo emite como <meta name="omnimon-build">. El build ABORTA
+#     si alguna pagina construida no lleva esa huella.
+#  3. Despues de subir vuelve a LEER la URL publica. Si la huella servida no es
+#     el SHA promocionado, el despliegue FALLA. Eso es lo que convierte "el
+#     deploy salio verde" en "produccion es main": un deploy verde con un
+#     origen que sigue sirviendo lo viejo es exactamente el fallo que ya
+#     ocurrio aqui, y esta comprobacion lo hace imposible de pasar por alto.
+#
+#  4. Antes de subir lee la huella que el origen sirve AHORA y exige que sea
+#     ancestro del SHA a promocionar. Sin eso, dos pushes casi simultaneos cuyos
+#     CI terminan en distinto orden dejarian que el run del commit viejo subiera
+#     el ultimo y terminara verde con produccion por detras de main.
+#     workflow_dispatch queda exento para poder revertir.
+#
+# Ademas se comprueba que cada asset del dist y cada asset que referencia el
+# HTML vivo respondan 200 y que su cuerpo sea sha256-identico al fichero
+# construido. El modo de fallo clasico del FTP es HTML nuevo apuntando a hashes
+# de _astro que nunca se transfirieron o que llegaron a medias: la pagina carga
+# sin estilos y el deploy ya reporto exito. Y los ficheros de public/ no llevan
+# hash de contenido, asi que una copia vieja responde 200 indefinidamente.
+#
+# Secretos y variables necesarios: ver .github/DEPLOYMENT.md. Sin ellos el
+# workflow falla en el primer paso con el nombre exacto de lo que falta.
+
+on:
+  workflow_run:
+    workflows: ["Landing CI"]
+    types: [completed]
+    branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: "SHA de 40 caracteres en main a promocionar, o al que revertir. Vacio usa el commit del run de CI."
+        required: false
+        default: ""
+
+# Una sola transferencia FTP a la vez. cancel-in-progress se queda en false a
+# proposito: una subida cancelada deja el origen a medio escribir, sirviendo
+# HTML que referencia hashes de _astro que nunca llegaron.
+concurrency:
+  group: omnimon-landing-hostinger
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  SITE_URL: https://omnimon.com.mx
+  BUILD_META_NAME: omnimon-build
+
+jobs:
+  deploy:
+    name: Build and FTP deploy to omnimon.com.mx
+    # Las promociones automaticas se limitan a runs de CI nacidos de un push a
+    # main. Un CI de pull_request, incluido el de un fork, no despliega.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    # GitHub-hosted a proposito. Este repositorio es PUBLICO y no tiene runners
+    # propios (repos/chochy2001/omnimon_landing/actions/runners devuelve 0), y
+    # los runners self-hosted de la organizacion CAPDESIS no sirven a un repo
+    # personal. Mandar un job que lee credenciales FTP de produccion a un
+    # runner self-hosted alcanzable desde un repo publico es justo la condicion
+    # del P0 CAPDESIS/CapLiving#525; aqui no se reproduce.
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+
+    steps:
+      # Incondicional a proposito: una guarda condicionada a runner.environment
+      # quedaria "skipped" y no "failed" si este job aterrizara en otro sitio.
+      - name: Validate deploy runner
+        run: |
+          set -euo pipefail
+          # Si algun dia se registra un runner self-hosted en este repo publico,
+          # este job deja de desplegar en vez de entregarle las credenciales.
+          test "${{ runner.environment }}" = "github-hosted"
+          test "${{ runner.os }}" = "Linux"
+
+      # El operador carga los secretos una sola vez. Hasta entonces el workflow
+      # no puede correr a medias: falla aqui, antes de construir o tocar nada,
+      # nombrando exactamente lo que falta.
+      - name: Require deploy credentials
+        env:
+          # HOSTINGER_FTPS_HOST y no FTP_HOST: la subida va con security: strict,
+          # asi que el valor tiene que ser el nombre que el certificado cubre.
+          # El FTP_HOST historico de esta cuenta es la IP 31.170.161.105, que
+          # ningun certificado *.hstgr.io puede autenticar.
+          HOSTINGER_FTPS_HOST: ${{ secrets.HOSTINGER_FTPS_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ vars.FTP_PORT }}
+          FTP_REMOTE_DIR: ${{ vars.FTP_REMOTE_DIR }}
+        run: |
+          set -euo pipefail
+          missing=""
+          for name in HOSTINGER_FTPS_HOST FTP_USER FTP_PASSWORD FTP_PORT FTP_REMOTE_DIR; do
+            if [ -z "${!name:-}" ]; then
+              missing="${missing}${name} "
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Faltan credenciales de despliegue: ${missing}. Crea los secretos HOSTINGER_FTPS_HOST, FTP_USER y FTP_PASSWORD y las variables FTP_PORT y FTP_REMOTE_DIR. Instrucciones en .github/DEPLOYMENT.md."
+            exit 1
+          fi
+          # Una IP nunca puede pasar la verificacion estricta de nombre, asi que
+          # se rechaza aqui con un mensaje util en vez de en mitad de la subida.
+          if grep -Eq '^[0-9]+(\.[0-9]+){3}$' <<<"$HOSTINGER_FTPS_HOST"; then
+            echo "::error::HOSTINGER_FTPS_HOST es una direccion IP. Con security: strict el certificado se valida por nombre y ningun certificado de Hostinger cubre una IP. Usa el nombre de servidor que el certificado declara. Ver .github/DEPLOYMENT.md."
+            exit 1
+          fi
+          # Nunca se imprime el valor, solo el nombre.
+          case "$FTP_PORT" in
+            ''|*[!0-9]*)
+              echo "::error::La variable FTP_PORT no es un numero de puerto valido. Ver .github/DEPLOYMENT.md."
+              exit 1
+              ;;
+          esac
+          # FTP-Deploy-Action exige que server-dir termine en barra.
+          case "$FTP_REMOTE_DIR" in
+            */) : ;;
+            *)
+              echo "::error::La variable FTP_REMOTE_DIR debe terminar en '/'. Ver .github/DEPLOYMENT.md."
+              exit 1
+              ;;
+          esac
+          echo "Credenciales de despliegue presentes."
+
+      - name: Resolve target commit
+        id: target
+        env:
+          INPUT_SHA: ${{ inputs.release_sha }}
+          CI_RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          FALLBACK_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          sha="${INPUT_SHA:-}"
+          source="entrada de workflow_dispatch"
+          if [ -z "$sha" ]; then
+            sha="${CI_RUN_SHA:-}"
+            source="head_sha del workflow_run de CI"
+          fi
+          if [ -z "$sha" ]; then
+            sha="${FALLBACK_SHA:-}"
+            source="github.sha"
+          fi
+          # Here-string y no tuberia: grep -q sale en la primera coincidencia,
+          # el escritor muere de SIGPIPE con estado 141 y pipefail lo
+          # convertiria en un "SHA invalido" falso.
+          if ! grep -Eq '^[0-9a-f]{40}$' <<<"$sha"; then
+            echo "::error::No se pudo resolver un SHA de 40 caracteres (se obtuvo '${sha}' de ${source})."
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "Promocionando $sha (resuelto de $source)"
+
+      - name: Checkout release SHA
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          fetch-depth: 0
+
+      - name: Verify release SHA is on main
+        env:
+          RELEASE_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$RELEASE_SHA"
+          git fetch --no-tags origin main
+          # Un SHA que no es ancestro de main no se publica, ni siquiera por
+          # workflow_dispatch: produccion solo puede ser un punto de main.
+          git merge-base --is-ancestor "$RELEASE_SHA" refs/remotes/origin/main
+
+      # workflow_run ya prueba que CI concluyo en success para este commit.
+      # Esto lo vuelve a probar contra la API para que una promocion o una
+      # reversion por workflow_dispatch tampoco pueda saltarse CI. No hay
+      # respaldo por exito parcial: un job verde no es un workflow verde.
+      - name: Verify Landing CI succeeded for target
+        uses: actions/github-script@d746ffe35508b1917358783b479e04febd2b8f71 # v9.0.0
+        env:
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = process.env.TARGET_SHA;
+            // El evento workflow_run puede llegar un instante antes de que el
+            // run sea consultable por head_sha, asi que se lee con reintentos.
+            for (let attempt = 1; attempt <= 3; attempt += 1) {
+              const runs = await github.paginate(github.rest.actions.listWorkflowRuns, {
+                owner,
+                repo,
+                workflow_id: "ci.yml",
+                head_sha: sha,
+                status: "completed",
+                per_page: 100,
+              });
+              const success = runs.find((run) => run.conclusion === "success");
+              if (success) {
+                core.info(`Landing CI en verde para ${sha}: ${success.html_url}`);
+                return;
+              }
+              if (attempt < 3) {
+                await new Promise((resolve) => setTimeout(resolve, 10000));
+              }
+            }
+            core.setFailed(
+              `No existe un run de Landing CI en success para ${sha}. No se promociona un commit sin validar al origen publico.`
+            );
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2.0.2
+        with:
+          bun-version: 1.3.14
+          no-cache: true
+
+      - name: Install dependencies
+        run: |
+          set -euo pipefail
+          bun install --frozen-lockfile
+
+      - name: Build static site and stamp the release SHA
+        env:
+          PUBLIC_BUILD_SHA: ${{ steps.target.outputs.sha }}
+          PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
+          PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
+        run: |
+          set -euo pipefail
+
+          # La verificacion posterior apunta a SITE_URL. Si astro.config.mjs
+          # cambia de dominio y este workflow no, se estaria verificando un
+          # origen equivocado y el deploy seria verde sin significar nada.
+          config_site="$(grep -oE "site: *'[^']+'" astro.config.mjs | head -n 1 | sed -E "s/^site: *'//; s/'$//")"
+          if [ "$config_site" != "$SITE_URL" ]; then
+            echo "::error::astro.config.mjs declara site '${config_site}' pero este workflow verifica '${SITE_URL}'. Alinea ambos antes de desplegar."
+            exit 1
+          fi
+
+          if [ -z "${PUBLIC_POSTHOG_KEY:-}" ]; then
+            echo "::warning::PUBLIC_POSTHOG_KEY vacio. El sitio se publicara sin analitica PostHog. Ver .github/DEPLOYMENT.md."
+          fi
+
+          bun run build
+
+          test -f dist/index.html
+          test -d dist/_astro
+
+          routes_file="${RUNNER_TEMP}/deploy-routes.txt"
+          fingerprint_file="${RUNNER_TEMP}/deploy-fingerprint-routes.txt"
+          assets_file="${RUNNER_TEMP}/deploy-assets.txt"
+          : > "$routes_file"
+          : > "$fingerprint_file"
+          : > "$assets_file"
+
+          pages=0
+          stamped=0
+          while IFS= read -r file; do
+            pages=$((pages + 1))
+            route="/${file#dist/}"
+            route="${route%index.html}"
+            printf '%s\n' "$route" >> "$routes_file"
+            if grep -qF "$PUBLIC_BUILD_SHA" "$file"; then
+              printf '%s\n' "$route" >> "$fingerprint_file"
+              stamped=$((stamped + 1))
+            elif grep -qF 'http-equiv="refresh"' "$file"; then
+              # Astro emite una pagina puente para cada redireccion estatica
+              # (hoy /es/ -> /). No pasa por Layout.astro, asi que no lleva
+              # huella y solo se le exige 200 en el smoke.
+              echo "redireccion estatica sin huella: ${route}"
+            else
+              echo "::error::${file} no lleva el SHA ${PUBLIC_BUILD_SHA} y tampoco es una redireccion estatica. O la pagina no usa Layout.astro o PUBLIC_BUILD_SHA no llego al build."
+              exit 1
+            fi
+          done < <(find dist -name 'index.html' | sort)
+
+          while IFS= read -r file; do
+            printf '%s\n' "/${file#dist/}" >> "$assets_file"
+          done < <(find dist -type f ! -name '*.html' | sort)
+
+          assets=$(wc -l < "$assets_file")
+
+          echo "paginas construidas: ${pages}, con huella: ${stamped}, assets: ${assets}"
+
+          # Suelos, no igualdades: protegen contra un dist vacio o truncado que
+          # de otro modo pasaria todos los bucles sin ejecutar ni una vuelta.
+          # Medido el 2026-09-19 en e59914c: 16 paginas, 15 con huella, 6 assets.
+          if [ "$pages" -lt 10 ]; then
+            echo "::error::Solo se construyeron ${pages} paginas. El dist esta truncado."
+            exit 1
+          fi
+          if [ "$stamped" -lt 8 ]; then
+            echo "::error::Solo ${stamped} paginas llevan la huella ${PUBLIC_BUILD_SHA}."
+            exit 1
+          fi
+          if [ "$assets" -lt 3 ]; then
+            echo "::error::Solo se construyeron ${assets} assets. El dist esta truncado."
+            exit 1
+          fi
+
+      # Que el SHA este en main no prueba que sea mas nuevo que lo publicado.
+      # Si dos pushes caen juntos y el CI del commit nuevo termina antes que el
+      # del viejo, el run del viejo subiria despues, su propia huella coincidiria
+      # en la verificacion posterior y el job terminaria VERDE dejando
+      # produccion por detras de main, que es justo el fallo que este workflow
+      # existe para impedir. Asi que antes de subir nada se lee la huella que el
+      # origen sirve AHORA y se exige que sea ancestro de lo que se va a
+      # promocionar. Va pegado al paso de subida a proposito: cuanto menor sea
+      # la distancia entre leer y escribir, menor la ventana de carrera.
+      #
+      # workflow_dispatch queda exento porque ahi retroceder es una decision
+      # deliberada del operador y tiene que seguir siendo posible revertir.
+      - name: Verify the promoted SHA does not move production backwards
+        env:
+          RELEASE_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "workflow_dispatch: una reversion deliberada si puede retroceder, no se exige avance."
+            exit 0
+          fi
+
+          base="$SITE_URL"
+          pre_file="${RUNNER_TEMP}/pre-deploy-root.html"
+          code=000
+          ok=0
+          for attempt in 1 2 3; do
+            code="$(curl -sS -L -o "$pre_file" -w '%{http_code}' --max-time 25 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "${base}/?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-pre-${attempt}" || true)"
+            # curl ya escribe 000 en %{http_code} cuando ni siquiera conecta,
+            # asi que un '|| echo 000' anadiria un segundo 000 al mensaje.
+            [ -n "$code" ] || code=000
+            if [ "$code" = "200" ]; then
+              ok=1
+              break
+            fi
+            sleep 10
+          done
+
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::No se pudo leer ${base}/ antes de subir (ultimo estado: ${code}). Sin saber que sirve el origen no se puede probar que este despliegue avanza. Si hay que publicar igualmente, usa workflow_dispatch con release_sha."
+            exit 1
+          fi
+
+          # || true: sin coincidencia grep sale 1, y head le manda SIGPIPE, y
+          # cualquiera de los dos mataria el script con pipefail.
+          served="$(grep -oE "name=\"${BUILD_META_NAME}\" content=\"[^\"]*\"" "$pre_file" \
+            | head -n 1 | sed -E 's/.*content="//; s/"$//' || true)"
+
+          if [ -z "$served" ]; then
+            # Hoy el origen sirve HTML de una subida manual vieja, sin huella
+            # ninguna. El estreno del pipeline tiene que poder ocurrir.
+            echo "El origen no sirve ninguna huella ${BUILD_META_NAME} todavia: primer despliegue del pipeline, se permite."
+            exit 0
+          fi
+
+          if [ "$served" = "$RELEASE_SHA" ]; then
+            echo "El origen ya sirve ${RELEASE_SHA}: republicar el mismo commit no retrocede."
+            exit 0
+          fi
+
+          if ! grep -Eq '^[0-9a-f]{40}$' <<<"$served"; then
+            echo "::error::El origen sirve la huella '${served}', que no es un SHA de 40 caracteres (un build local sin PUBLIC_BUILD_SHA emite 'dev'). No se puede probar que ${RELEASE_SHA} sea mas nuevo. Si la publicacion es deliberada, usa workflow_dispatch con release_sha."
+            exit 1
+          fi
+
+          if ! git cat-file -e "${served}^{commit}" 2>/dev/null; then
+            echo "::error::El origen sirve ${served}, que no existe en este repositorio. No se puede probar que ${RELEASE_SHA} sea mas nuevo. Si la publicacion es deliberada, usa workflow_dispatch con release_sha."
+            exit 1
+          fi
+
+          if ! git merge-base --is-ancestor "$served" "$RELEASE_SHA"; then
+            echo "::error::El origen ya sirve ${served}, que no es ancestro de ${RELEASE_SHA}: otro run publico algo mas nuevo o divergente. Subir aqui dejaria produccion por detras de main. Si la reversion es deliberada, usa workflow_dispatch con release_sha=${RELEASE_SHA}."
+            exit 1
+          fi
+
+          echo "El origen sirve ${served}, ancestro de ${RELEASE_SHA}: el despliegue avanza."
+
+      # Falla cerrado ANTES de enviar usuario o contrasena. s_client solo
+      # negocia TLS: no manda credenciales. Si el certificado del endpoint no
+      # verifica de forma estricta, el error sale aqui con un mensaje legible en
+      # vez de morir dentro de la accion de subida con un error de TLS crudo.
+      - name: Verify the strict FTPS endpoint before sending credentials
+        env:
+          FTPS_HOST: ${{ secrets.HOSTINGER_FTPS_HOST }}
+          FTP_PORT: ${{ vars.FTP_PORT }}
+        run: |
+          set -euo pipefail
+          if ! openssl s_client -starttls ftp -connect "${FTPS_HOST}:${FTP_PORT}" \
+              -servername "${FTPS_HOST}" -verify_hostname "${FTPS_HOST}" \
+              -verify_return_error -verify 8 </dev/null >/dev/null 2>&1; then
+            echo "::error::El certificado FTPS del endpoint no verifica de forma estricta contra HOSTINGER_FTPS_HOST."
+            echo "::error::Su valor debe ser el nombre de servidor que el certificado cubre. Medido el 2026-09-19 contra el FTP de esta cuenta: CN=*.hstgr.io, SAN *.hstgr.io y hstgr.io. Una IP como 31.170.161.105 o un nombre tipo ftp.omnimon.com.mx NO lo cubre."
+            echo "::error::Este deploy no envia la contrasena FTP por un canal que no puede autenticar. Ver .github/DEPLOYMENT.md."
+            exit 1
+          fi
+          echo "Certificado FTPS verificado de forma estricta contra HOSTINGER_FTPS_HOST."
+
+      - name: FTPS deploy dist to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
+        with:
+          server: ${{ secrets.HOSTINGER_FTPS_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ vars.FTP_PORT }}
+          local-dir: ./dist/
+          server-dir: ${{ vars.FTP_REMOTE_DIR }}
+          protocol: ftps
+          # strict, nunca el valor por defecto. Medido en el dist/index.js de la
+          # accion fijada arriba: la entrada security se rellena con "loose" si
+          # no se pasa, y el codigo hace
+          #   const rejectUnauthorized = args.security === "strict";
+          # para despues pasarlo tal cual en secureOptions. Es decir, sin esta
+          # clave protocol: ftps abre un canal CIFRADO PERO NO AUTENTICADO: no se
+          # valida la cadena ni el nombre del servidor, y cualquiera capaz de
+          # interponerse en la ruta se lleva la contrasena FTP de produccion.
+          security: strict
+          # El origen conserva ficheros de despliegues manuales anteriores
+          # (entradas de blog viejas, sitemap, imagenes, .htaccess) que el build
+          # actual ya no emite. dangerous-clean-slate: true los borraria TODOS de
+          # golpe antes de subir, que es distinto del borrado por diferencia de
+          # estado descrito en .github/DEPLOYMENT.md y deja el sitio caido si la
+          # subida se corta a la mitad.
+          dangerous-clean-slate: false
+          log-level: standard
+
+      # Esta es la pieza que convierte "el deploy salio verde" en "produccion es
+      # main". Sin ella, una subida que no llego al directorio que Apache sirve
+      # reporta exito igual, que es como el origen se quedo en 6.3.0.
+      - name: Assert live build fingerprint on public origin
+        env:
+          RELEASE_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          base="$SITE_URL"
+          expected="<meta name=\"${BUILD_META_NAME}\" content=\"${RELEASE_SHA}\">"
+          fingerprint_file="${RUNNER_TEMP}/deploy-fingerprint-routes.txt"
+          test -s "$fingerprint_file"
+
+          # Primero se espera a que la raiz sirva la huella recien subida. El
+          # parametro anticache evita leer una copia de borde.
+          body=""
+          ok=0
+          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            body="$(curl -sS --max-time 25 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "${base}/?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}" || true)"
+            # Here-string y no tuberia, por el mismo SIGPIPE de mas arriba.
+            if grep -qF "$expected" <<<"$body"; then
+              ok=1
+              break
+            fi
+            sleep 10
+          done
+          if [ "$ok" -ne 1 ]; then
+            served="$(grep -oE "name=\"${BUILD_META_NAME}\" content=\"[0-9a-f]*\"" <<<"$body" || echo 'ninguna')"
+            echo "::error::${base}/ no sirve el build ${RELEASE_SHA} (encontrado: ${served}). La subida FTP no llego al origen publico: revisa FTP_REMOTE_DIR."
+            exit 1
+          fi
+          echo "huella correcta / -> ${RELEASE_SHA}"
+
+          # Y luego todas las demas paginas con huella. Una subida parcial deja
+          # la raiz nueva y el resto viejo, y eso tambien debe fallar.
+          fail=0
+          while IFS= read -r route; do
+            if [ -z "$route" ] || [ "$route" = "/" ]; then
+              continue
+            fi
+            page_ok=0
+            for attempt in 1 2 3; do
+              page="$(curl -sS -L --max-time 25 \
+                -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+                "${base}${route}?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}" || true)"
+              if grep -qF "$expected" <<<"$page"; then
+                page_ok=1
+                break
+              fi
+              sleep 5
+            done
+            if [ "$page_ok" -ne 1 ]; then
+              echo "::error::${base}${route} no sirve el build ${RELEASE_SHA}. Subida parcial."
+              fail=1
+            else
+              echo "huella correcta ${route}"
+            fi
+          done < "$fingerprint_file"
+          exit "$fail"
+
+      - name: Smoke public URLs
+        run: |
+          set -euo pipefail
+          base="$SITE_URL"
+          routes_file="${RUNNER_TEMP}/deploy-routes.txt"
+          test -s "$routes_file"
+          live_dir="${RUNNER_TEMP}/live"
+          rm -rf "$live_dir"
+          mkdir -p "$live_dir"
+
+          # Las rutas salen del dist recien construido, no de una lista escrita
+          # a mano ni del sitemap del origen: ese sitemap lo dejo un despliegue
+          # manual viejo y ya no lo emite este build, asi que describe un sitio
+          # que no es el que se acaba de publicar.
+          fail=0
+          checked=0
+          while IFS= read -r route; do
+            [ -n "$route" ] || continue
+            checked=$((checked + 1))
+            slug="${route//\//_}"
+            # -L a proposito: Apache redirige las rutas sin barra final a su
+            # forma con barra, asi que lo util es el estado final.
+            code="$(curl -sS -L -o "${live_dir}/page${slug}.html" -w '%{http_code}' --max-time 25 \
+              -H 'Cache-Control: no-cache' \
+              "${base}${route}?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" || echo 000)"
+            echo "$code ${base}${route}"
+            if [ "$code" != "200" ]; then
+              echo "::error::Se esperaba 200 en ${route}, llego ${code}"
+              fail=1
+              # El cuerpo de un error no se conserva: la pagina de error de
+              # Hostinger referencia sus propios assets y contaminaria la
+              # extraccion de assets del paso siguiente.
+              rm -f "${live_dir}/page${slug}.html"
+            fi
+          done < "$routes_file"
+
+          if [ "$checked" -lt 10 ]; then
+            echo "::error::Solo se comprobaron ${checked} rutas. La lista de rutas esta truncada."
+            fail=1
+          fi
+
+          # Una ruta inexistente debe dar 404 de verdad. Si el origen empieza a
+          # contestar 200 a cualquier cosa, el smoke de arriba dejaria de
+          # significar algo. Medido el 2026-09-19: omnimon.com.mx devuelve 404.
+          probe="/omnimon-deploy-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/"
+          probe_code="$(curl -sS -L -o /dev/null -w '%{http_code}' --max-time 25 "${base}${probe}" || echo 000)"
+          echo "$probe_code ${base}${probe}"
+          if [ "$probe_code" != "404" ]; then
+            echo "::error::Se esperaba 404 en una ruta inexistente, llego ${probe_code}. El origen no distingue lo que existe de lo que no."
+            fail=1
+          fi
+
+          exit "$fail"
+
+      # El modo de fallo clasico del FTP: el HTML nuevo se sube y los assets
+      # con hash nuevo no, o llegan a medias. La pagina responde 200, se ve
+      # rota, y el deploy ya reporto exito.
+      #
+      # Exigir 200 y cuerpo mayor que cero no basta para detectarlo. Un corte de
+      # FTP deja casi siempre un fichero TRUNCADO, no uno de cero bytes, que es
+      # el caso menos probable. Y los ficheros de public/ (favicon.ico,
+      # favicon.svg) no llevan hash de contenido en el nombre, asi que una copia
+      # VIEJA con el mismo nombre responde 200 con cuerpo no vacio para siempre.
+      # Ademas la accion no vuelve a mirarlos por su cuenta: su inventario
+      # .ftp-deploy-sync-state.json guarda el hash del fichero LOCAL que creyo
+      # haber subido, no el del fichero que el origen sirve de verdad, asi que
+      # un STOR cortado que aun asi respondio 226 queda anotado como subido y el
+      # siguiente run lo clasifica como "same" y ni lo intenta. Leer el origen
+      # es la unica forma de verlo.
+      #
+      # Por eso se compara el cuerpo servido contra el fichero de dist con
+      # sha256, y no por tamano. El tamano es mas barato y ya distingue truncado
+      # de completo, pero no ve un fichero viejo que pese lo mismo, que es justo
+      # lo que los nombres sin hash permiten. El artefacto entero pesa unos
+      # 340 KB, asi que bajar los cuerpos no es un coste real.
+      - name: Assert live assets match the built artifact byte for byte
+        run: |
+          set -euo pipefail
+          base="$SITE_URL"
+          assets_file="${RUNNER_TEMP}/deploy-assets.txt"
+          live_dir="${RUNNER_TEMP}/live"
+          refs_file="${RUNNER_TEMP}/live-asset-refs.txt"
+          check_file="${RUNNER_TEMP}/assets-to-check.txt"
+          body_file="${RUNNER_TEMP}/served-asset.bin"
+          test -s "$assets_file"
+
+          # Assets que el HTML servido referencia de verdad, leidos de las
+          # paginas vivas descargadas en el smoke.
+          grep -hoE '(href|src)="/[^"]+\.(css|js|mjs|svg|ico|png|jpe?g|webp|avif|woff2?|json|xml|txt)"' \
+            "$live_dir"/*.html 2>/dev/null \
+            | sed -E 's/^(href|src)="//; s/"$//' \
+            | sort -u > "$refs_file" || true
+
+          if [ ! -s "$refs_file" ]; then
+            echo "::error::Ninguna pagina viva referencia assets. O la descarga del smoke fallo o lo servido no es el HTML construido; sin esto la comprobacion pasaria en vacio."
+            exit 1
+          fi
+
+          sort -u "$assets_file" "$refs_file" > "$check_file"
+
+          fail=0
+          compared=0
+          while IFS= read -r asset; do
+            [ -n "$asset" ] || continue
+            rm -f "$body_file"
+            # Accept-Encoding: identity para comparar el cuerpo tal cual esta en
+            # disco y no una version comprimida por el servidor.
+            result="$(curl -sS -L -o "$body_file" -w '%{http_code} %{size_download}' --max-time 25 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' -H 'Accept-Encoding: identity' \
+              "${base}${asset}?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" || echo '000 0')"
+            code="${result%% *}"
+            size="${result##* }"
+            case "$size" in
+              ''|*[!0-9]*) size=0 ;;
+            esac
+            if [ "$code" != "200" ]; then
+              echo "$code $size ${base}${asset}"
+              echo "::error::Se esperaba 200 en el asset ${asset}, llego ${code}. El HTML vivo apunta a un fichero que no se subio."
+              fail=1
+              continue
+            fi
+
+            local_file="dist${asset}"
+            if [ ! -f "$local_file" ]; then
+              # Asset que el HTML vivo referencia y este build no emite: resto
+              # de un despliegue manual viejo. No hay copia local contra la que
+              # comparar, asi que solo se le puede exigir 200 y cuerpo no vacio.
+              echo "$code $size ${base}${asset} (sin copia en dist, solo 200 y no vacio)"
+              if [ "$size" -lt 1 ]; then
+                echo "::error::El asset ${asset} responde 200 pero con cuerpo vacio."
+                fail=1
+              fi
+              continue
+            fi
+
+            local_size="$(wc -c < "$local_file" | tr -d ' ')"
+            served_sum="$(sha256sum "$body_file" | cut -d ' ' -f 1)"
+            local_sum="$(sha256sum "$local_file" | cut -d ' ' -f 1)"
+            if [ "$served_sum" != "$local_sum" ]; then
+              echo "$code $size ${base}${asset}"
+              echo "::error::El asset ${asset} responde 200 pero lo servido no es el fichero construido: servido ${size} bytes sha256 ${served_sum}, dist ${local_size} bytes sha256 ${local_sum}. O la transferencia FTP se corto, o el origen conserva una copia vieja con el mismo nombre, o algo entre medias transforma el cuerpo."
+              fail=1
+              continue
+            fi
+
+            compared=$((compared + 1))
+            echo "$code $size sha256 identico a dist ${base}${asset}"
+          done < "$check_file"
+
+          # Suelo, no igualdad: si ningun asset llego a compararse contra su
+          # copia de dist, la comprobacion habria pasado en vacio.
+          # Medido el 2026-09-19 en d12bd6d: 6 assets, los 6 comparables.
+          if [ "$compared" -lt 3 ]; then
+            echo "::error::Solo ${compared} assets se compararon contra dist. La comprobacion no cubre el artefacto."
+            fail=1
+          fi
+          echo "assets comparados byte a byte contra dist: ${compared}"
+          exit "$fail"
+
+      - name: Deploy summary
+        if: always()
+        env:
+          RELEASE_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Despliegue de la landing"
+            echo
+            echo "- Origen publico: ${SITE_URL}"
+            echo "- SHA promocionado: \`${RELEASE_SHA:-sin resolver}\`"
+            echo "- Huella servida verificada como \`<meta name=\"${BUILD_META_NAME}\">\` en la URL publica"
+            echo "- Resultado del job: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"

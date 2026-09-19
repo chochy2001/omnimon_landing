@@ -21,6 +21,12 @@ const {
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.href;
 const privacyHref = legalHref(lang, 'privacy');
 const termsHref = legalHref(lang, 'terms');
+
+// Huella de build. El workflow de despliegue inyecta PUBLIC_BUILD_SHA con el
+// SHA exacto que promociona, y despues vuelve a leer esta etiqueta desde la
+// URL publica: si lo servido no coincide, el despliegue falla. Sin la variable
+// el valor queda en "dev", asi un build local nunca se confunde con produccion.
+const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 ---
 
 <!doctype html>
@@ -50,6 +56,7 @@ const termsHref = legalHref(lang, 'terms');
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" sizes="any" />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="omnimon-build" content={buildSha} />
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
