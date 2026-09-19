@@ -34,7 +34,7 @@ antes de tocar el origen.
 
 | Nombre | Contenido | De donde sale |
 |--------|-----------|----------------|
-| `FTP_HOST` | Host o IP del servidor FTP de Hostinger | hPanel > Archivos > Cuentas FTP, o el `.env.local` gitignoreado del checkout local, clave `FTP_HOST` |
+| `HOSTINGER_FTPS_HOST` | Nombre de servidor FTPS de Hostinger que el certificado cubre. **No vale una IP** | hPanel > Archivos > Cuentas FTP. El certificado servido por el FTP de esta cuenta, medido el 2026-09-19, es `CN=*.hstgr.io` con SAN `*.hstgr.io` y `hstgr.io`, asi que el valor tiene que ser un nombre bajo `hstgr.io`. El `FTP_HOST` del `.env.local` local es la IP `31.170.161.105` y **no sirve aqui**: con `security: strict` la verificacion de nombre la rechaza |
 | `FTP_USER` | Usuario FTP | mismo origen, clave `FTP_USER` |
 | `FTP_PASSWORD` | Contrasena FTP | mismo origen, clave `FTP_PASSWORD`. Si no se conoce, se regenera en hPanel |
 
@@ -68,7 +68,7 @@ mensaje exacto en vez de reportar un despliegue verde de un sitio que nadie ve.
 ### Carga con `gh`
 
 ```bash
-gh secret set FTP_HOST -R chochy2001/omnimon_landing
+gh secret set HOSTINGER_FTPS_HOST -R chochy2001/omnimon_landing
 gh secret set FTP_USER -R chochy2001/omnimon_landing
 gh secret set FTP_PASSWORD -R chochy2001/omnimon_landing
 
@@ -161,16 +161,47 @@ origen ya sirve.
 
 ## Limites conocidos
 
-- **No se borra nada del origen.** `dangerous-clean-slate: false`. El origen
-  conserva ficheros de despliegues manuales anteriores (entradas de blog que el
-  fuente ya no emite, `sitemap-index.xml`, imagenes, `.htaccess`). Limpiarlos es
-  una tarea aparte y deliberada; borrarlos desde aqui tiraria el sitio.
-- **Verificacion del certificado FTPS.** Se usa `protocol: ftps`, con el
-  comportamiento por defecto de `SamKirkland/FTP-Deploy-Action` para la opcion
-  `security`. El canal va cifrado, pero el certificado FTPS de Hostinger no
-  declara un nombre que coincida con el host, algo ya documentado en la flota,
-  asi que no hay autenticacion estricta del servidor. Es el mismo compromiso que
-  el workflow de referencia de `CapdesisWebLanding`.
+- **El origen si pierde ficheros, aunque `dangerous-clean-slate` sea `false`.**
+  Las dos cosas son distintas y conviene no confundirlas.
+  `dangerous-clean-slate: true` borraria el directorio remoto ENTERO antes de
+  subir; con `false` eso no ocurre nunca. Pero la accion tambien borra por
+  diferencia de estado, y eso si ocurre. Medido leyendo el `dist/index.js` de
+  `SamKirkland/FTP-Deploy-Action` v4.4.0 (SHA `110f9186`), que es el bundle que
+  el runner ejecuta:
+  - La accion deja un inventario, `.ftp-deploy-sync-state.json`, dentro del
+    directorio remoto al terminar cada subida (`syncLocalToServer`).
+  - Al empezar intenta leerlo. Si no existe registra
+    `this must be your first publish` y toma el estado del servidor como vacio
+    (`getServerFiles` devuelve `data: []`), asi que el primer run **no borra
+    nada**.
+  - A partir del segundo run el inventario ya esta. `HashDiff.getDiffs` mete en
+    `deleteList` todo fichero o carpeta que figure en ese inventario y que el
+    build nuevo ya no emita, y `syncLocalToServer` los elimina con `removeFile`
+    y `removeFolder`. Ese camino **no consulta `dangerous-clean-slate`**.
+
+  O sea: lo que este pipeline subio en un despliegue anterior y el build actual
+  deja de emitir **se borra**. Lo que nunca estuvo en el inventario no se toca,
+  y ahi es donde estan los restos de las subidas manuales antiguas (entradas de
+  blog que el fuente ya no emite, `sitemap-index.xml`, imagenes, `.htaccess`):
+  esos si sobreviven, porque el primer run del pipeline solo apunto el contenido
+  de `dist/`. Borrar el inventario a mano en el servidor devuelve la accion al
+  modo primera publicacion y suspende los borrados hasta el siguiente run.
+- **Verificacion del certificado FTPS: estricta.** Se usa `protocol: ftps` con
+  `security: strict`. La clave no es decorativa: en el `dist/index.js` de la
+  accion fijada, la entrada `security` se rellena con `"loose"` cuando no se
+  pasa, y el codigo hace
+  `const rejectUnauthorized = args.security === "strict";` antes de mandarlo tal
+  cual en `secureOptions`. Sin la clave, `protocol: ftps` da un canal cifrado
+  pero **no autenticado**: no se valida ni la cadena ni el nombre del servidor,
+  y quien pueda interponerse en la ruta se queda con la contrasena FTP de
+  produccion. Consecuencia operativa: `HOSTINGER_FTPS_HOST` debe ser un nombre
+  que el certificado cubra. El certificado servido por el FTP de esta cuenta,
+  medido el 2026-09-19 con `openssl s_client -starttls ftp`, es `CN=*.hstgr.io`
+  con SAN `*.hstgr.io` y `hstgr.io`; una IP o un `ftp.omnimon.com.mx` fallan la
+  verificacion de nombre. El paso `Verify the strict FTPS endpoint before
+  sending credentials` lo comprueba con `openssl` **antes** de que el workflow
+  entregue usuario o contrasena a nadie, asi que un valor mal puesto falla con
+  un mensaje legible en vez de morir dentro de la subida.
 - **El runner es GitHub-hosted a proposito.** Este repositorio es publico y no
   tiene runners propios, y los runners self-hosted de CAPDESIS no sirven a un
   repositorio personal. Entregar credenciales FTP de produccion a un runner

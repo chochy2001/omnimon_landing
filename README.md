@@ -38,14 +38,16 @@ Landing publica de OmniMon ubicada en `/Users/jorge/Documents/Apps/omnimon_apps/
 ## Workflows y automatizacion
 
 - CI de esta landing: `.github/workflows/ci.yml` (`bun run test` + `bun run build` en `ubuntu-latest`, GitHub-hosted desde `e59914c`).
-- Despliegue: `.github/workflows/deploy-hostinger.yml`. Se encadena por `workflow_run` sobre `Landing CI`, construye el SHA exacto que CI dejo en verde, comprueba antes de subir que la huella que el origen sirve sea ancestro de ese SHA (para que un run tardio de un commit viejo no deje produccion por detras de `main`), lo sube por FTP a Hostinger y despues vuelve a leer `https://omnimon.com.mx` para exigir que la huella servida sea ese SHA y que cada asset servido sea `sha256`-identico al construido. Si algo de eso no se cumple, el despliegue falla.
+- Despliegue: `.github/workflows/deploy-hostinger.yml`. Se encadena por `workflow_run` sobre `Landing CI`, construye el SHA exacto que CI dejo en verde, comprueba antes de subir que la huella que el origen sirve sea ancestro de ese SHA (para que un run tardio de un commit viejo no deje produccion por detras de `main`), lo sube por FTPS con verificacion estricta de certificado a Hostinger y despues vuelve a leer `https://omnimon.com.mx` para exigir que la huella servida sea ese SHA y que cada asset servido sea `sha256`-identico al construido. Si algo de eso no se cumple, el despliegue falla.
 - Los workflows `../.github/workflows/omnimon-ci.yml` y `../.github/workflows/release-policy.yml` pertenecen al repo `macmon` (cargo + bun del desktop). `omnimon_landing/` esta en el gitignore de macmon.
 
 ## Despliegue
 
 El pipeline no puede correr hasta que el operador cargue los secretos
-`FTP_HOST`, `FTP_USER` y `FTP_PASSWORD` y las variables `FTP_PORT` y
-`FTP_REMOTE_DIR`. Nombres, origen de cada valor, modo de disparo, reversion y
+`HOSTINGER_FTPS_HOST`, `FTP_USER` y `FTP_PASSWORD` y las variables `FTP_PORT` y
+`FTP_REMOTE_DIR`. La subida usa `security: strict`, asi que
+`HOSTINGER_FTPS_HOST` tiene que ser el nombre de servidor que el certificado
+FTPS cubre y no la IP que guarda el `.env.local` local. Nombres, origen de cada valor, modo de disparo, reversion y
 limites conocidos estan en [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
 
 Medido el 2026-09-19 contra el origen publico, antes de que existiera este

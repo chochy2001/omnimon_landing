@@ -106,7 +106,11 @@ jobs:
       # nombrando exactamente lo que falta.
       - name: Require deploy credentials
         env:
-          FTP_HOST: ${{ secrets.FTP_HOST }}
+          # HOSTINGER_FTPS_HOST y no FTP_HOST: la subida va con security: strict,
+          # asi que el valor tiene que ser el nombre que el certificado cubre.
+          # El FTP_HOST historico de esta cuenta es la IP 31.170.161.105, que
+          # ningun certificado *.hstgr.io puede autenticar.
+          HOSTINGER_FTPS_HOST: ${{ secrets.HOSTINGER_FTPS_HOST }}
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
           FTP_PORT: ${{ vars.FTP_PORT }}
@@ -114,13 +118,19 @@ jobs:
         run: |
           set -euo pipefail
           missing=""
-          for name in FTP_HOST FTP_USER FTP_PASSWORD FTP_PORT FTP_REMOTE_DIR; do
+          for name in HOSTINGER_FTPS_HOST FTP_USER FTP_PASSWORD FTP_PORT FTP_REMOTE_DIR; do
             if [ -z "${!name:-}" ]; then
               missing="${missing}${name} "
             fi
           done
           if [ -n "$missing" ]; then
-            echo "::error::Faltan credenciales de despliegue: ${missing}. Crea los secretos FTP_HOST, FTP_USER y FTP_PASSWORD y las variables FTP_PORT y FTP_REMOTE_DIR. Instrucciones en .github/DEPLOYMENT.md."
+            echo "::error::Faltan credenciales de despliegue: ${missing}. Crea los secretos HOSTINGER_FTPS_HOST, FTP_USER y FTP_PASSWORD y las variables FTP_PORT y FTP_REMOTE_DIR. Instrucciones en .github/DEPLOYMENT.md."
+            exit 1
+          fi
+          # Una IP nunca puede pasar la verificacion estricta de nombre, asi que
+          # se rechaza aqui con un mensaje util en vez de en mitad de la subida.
+          if grep -Eq '^[0-9]+(\.[0-9]+){3}$' <<<"$HOSTINGER_FTPS_HOST"; then
+            echo "::error::HOSTINGER_FTPS_HOST es una direccion IP. Con security: strict el certificado se valida por nombre y ningun certificado de Hostinger cubre una IP. Usa el nombre de servidor que el certificado declara. Ver .github/DEPLOYMENT.md."
             exit 1
           fi
           # Nunca se imprime el valor, solo el nombre.
@@ -390,20 +400,51 @@ jobs:
 
           echo "El origen sirve ${served}, ancestro de ${RELEASE_SHA}: el despliegue avanza."
 
-      - name: FTP deploy dist to Hostinger
+      # Falla cerrado ANTES de enviar usuario o contrasena. s_client solo
+      # negocia TLS: no manda credenciales. Si el certificado del endpoint no
+      # verifica de forma estricta, el error sale aqui con un mensaje legible en
+      # vez de morir dentro de la accion de subida con un error de TLS crudo.
+      - name: Verify the strict FTPS endpoint before sending credentials
+        env:
+          FTPS_HOST: ${{ secrets.HOSTINGER_FTPS_HOST }}
+          FTP_PORT: ${{ vars.FTP_PORT }}
+        run: |
+          set -euo pipefail
+          if ! openssl s_client -starttls ftp -connect "${FTPS_HOST}:${FTP_PORT}" \
+              -servername "${FTPS_HOST}" -verify_hostname "${FTPS_HOST}" \
+              -verify_return_error -verify 8 </dev/null >/dev/null 2>&1; then
+            echo "::error::El certificado FTPS del endpoint no verifica de forma estricta contra HOSTINGER_FTPS_HOST."
+            echo "::error::Su valor debe ser el nombre de servidor que el certificado cubre. Medido el 2026-09-19 contra el FTP de esta cuenta: CN=*.hstgr.io, SAN *.hstgr.io y hstgr.io. Una IP como 31.170.161.105 o un nombre tipo ftp.omnimon.com.mx NO lo cubre."
+            echo "::error::Este deploy no envia la contrasena FTP por un canal que no puede autenticar. Ver .github/DEPLOYMENT.md."
+            exit 1
+          fi
+          echo "Certificado FTPS verificado de forma estricta contra HOSTINGER_FTPS_HOST."
+
+      - name: FTPS deploy dist to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
         with:
-          server: ${{ secrets.FTP_HOST }}
+          server: ${{ secrets.HOSTINGER_FTPS_HOST }}
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ vars.FTP_PORT }}
           local-dir: ./dist/
           server-dir: ${{ vars.FTP_REMOTE_DIR }}
           protocol: ftps
+          # strict, nunca el valor por defecto. Medido en el dist/index.js de la
+          # accion fijada arriba: la entrada security se rellena con "loose" si
+          # no se pasa, y el codigo hace
+          #   const rejectUnauthorized = args.security === "strict";
+          # para despues pasarlo tal cual en secureOptions. Es decir, sin esta
+          # clave protocol: ftps abre un canal CIFRADO PERO NO AUTENTICADO: no se
+          # valida la cadena ni el nombre del servidor, y cualquiera capaz de
+          # interponerse en la ruta se lleva la contrasena FTP de produccion.
+          security: strict
           # El origen conserva ficheros de despliegues manuales anteriores
           # (entradas de blog viejas, sitemap, imagenes, .htaccess) que el build
-          # actual ya no emite. Borrarlos aqui tiraria el sitio; limpiarlos es
-          # una tarea aparte y deliberada.
+          # actual ya no emite. dangerous-clean-slate: true los borraria TODOS de
+          # golpe antes de subir, que es distinto del borrado por diferencia de
+          # estado descrito en .github/DEPLOYMENT.md y deja el sitio caido si la
+          # subida se corta a la mitad.
           dangerous-clean-slate: false
           log-level: standard
 
@@ -531,8 +572,13 @@ jobs:
       # FTP deja casi siempre un fichero TRUNCADO, no uno de cero bytes, que es
       # el caso menos probable. Y los ficheros de public/ (favicon.ico,
       # favicon.svg) no llevan hash de contenido en el nombre, asi que una copia
-      # VIEJA con el mismo nombre responde 200 con cuerpo no vacio para siempre;
-      # con dangerous-clean-slate: false esa copia no se borra nunca.
+      # VIEJA con el mismo nombre responde 200 con cuerpo no vacio para siempre.
+      # Ademas la accion no vuelve a mirarlos por su cuenta: su inventario
+      # .ftp-deploy-sync-state.json guarda el hash del fichero LOCAL que creyo
+      # haber subido, no el del fichero que el origen sirve de verdad, asi que
+      # un STOR cortado que aun asi respondio 226 queda anotado como subido y el
+      # siguiente run lo clasifica como "same" y ni lo intenta. Leer el origen
+      # es la unica forma de verlo.
       #
       # Por eso se compara el cuerpo servido contra el fichero de dist con
       # sha256, y no por tamano. El tamano es mas barato y ya distingue truncado
