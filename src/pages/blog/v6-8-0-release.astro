@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const releaseUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
+---
+
+<Layout
+	title="OmniMon v6.8.0: Memory Guard for macOS | Blog"
+	description="OmniMon v6.8.0 ships an optional macOS Memory Guard LaunchAgent that reaps idle leftovers without false-positive kills of Warp, Chrome, or fseventsd."
+	lang="en"
+>
+	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		<article class="space-y-10">
+			<header class="space-y-4">
+				<div class="flex flex-wrap items-center gap-3 text-sm text-slate-400">
+					<a href="/blog/" class="transition hover:text-white">&larr; Blog</a>
+					<span>|</span>
+					<a href="/es/blog/v6-8-0-release-es/" class="transition hover:text-sky-300">Leer en espanol</a>
+				</div>
+				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.8.0: Memory Guard for macOS</h1>
+				<div class="flex items-center gap-4 text-sm text-slate-400">
+					<time>19 Sep 2026</time>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">New release</span>
+				</div>
+			</header>
+
+			<section class="space-y-6 text-lg leading-8 text-slate-300">
+				<p>
+					Version 6.8.0 adds <strong class="text-white">Memory Guard</strong>, an optional macOS LaunchAgent that lives in the OmniMon repo at <code>tools/macos-memory-guard/</code>. It is open source (MIT) and complements the in-app Zombie Killer without replacing it.
+				</p>
+				<h2 class="text-2xl font-bold text-white">What it will kill — and what it will not</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Leftovers only.</strong> Idle orphans (<code>ppid=1</code>, CPU idle, at least one hour old): leftover Flutter testers, <code>http.server</code>, <code>php -S</code>, <code>next-server</code>, idle <code>git fsmonitor</code>.</li>
+					<li><strong class="text-white">Never.</strong> Warp, Chrome, Cursor, ChatGPT, agent CLIs with a living parent, MCP servers, or Apple <code>fseventsd</code>.</li>
+					<li><strong class="text-white">Deterministic.</strong> One process, 15-second sample, no dialogs in the hot loop. <code>omnimon-memory-guard prove</code> is the classifier contract.</li>
+				</ul>
+				<p>
+					Install: <code>bash tools/macos-memory-guard/install-memory-guard.sh</code>. Confirm with <code>omnimon-memory-guard prove</code>. Homebrew stays on published tag 6.6.6 until a Universal DMG exists.
+				</p>
+				<p><a class="text-sky-300 hover:text-white" href={releaseUrl}>GitHub releases</a></p>
+			</section>
+		</article>
+	</main>
+</Layout>
