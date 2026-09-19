@@ -27,10 +27,18 @@ name: Deploy landing (Hostinger FTP)
 #     origen que sigue sirviendo lo viejo es exactamente el fallo que ya
 #     ocurrio aqui, y esta comprobacion lo hace imposible de pasar por alto.
 #
-# Ademas se comprueba que los assets que referencia el HTML vivo respondan 200
-# y no vengan vacios. El modo de fallo clasico del FTP es HTML nuevo apuntando
-# a hashes de _astro que nunca se transfirieron: la pagina carga sin estilos y
-# el deploy ya reporto exito.
+#  4. Antes de subir lee la huella que el origen sirve AHORA y exige que sea
+#     ancestro del SHA a promocionar. Sin eso, dos pushes casi simultaneos cuyos
+#     CI terminan en distinto orden dejarian que el run del commit viejo subiera
+#     el ultimo y terminara verde con produccion por detras de main.
+#     workflow_dispatch queda exento para poder revertir.
+#
+# Ademas se comprueba que cada asset del dist y cada asset que referencia el
+# HTML vivo respondan 200 y que su cuerpo sea sha256-identico al fichero
+# construido. El modo de fallo clasico del FTP es HTML nuevo apuntando a hashes
+# de _astro que nunca se transfirieron o que llegaron a medias: la pagina carga
+# sin estilos y el deploy ya reporto exito. Y los ficheros de public/ no llevan
+# hash de contenido, asi que una copia vieja responde 200 indefinidamente.
 #
 # Secretos y variables necesarios: ver .github/DEPLOYMENT.md. Sin ellos el
 # workflow falla en el primer paso con el nombre exacto de lo que falta.
@@ -303,6 +311,85 @@ jobs:
             exit 1
           fi
 
+      # Que el SHA este en main no prueba que sea mas nuevo que lo publicado.
+      # Si dos pushes caen juntos y el CI del commit nuevo termina antes que el
+      # del viejo, el run del viejo subiria despues, su propia huella coincidiria
+      # en la verificacion posterior y el job terminaria VERDE dejando
+      # produccion por detras de main, que es justo el fallo que este workflow
+      # existe para impedir. Asi que antes de subir nada se lee la huella que el
+      # origen sirve AHORA y se exige que sea ancestro de lo que se va a
+      # promocionar. Va pegado al paso de subida a proposito: cuanto menor sea
+      # la distancia entre leer y escribir, menor la ventana de carrera.
+      #
+      # workflow_dispatch queda exento porque ahi retroceder es una decision
+      # deliberada del operador y tiene que seguir siendo posible revertir.
+      - name: Verify the promoted SHA does not move production backwards
+        env:
+          RELEASE_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "workflow_dispatch: una reversion deliberada si puede retroceder, no se exige avance."
+            exit 0
+          fi
+
+          base="$SITE_URL"
+          pre_file="${RUNNER_TEMP}/pre-deploy-root.html"
+          code=000
+          ok=0
+          for attempt in 1 2 3; do
+            code="$(curl -sS -L -o "$pre_file" -w '%{http_code}' --max-time 25 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "${base}/?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-pre-${attempt}" || true)"
+            # curl ya escribe 000 en %{http_code} cuando ni siquiera conecta,
+            # asi que un '|| echo 000' anadiria un segundo 000 al mensaje.
+            [ -n "$code" ] || code=000
+            if [ "$code" = "200" ]; then
+              ok=1
+              break
+            fi
+            sleep 10
+          done
+
+          if [ "$ok" -ne 1 ]; then
+            echo "::error::No se pudo leer ${base}/ antes de subir (ultimo estado: ${code}). Sin saber que sirve el origen no se puede probar que este despliegue avanza. Si hay que publicar igualmente, usa workflow_dispatch con release_sha."
+            exit 1
+          fi
+
+          # || true: sin coincidencia grep sale 1, y head le manda SIGPIPE, y
+          # cualquiera de los dos mataria el script con pipefail.
+          served="$(grep -oE "name=\"${BUILD_META_NAME}\" content=\"[^\"]*\"" "$pre_file" \
+            | head -n 1 | sed -E 's/.*content="//; s/"$//' || true)"
+
+          if [ -z "$served" ]; then
+            # Hoy el origen sirve HTML de una subida manual vieja, sin huella
+            # ninguna. El estreno del pipeline tiene que poder ocurrir.
+            echo "El origen no sirve ninguna huella ${BUILD_META_NAME} todavia: primer despliegue del pipeline, se permite."
+            exit 0
+          fi
+
+          if [ "$served" = "$RELEASE_SHA" ]; then
+            echo "El origen ya sirve ${RELEASE_SHA}: republicar el mismo commit no retrocede."
+            exit 0
+          fi
+
+          if ! grep -Eq '^[0-9a-f]{40}$' <<<"$served"; then
+            echo "::error::El origen sirve la huella '${served}', que no es un SHA de 40 caracteres (un build local sin PUBLIC_BUILD_SHA emite 'dev'). No se puede probar que ${RELEASE_SHA} sea mas nuevo. Si la publicacion es deliberada, usa workflow_dispatch con release_sha."
+            exit 1
+          fi
+
+          if ! git cat-file -e "${served}^{commit}" 2>/dev/null; then
+            echo "::error::El origen sirve ${served}, que no existe en este repositorio. No se puede probar que ${RELEASE_SHA} sea mas nuevo. Si la publicacion es deliberada, usa workflow_dispatch con release_sha."
+            exit 1
+          fi
+
+          if ! git merge-base --is-ancestor "$served" "$RELEASE_SHA"; then
+            echo "::error::El origen ya sirve ${served}, que no es ancestro de ${RELEASE_SHA}: otro run publico algo mas nuevo o divergente. Subir aqui dejaria produccion por detras de main. Si la reversion es deliberada, usa workflow_dispatch con release_sha=${RELEASE_SHA}."
+            exit 1
+          fi
+
+          echo "El origen sirve ${served}, ancestro de ${RELEASE_SHA}: el despliegue avanza."
+
       - name: FTP deploy dist to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
         with:
@@ -437,10 +524,22 @@ jobs:
           exit "$fail"
 
       # El modo de fallo clasico del FTP: el HTML nuevo se sube y los assets
-      # con hash nuevo no. La pagina responde 200, se ve rota, y el deploy ya
-      # reporto exito. Aqui se exige 200 y cuerpo no vacio para cada asset del
-      # dist y para cada asset que el HTML vivo referencia.
-      - name: Assert live assets are served and non-empty
+      # con hash nuevo no, o llegan a medias. La pagina responde 200, se ve
+      # rota, y el deploy ya reporto exito.
+      #
+      # Exigir 200 y cuerpo mayor que cero no basta para detectarlo. Un corte de
+      # FTP deja casi siempre un fichero TRUNCADO, no uno de cero bytes, que es
+      # el caso menos probable. Y los ficheros de public/ (favicon.ico,
+      # favicon.svg) no llevan hash de contenido en el nombre, asi que una copia
+      # VIEJA con el mismo nombre responde 200 con cuerpo no vacio para siempre;
+      # con dangerous-clean-slate: false esa copia no se borra nunca.
+      #
+      # Por eso se compara el cuerpo servido contra el fichero de dist con
+      # sha256, y no por tamano. El tamano es mas barato y ya distingue truncado
+      # de completo, pero no ve un fichero viejo que pese lo mismo, que es justo
+      # lo que los nombres sin hash permiten. El artefacto entero pesa unos
+      # 340 KB, asi que bajar los cuerpos no es un coste real.
+      - name: Assert live assets match the built artifact byte for byte
         run: |
           set -euo pipefail
           base="$SITE_URL"
@@ -448,6 +547,7 @@ jobs:
           live_dir="${RUNNER_TEMP}/live"
           refs_file="${RUNNER_TEMP}/live-asset-refs.txt"
           check_file="${RUNNER_TEMP}/assets-to-check.txt"
+          body_file="${RUNNER_TEMP}/served-asset.bin"
           test -s "$assets_file"
 
           # Assets que el HTML servido referencia de verdad, leidos de las
@@ -465,25 +565,62 @@ jobs:
           sort -u "$assets_file" "$refs_file" > "$check_file"
 
           fail=0
+          compared=0
           while IFS= read -r asset; do
             [ -n "$asset" ] || continue
-            result="$(curl -sS -L -o /dev/null -w '%{http_code} %{size_download}' --max-time 25 "${base}${asset}" || echo '000 0')"
+            rm -f "$body_file"
+            # Accept-Encoding: identity para comparar el cuerpo tal cual esta en
+            # disco y no una version comprimida por el servidor.
+            result="$(curl -sS -L -o "$body_file" -w '%{http_code} %{size_download}' --max-time 25 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' -H 'Accept-Encoding: identity' \
+              "${base}${asset}?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" || echo '000 0')"
             code="${result%% *}"
             size="${result##* }"
             case "$size" in
               ''|*[!0-9]*) size=0 ;;
             esac
-            echo "$code $size ${base}${asset}"
             if [ "$code" != "200" ]; then
+              echo "$code $size ${base}${asset}"
               echo "::error::Se esperaba 200 en el asset ${asset}, llego ${code}. El HTML vivo apunta a un fichero que no se subio."
               fail=1
               continue
             fi
-            if [ "$size" -lt 1 ]; then
-              echo "::error::El asset ${asset} responde 200 pero con cuerpo vacio. La transferencia FTP se corto."
-              fail=1
+
+            local_file="dist${asset}"
+            if [ ! -f "$local_file" ]; then
+              # Asset que el HTML vivo referencia y este build no emite: resto
+              # de un despliegue manual viejo. No hay copia local contra la que
+              # comparar, asi que solo se le puede exigir 200 y cuerpo no vacio.
+              echo "$code $size ${base}${asset} (sin copia en dist, solo 200 y no vacio)"
+              if [ "$size" -lt 1 ]; then
+                echo "::error::El asset ${asset} responde 200 pero con cuerpo vacio."
+                fail=1
+              fi
+              continue
             fi
+
+            local_size="$(wc -c < "$local_file" | tr -d ' ')"
+            served_sum="$(sha256sum "$body_file" | cut -d ' ' -f 1)"
+            local_sum="$(sha256sum "$local_file" | cut -d ' ' -f 1)"
+            if [ "$served_sum" != "$local_sum" ]; then
+              echo "$code $size ${base}${asset}"
+              echo "::error::El asset ${asset} responde 200 pero lo servido no es el fichero construido: servido ${size} bytes sha256 ${served_sum}, dist ${local_size} bytes sha256 ${local_sum}. O la transferencia FTP se corto, o el origen conserva una copia vieja con el mismo nombre, o algo entre medias transforma el cuerpo."
+              fail=1
+              continue
+            fi
+
+            compared=$((compared + 1))
+            echo "$code $size sha256 identico a dist ${base}${asset}"
           done < "$check_file"
+
+          # Suelo, no igualdad: si ningun asset llego a compararse contra su
+          # copia de dist, la comprobacion habria pasado en vacio.
+          # Medido el 2026-09-19 en d12bd6d: 6 assets, los 6 comparables.
+          if [ "$compared" -lt 3 ]; then
+            echo "::error::Solo ${compared} assets se compararon contra dist. La comprobacion no cubre el artefacto."
+            fail=1
+          fi
+          echo "assets comparados byte a byte contra dist: ${compared}"
           exit "$fail"
 
       - name: Deploy summary

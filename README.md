@@ -38,7 +38,7 @@ Landing publica de OmniMon ubicada en `/Users/jorge/Documents/Apps/omnimon_apps/
 ## Workflows y automatizacion
 
 - CI de esta landing: `.github/workflows/ci.yml` (`bun run test` + `bun run build` en `ubuntu-latest`, GitHub-hosted desde `e59914c`).
-- Despliegue: `.github/workflows/deploy-hostinger.yml`. Se encadena por `workflow_run` sobre `Landing CI`, construye el SHA exacto que CI dejo en verde, lo sube por FTP a Hostinger y despues vuelve a leer `https://omnimon.com.mx` para exigir que la huella servida sea ese SHA. Si no lo es, el despliegue falla.
+- Despliegue: `.github/workflows/deploy-hostinger.yml`. Se encadena por `workflow_run` sobre `Landing CI`, construye el SHA exacto que CI dejo en verde, comprueba antes de subir que la huella que el origen sirve sea ancestro de ese SHA (para que un run tardio de un commit viejo no deje produccion por detras de `main`), lo sube por FTP a Hostinger y despues vuelve a leer `https://omnimon.com.mx` para exigir que la huella servida sea ese SHA y que cada asset servido sea `sha256`-identico al construido. Si algo de eso no se cumple, el despliegue falla.
 - Los workflows `../.github/workflows/omnimon-ci.yml` y `../.github/workflows/release-policy.yml` pertenecen al repo `macmon` (cargo + bun del desktop). `omnimon_landing/` esta en el gitignore de macmon.
 
 ## Despliegue

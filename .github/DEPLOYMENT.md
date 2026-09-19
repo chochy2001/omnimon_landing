@@ -109,6 +109,11 @@ La ruta manual no se salta CI: el workflow consulta la API y exige un run de
 `Landing CI` en `success` para ese SHA, y exige ademas que el SHA sea ancestro
 de `origin/main`. Para revertir se promociona el ultimo SHA bueno de `main`.
 
+`workflow_dispatch` es la unica ruta exenta de la comprobacion de no retroceso
+(punto 6 de la seccion siguiente), justo para que revertir siga siendo posible.
+Un `workflow_run` automatico nunca puede publicar algo anterior a lo que el
+origen ya sirve.
+
 ## Que garantiza y como
 
 1. **Encadenado sobre CI.** `workflow_run` sobre `Landing CI`, filtrado a
@@ -130,11 +135,29 @@ de `origin/main`. Para revertir se promociona el ultimo SHA bueno de `main`.
    despliegue manual viejo, ya no lo emite este build y describe un sitio que no
    es el que se publica. Todas deben responder `200`, y una ruta inexistente
    debe responder `404`.
-5. **Assets servidos y no vacios.** Se comprueba cada fichero de `dist` que no
-   sea HTML y cada asset que referencia el HTML vivo: `200` y cuerpo mayor que
-   cero. El fallo clasico del FTP es HTML nuevo apuntando a hashes de `_astro`
-   que nunca se transfirieron; la pagina carga rota y el despliegue ya reporto
-   exito.
+5. **Assets identicos al artefacto, byte a byte.** Se comprueba cada fichero de
+   `dist` que no sea HTML y cada asset que referencia el HTML vivo: `200` y
+   cuerpo con el mismo `sha256` que el fichero construido. El fallo clasico del
+   FTP es HTML nuevo apuntando a hashes de `_astro` que nunca se transfirieron o
+   que llegaron a medias; la pagina carga rota y el despliegue ya reporto exito.
+   Exigir solo `200` y cuerpo mayor que cero no lo detecta: un corte de FTP deja
+   un fichero truncado, no uno de cero bytes. Y los ficheros de `public/`
+   (`favicon.ico`, `favicon.svg`) no llevan hash de contenido en el nombre, asi
+   que una copia vieja del origen responderia `200` con cuerpo no vacio para
+   siempre; el `sha256` si la distingue aunque pese lo mismo. Un asset que el
+   HTML vivo referencia y este build no emite no tiene copia local con la que
+   comparar: a ese solo se le exige `200` y cuerpo no vacio, y el log lo dice.
+6. **Produccion no retrocede.** Antes de subir nada, el workflow lee la huella
+   que el origen sirve en ese momento y exige que sea ancestro del SHA que va a
+   promocionar. Sin eso, dos pushes casi simultaneos cuyos CI terminan en orden
+   invertido dejarian que el run del commit viejo subiera el ultimo y terminara
+   verde con produccion por detras de `main`, porque la verificacion posterior
+   solo comprueba su propia huella. Casos permitidos de forma explicita: que el
+   origen no sirva ninguna huella todavia (el primer despliegue del pipeline,
+   que es la situacion de hoy) y que sirva exactamente el mismo SHA
+   (republicacion). Si el origen sirve una huella que no es un SHA de 40
+   caracteres, o un SHA que no existe en el repositorio, o uno que no es
+   ancestro, el job falla antes de tocar el origen.
 
 ## Limites conocidos
 
@@ -154,6 +177,10 @@ de `origin/main`. Para revertir se promociona el ultimo SHA bueno de `main`.
   self-hosted alcanzable desde un repositorio publico es la condicion del P0
   `CAPDESIS/CapLiving#525`. El primer paso del job falla si alguna vez aterriza
   en un runner que no sea GitHub-hosted.
+- **La comprobacion de no retroceso tiene una ventana.** Se lee la huella
+  servida justo antes de subir, no de forma atomica con la subida. Entre ambos
+  instantes solo cabe una publicacion hecha fuera de este workflow, porque el
+  grupo de concurrencia `omnimon-landing-hostinger` serializa los runs entre si.
 - **El encadenado depende del nombre del CI.** `workflow_run` referencia
   `workflows: ["Landing CI"]` y la comprobacion por API usa `ci.yml`. Si se
   renombra el workflow de CI o su fichero, hay que actualizar ambos aqui.
