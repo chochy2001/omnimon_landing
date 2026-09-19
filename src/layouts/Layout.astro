@@ -3,9 +3,11 @@ import '../styles/global.css';
 import { OMNIMON_VERSION } from '../consts';
 import PostHogInit from '../components/analytics/PostHogInit.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
+import LanguageSwitcher from '../components/LanguageSwitcher.astro';
 import CookieBanner from '../components/ui/CookieBanner.astro';
 import { legalHref, legalLinkLabel } from '../lib/legal';
 import type { ConsentLocale } from '../lib/consent';
+import { blogHref, chromeCopy, homeHref, localeFromPath, switchLocalePath } from '../lib/locale';
 
 interface Props {
 	title: string;
@@ -16,16 +18,23 @@ interface Props {
 const {
 	title,
 	description = `OmniMon ${OMNIMON_VERSION}: observabilidad, seguridad activa y asistentes de IA para macOS, Windows y Linux.`,
-	lang = 'es',
+	lang = localeFromPath(Astro.url.pathname),
 } = Astro.props;
+const copy = chromeCopy[lang];
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : Astro.url.href;
+const otherLang = lang === 'en' ? 'es' : 'en';
+const otherPath = switchLocalePath(Astro.url.pathname, lang);
+const otherUrl = Astro.site ? new URL(otherPath, Astro.site).toString() : otherPath;
+const defaultUrl = Astro.site ? new URL('/', Astro.site).toString() : '/';
 const privacyHref = legalHref(lang, 'privacy');
 const termsHref = legalHref(lang, 'terms');
+const homeUrl = homeHref(lang);
+const blogUrl = blogHref(lang);
+const docsUrl = 'https://github.com/chochy2001/omnimon#readme';
+const githubUrl = 'https://github.com/chochy2001/omnimon';
+const downloadUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
+const sponsorUrl = 'https://github.com/sponsors/chochy2001';
 
-// Huella de build. El workflow de despliegue inyecta PUBLIC_BUILD_SHA con el
-// SHA exacto que promociona, y despues vuelve a leer esta etiqueta desde la
-// URL publica: si lo servido no coincide, el despliegue falla. Sin la variable
-// el valor queda en "dev", asi un build local nunca se confunde con produccion.
 const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 ---
 
@@ -35,19 +44,35 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="theme-color" content="#0b1220" />
+		<meta name="theme-color" content="#060a14" />
 		<link rel="canonical" href={canonicalUrl} />
+		<link rel="alternate" hreflang={lang} href={canonicalUrl} />
+		<link rel="alternate" hreflang={otherLang} href={otherUrl} />
+		<link rel="alternate" hreflang="x-default" href={defaultUrl} />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+		/>
 
-		<!-- Theme bootstrap: applied before paint to avoid flash of wrong theme -->
 		<script is:inline>
 			(function () {
 				try {
 					var stored = localStorage.getItem('omnimon-theme');
-					// OmniMon current design is dark-only, default to dark unless user explicitly chose light
-					var theme = stored === 'light' ? 'light' : 'dark';
+					var prefersDark = false;
+					try {
+						prefersDark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+					} catch (_) {}
+					var theme = stored === 'light' || stored === 'dark' ? stored : prefersDark ? 'dark' : 'light';
 					if (theme === 'dark') {
 						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
 					}
+					document.documentElement.style.colorScheme = theme;
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (meta) meta.setAttribute('content', theme === 'dark' ? '#060a14' : '#f3f7fc');
 				} catch (_) {
 					document.documentElement.classList.add('dark');
 				}
@@ -66,30 +91,62 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 		<meta name="twitter:description" content={description} />
 		<title>{title}</title>
 
-		<!-- PostHog Analytics -->
 		<PostHogInit />
 	</head>
-	<body class="bg-slate-950 text-slate-200 font-sans antialiased min-h-screen selection:bg-indigo-500/30 pt-16">
-		<nav class="fixed inset-x-0 top-0 z-50 h-16 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-sm">
-			<div class="mx-auto flex h-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-				<a href="/" class="text-lg font-bold text-white tracking-tight">OmniMon</a>
-				<div class="flex items-center gap-6 text-sm text-slate-300">
-					<a href="/blog/" class="transition hover:text-white">Blog</a>
-					<a href="https://github.com/chochy2001/omnimon#readme" target="_blank" rel="noreferrer" class="transition hover:text-white">Docs</a>
-					<a href="https://github.com/chochy2001/omnimon" target="_blank" rel="noreferrer" class="transition hover:text-white">GitHub</a>
-					<a href="https://github.com/chochy2001/omnimon/releases/latest" target="_blank" rel="noreferrer" class="inline-flex items-center rounded-full bg-orange-500 px-4 py-1.5 font-semibold text-slate-950 transition hover:bg-orange-400">Descargar</a>
-					<ThemeToggle />
+	<body class="font-sans antialiased min-h-screen pt-16">
+		<nav class="site-nav fixed inset-x-0 top-0 z-50">
+			<div class="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
+				<a href={homeUrl} class="flex min-w-0 flex-1 items-center gap-2 tracking-tight sm:gap-2.5">
+					<span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 text-cyan-400">
+						<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+							<circle cx="12" cy="12" r="10"></circle>
+							<path d="M12 6v6l4 2"></path>
+						</svg>
+					</span>
+					<span class="truncate font-mono text-base font-bold sm:text-lg" style="color: var(--text-main)">OmniMon</span>
+					<span class="hidden rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] text-cyan-400 sm:inline">v{OMNIMON_VERSION}</span>
+				</a>
+				<div class="hidden items-center gap-6 text-sm md:flex">
+					<a href={blogUrl} class="transition hover:text-[var(--text-main)]">{copy.blog}</a>
+					<a href={docsUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.docs}</a>
+					<a href={githubUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.github}</a>
+					<a href={downloadUrl} target="_blank" rel="noreferrer" class="inline-flex items-center rounded-full bg-orange-500 px-4 py-1.5 font-semibold text-slate-950 transition hover:bg-orange-400">{copy.download}</a>
+				</div>
+				<div class="flex shrink-0 items-center gap-1.5 sm:gap-2">
+					<LanguageSwitcher lang={lang} />
+					<ThemeToggle label={copy.theme} />
+					<details class="nav-menu md:hidden">
+						<summary class="nav-icon-btn cursor-pointer" aria-label={copy.menu}>
+							<svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+								<path d="M4 6h16M4 12h16M4 18h16"></path>
+							</svg>
+						</summary>
+						<div class="nav-panel space-y-3 text-sm">
+							<a href={blogUrl} class="block">{copy.blog}</a>
+							<a href={docsUrl} target="_blank" rel="noreferrer" class="block">{copy.docs}</a>
+							<a href={githubUrl} target="_blank" rel="noreferrer" class="block">{copy.github}</a>
+							<a href={downloadUrl} target="_blank" rel="noreferrer" class="inline-flex items-center rounded-full bg-orange-500 px-4 py-2 font-semibold text-slate-950">{copy.download}</a>
+						</div>
+					</details>
 				</div>
 			</div>
 		</nav>
 		<slot />
-		<div class="border-t border-slate-800/80 py-4 text-xs text-slate-500">
-			<div class="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 sm:px-6 lg:px-8">
-				<a href={privacyHref} class="transition hover:text-white">{legalLinkLabel(lang, 'privacy')}</a>
-				<span aria-hidden="true">·</span>
-				<a href={termsHref} class="transition hover:text-white">{legalLinkLabel(lang, 'terms')}</a>
+		<footer class="site-footer py-8 text-sm">
+			<div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+				<p>&copy; {new Date().getFullYear()} {copy.footerCopy}</p>
+				<div class="flex flex-wrap items-center gap-4">
+					<a href={homeUrl} class="transition hover:text-[var(--text-main)]">{copy.footerHome}</a>
+					<a href={blogUrl} class="transition hover:text-[var(--text-main)]">{copy.blog}</a>
+					<a href={docsUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.docs}</a>
+					<a href={githubUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.github}</a>
+					<a href={downloadUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.footerReleases}</a>
+					<a href={sponsorUrl} target="_blank" rel="noreferrer" class="transition hover:text-orange-400">{copy.footerSponsor}</a>
+					<a href={privacyHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'privacy')}</a>
+					<a href={termsHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'terms')}</a>
+				</div>
 			</div>
-		</div>
+		</footer>
 		<CookieBanner />
 	</body>
 </html>

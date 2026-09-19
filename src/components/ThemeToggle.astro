@@ -5,18 +5,23 @@
  * Persists preference in localStorage under 'omnimon-theme'.
  * Respects prefers-color-scheme on first visit.
  */
+interface Props {
+	label?: string;
+}
+
+const { label = 'Toggle color theme' } = Astro.props;
 ---
 
 <button
 	id="theme-toggle"
 	type="button"
-	aria-label="Cambiar tema"
-	title="Cambiar tema"
-	class="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-700/70 bg-slate-900/60 text-slate-300 transition hover:border-orange-400/60 hover:text-orange-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/60"
+	aria-label={label}
+	title={label}
+	class="theme-toggle nav-icon-btn focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/60"
 >
 	<svg
 		id="theme-toggle-sun"
-		class="hidden h-4 w-4"
+		class="h-4 w-4"
 		fill="none"
 		viewBox="0 0 24 24"
 		stroke="currentColor"
@@ -31,7 +36,7 @@
 	</svg>
 	<svg
 		id="theme-toggle-moon"
-		class="hidden h-4 w-4"
+		class="h-4 w-4"
 		fill="none"
 		viewBox="0 0 24 24"
 		stroke="currentColor"
@@ -57,24 +62,26 @@
 			} catch (_) {
 				// localStorage blocked, fall through to media query
 			}
-			// OmniMon default is dark (current design is dark-only)
-			return 'dark';
+			try {
+				if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+					return 'dark';
+				}
+			} catch (_) {
+				// matchMedia unavailable
+			}
+			return 'light';
 		}
 
 		function applyTheme(theme) {
 			const html = document.documentElement;
-			const sun = document.getElementById('theme-toggle-sun');
-			const moon = document.getElementById('theme-toggle-moon');
-
 			if (theme === 'dark') {
 				html.classList.add('dark');
-				sun && sun.classList.remove('hidden');
-				moon && moon.classList.add('hidden');
 			} else {
 				html.classList.remove('dark');
-				sun && sun.classList.add('hidden');
-				moon && moon.classList.remove('hidden');
 			}
+			html.style.colorScheme = theme;
+			const meta = document.querySelector('meta[name="theme-color"]');
+			if (meta) meta.setAttribute('content', theme === 'dark' ? '#060a14' : '#f3f7fc');
 			try {
 				localStorage.setItem(KEY, theme);
 			} catch (_) {

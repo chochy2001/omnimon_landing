@@ -24,10 +24,10 @@ const otherLocale: ConsentLocale = locale === 'es' ? 'en' : 'es';
           {otherLocale === 'en' ? 'English' : 'Espanol'}
         </a>
       </p>
-      <h1 class="section-title text-4xl font-black tracking-tight text-white">{title}</h1>
-      <p class="text-sm text-slate-400">Actualizado / Updated: {copy.updated}</p>
+      <h1 class="section-title text-4xl font-black tracking-tight">{title}</h1>
+      <p class="muted text-sm">Actualizado / Updated: {copy.updated}</p>
     </header>
-    <article class="space-y-4 text-sm leading-7 text-slate-300">
+    <article class="muted space-y-4 text-sm leading-7">
       {body.map((paragraph) => (
         <p>{paragraph}</p>
       ))}

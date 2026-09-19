@@ -1,0 +1,244 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { OMNIMON_VERSION } from '../consts';
+import type { ConsentLocale } from '../lib/consent';
+import { homeCopy } from '../lib/home';
+
+interface Props {
+	locale: ConsentLocale;
+}
+
+const { locale } = Astro.props;
+const copy = homeCopy[locale];
+const releaseUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
+const docsUrl = 'https://github.com/chochy2001/omnimon#readme';
+const sponsorUrl = 'https://github.com/sponsors/chochy2001';
+const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/main/scripts/install-web.sh';
+---
+
+<Layout title={copy.title} description={copy.description} lang={locale}>
+	<main class="mx-auto flex w-full max-w-7xl flex-col gap-20 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		<section class="grid-noise glass-panel relative overflow-hidden rounded-[2rem] px-6 py-12 sm:px-10 lg:px-12">
+			<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent"></div>
+			<div class="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+				<div class="space-y-8">
+					<div class="inline-flex max-w-full flex-wrap items-center gap-3 rounded-full border border-cyan-400/20 bg-[color-mix(in_srgb,var(--bg-base)_55%,transparent)] px-4 py-2 text-sm" style="color: var(--text-soft)">
+						<span class="rounded-full bg-orange-500/20 px-2 py-1 text-orange-500 dark:text-orange-200">{copy.badgeNew}</span>
+						<span class="font-mono text-cyan-600 dark:text-cyan-200">{copy.versionWord} {OMNIMON_VERSION}</span>
+						<span aria-hidden="true">|</span>
+						<span>{copy.releaseWord} {copy.releaseDate}</span>
+					</div>
+
+					<div class="space-y-5">
+						<h1 class="section-title max-w-4xl text-4xl font-black tracking-tight sm:text-6xl lg:text-7xl">
+							{copy.h1}
+						</h1>
+						<p class="muted max-w-2xl text-lg leading-8 sm:text-xl">
+							{copy.lead}
+						</p>
+					</div>
+
+					<div class="flex flex-col gap-4 sm:flex-row">
+						<a href="#download" class="inline-flex items-center justify-center rounded-full bg-orange-500 px-7 py-3.5 font-semibold text-slate-950 transition hover:bg-orange-400">
+							{copy.ctaDownload}
+						</a>
+						<a href={docsUrl} target="_blank" rel="noreferrer" class="inline-flex items-center justify-center rounded-full border px-7 py-3.5 font-semibold transition hover:border-cyan-400/40" style="border-color: var(--surface-border); color: var(--text-main)">
+							{copy.ctaDocs}
+						</a>
+						<a href={sponsorUrl} target="_blank" rel="noreferrer" class="inline-flex items-center justify-center rounded-full border border-orange-300/40 bg-orange-500/10 px-7 py-3.5 font-semibold text-orange-700 transition hover:border-orange-200/60 hover:bg-orange-500/20 dark:text-orange-100">
+							{copy.ctaSponsors}
+						</a>
+					</div>
+
+					<div class="grid gap-3 text-sm sm:grid-cols-3" style="color: var(--text-soft)">
+						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-base) 60%, transparent)">
+							<p class="text-xs uppercase tracking-[0.24em]" style="color: var(--text-faint)">{copy.platformsKicker}</p>
+							<p class="mt-2 font-semibold" style="color: var(--text-main)">{copy.platformsValue}</p>
+						</div>
+						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-base) 60%, transparent)">
+							<p class="text-xs uppercase tracking-[0.24em]" style="color: var(--text-faint)">{copy.securityKicker}</p>
+							<p class="mt-2 font-semibold" style="color: var(--text-main)">{copy.securityValue}</p>
+						</div>
+						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-base) 60%, transparent)">
+							<p class="text-xs uppercase tracking-[0.24em]" style="color: var(--text-faint)">{copy.aiKicker}</p>
+							<p class="mt-2 font-semibold" style="color: var(--text-main)">{copy.aiValue}</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="glass-panel rounded-[1.75rem] p-5">
+					<div class="mb-4 flex items-center justify-between gap-3">
+						<div>
+							<p class="text-xs uppercase tracking-[0.28em] kicker">{copy.snapshotKicker}</p>
+							<h2 class="mt-2 text-2xl font-bold">OmniMon {OMNIMON_VERSION}</h2>
+						</div>
+						<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-full border border-cyan-400/20 px-3 py-1 text-sm text-cyan-700 transition hover:border-cyan-400/40 dark:text-cyan-200">{copy.snapshotCta}</a>
+					</div>
+					<div class="terminal-panel space-y-4 rounded-2xl p-4 font-mono text-sm">
+						<p><span class="text-emerald-300">$</span> omnimon status --format json</p>
+						<p class="text-cyan-300">{copy.snapshotLine2}</p>
+						<p class="text-slate-400">{copy.snapshotLine3}</p>
+						<p class="text-slate-400">{copy.snapshotLine4}</p>
+						<p class="text-slate-400">{copy.snapshotLine5}</p>
+						<p class="text-orange-300">version: {OMNIMON_VERSION}</p>
+					</div>
+					<div class="mt-5 grid gap-3 text-sm sm:grid-cols-2" style="color: var(--text-soft)">
+						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border)">
+							<p style="color: var(--text-main)">{copy.qaTitle}</p>
+							<p class="mt-1">{copy.qaBody}</p>
+						</div>
+						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border)">
+							<p style="color: var(--text-main)">{copy.cliTitle}</p>
+							<p class="mt-1">{copy.cliBody}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section aria-label={copy.screenshotAlt}>
+			<div class="screenshot-frame">
+				<img
+					src="/omnimon-screenshot.png"
+					alt={copy.screenshotAlt}
+					width="1728"
+					height="1011"
+					loading="eager"
+					decoding="async"
+				/>
+			</div>
+		</section>
+
+		<section class="space-y-8">
+			<div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+				<div>
+					<p class="kicker text-sm uppercase tracking-[0.24em]">{copy.releaseKicker}</p>
+					<h2 class="section-title mt-2 text-3xl font-bold sm:text-4xl">{copy.releaseH2}</h2>
+				</div>
+				<p class="muted max-w-2xl">{copy.releaseLead}</p>
+			</div>
+
+			<div class="grid gap-5 lg:grid-cols-2 xl:grid-cols-4">
+				{copy.highlights.map((item) => (
+					<article class="glass-panel rounded-3xl p-6 transition hover:-translate-y-1">
+						<h3 class="text-xl font-semibold">{item.title}</h3>
+						<p class="muted mt-3 text-sm leading-7">{item.description}</p>
+					</article>
+				))}
+			</div>
+		</section>
+
+		<section class="grid gap-6 lg:grid-cols-3">
+			{copy.pillars.map((pillar) => (
+				<article class="rounded-3xl border p-7 transition hover:border-cyan-400/30" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-elevated) 70%, transparent)">
+					<p class={`text-sm uppercase tracking-[0.24em] ${pillar.accent}`}>{pillar.title}</p>
+					<p class="muted mt-4 text-lg leading-8">{pillar.description}</p>
+				</article>
+			))}
+		</section>
+
+		<section class="glass-panel overflow-hidden rounded-[2rem]">
+			<div class="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+				<div class="border-b px-6 py-8 lg:border-b-0 lg:border-r lg:px-8 lg:py-10" style="border-color: var(--surface-border)">
+					<p class="kicker text-sm uppercase tracking-[0.24em]">{copy.flowKicker}</p>
+					<h2 class="section-title mt-3 text-3xl font-bold">{copy.flowH2}</h2>
+					<div class="muted mt-8 space-y-6 text-sm leading-7">
+						{copy.flowItems.map((item) => (
+							<div>
+								<h3 class="font-semibold" style="color: var(--text-main)">{item.title}</h3>
+								<p class="mt-1">{item.description}</p>
+							</div>
+						))}
+					</div>
+				</div>
+
+				<div class="terminal-panel px-6 py-8 lg:px-8 lg:py-10">
+					<div class="mb-4 flex gap-2">
+						<div class="h-3 w-3 rounded-full bg-rose-400"></div>
+						<div class="h-3 w-3 rounded-full bg-amber-300"></div>
+						<div class="h-3 w-3 rounded-full bg-emerald-400"></div>
+					</div>
+					<pre class="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 p-5 text-sm leading-7 text-slate-300"><code>$ omnimon audit --security
+[INFO] Starting security audit...
+[OK] Release signature verification enabled
+[OK] Native keyring storage enforced
+[OK] AI rules rate limiting active
+[OK] Alerts grouped by process
+[DONE] OmniMon {OMNIMON_VERSION} is ready</code></pre>
+				</div>
+			</div>
+		</section>
+
+		<section class="glass-panel rounded-[2rem] px-6 py-10 sm:px-8 lg:px-10">
+			<div class="flex flex-col gap-4 text-center">
+				<p class="kicker text-sm uppercase tracking-[0.24em]">{copy.tutorialKicker}</p>
+				<h2 class="section-title text-3xl font-bold sm:text-4xl">{copy.tutorialH2}</h2>
+				<p class="muted mx-auto max-w-3xl">{copy.tutorialLead}</p>
+			</div>
+
+			<div class="mt-8 grid gap-4 lg:grid-cols-4">
+				{copy.tutorial.map((item) => (
+					<article class="rounded-3xl border p-6 text-left" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-base) 55%, transparent)">
+						<p class="text-sm uppercase tracking-[0.24em] text-cyan-600 dark:text-cyan-200">{locale === 'es' ? 'Paso' : 'Step'} {item.step}</p>
+						<h3 class="mt-3 text-xl font-semibold">{item.title}</h3>
+						<p class="muted mt-3 text-sm leading-7">{item.description}</p>
+					</article>
+				))}
+			</div>
+		</section>
+
+		<section id="download" class="glass-panel rounded-[2rem] px-6 py-10 sm:px-8 lg:px-10">
+			<div class="flex flex-col gap-4 text-center">
+				<p class="kicker text-sm uppercase tracking-[0.24em]">{copy.downloadKicker}</p>
+				<h2 class="section-title text-3xl font-bold sm:text-4xl">{copy.downloadH2}</h2>
+				<p class="muted mx-auto max-w-3xl">{copy.downloadLead}</p>
+			</div>
+
+			<div class="mt-8 grid gap-4 lg:grid-cols-3">
+				{copy.artifacts.map((artifact) => (
+					<a href={artifact.platform === 'Linux' ? installScriptUrl : releaseUrl} target="_blank" rel="noreferrer" class="rounded-3xl border p-6 text-left transition hover:border-orange-400/50" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-base) 55%, transparent)">
+						<p class={`text-sm uppercase tracking-[0.24em] ${artifact.accent}`}>{artifact.platform}</p>
+						<h3 class="mt-3 text-xl font-semibold">{artifact.name}</h3>
+						<p class="muted mt-2 text-sm leading-7">{artifact.description}</p>
+						<p class="mt-4 text-xs uppercase tracking-[0.24em]" style="color: var(--text-faint)">SHA-256</p>
+						<p class="muted mt-2 text-sm leading-7">{artifact.sha256}</p>
+					</a>
+				))}
+			</div>
+
+			<div class="mt-8 grid gap-4 lg:grid-cols-2">
+				<div class="rounded-3xl border p-6" style="border-color: var(--surface-border)">
+					<p class="text-sm uppercase tracking-[0.24em]" style="color: var(--text-faint)">{copy.brewKicker}</p>
+					<pre class="terminal-panel mt-4 overflow-x-auto rounded-2xl p-4 text-sm leading-7"><code>brew tap chochy2001/omnimon
+brew install --cask omnimon</code></pre>
+				</div>
+				<div class="rounded-3xl border p-6" style="border-color: var(--surface-border)">
+					<p class="text-sm uppercase tracking-[0.24em]" style="color: var(--text-faint)">{copy.shaKicker}</p>
+					<pre class="terminal-panel mt-4 overflow-x-auto rounded-2xl p-4 text-sm leading-7"><code>shasum -a 256 OmniMon-{OMNIMON_VERSION}-macOS-Universal.dmg
+cat SHA256SUMS.txt</code></pre>
+				</div>
+			</div>
+
+			<div class="mt-6 rounded-3xl border border-orange-400/20 bg-orange-500/10 p-6 text-sm leading-7 text-orange-950 dark:text-orange-50">
+				<strong class="block text-base" style="color: var(--text-main)">{copy.sponsorsTitle}</strong>
+				<p class="mt-2">{copy.sponsorsBody}</p>
+				<a href={sponsorUrl} target="_blank" rel="noreferrer" class="mt-4 inline-flex items-center justify-center rounded-full bg-orange-500 px-5 py-2.5 font-semibold text-slate-950 transition hover:bg-orange-400">{copy.sponsorsCta}</a>
+			</div>
+		</section>
+
+		<section class="mx-auto w-full max-w-4xl space-y-6">
+			<div class="text-center">
+				<p class="kicker text-sm uppercase tracking-[0.24em]">{copy.faqKicker}</p>
+				<h2 class="section-title mt-2 text-3xl font-bold">{copy.faqH2}</h2>
+			</div>
+			<div class="space-y-4">
+				{copy.faqs.map((item) => (
+					<details class="rounded-3xl border p-5 transition open:border-cyan-400/30" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-elevated) 70%, transparent)">
+						<summary class="cursor-pointer font-medium transition hover:text-cyan-600 dark:hover:text-sky-200">{item.question}</summary>
+						<p class="muted mt-4 text-sm leading-7">{item.answer}</p>
+					</details>
+				))}
+			</div>
+		</section>
+	</main>
+</Layout>
