@@ -8,8 +8,12 @@ import {
 
 describe('release metadata', () => {
   test('builds locale-aware release slugs from the central version', () => {
-    expect(buildReleaseSlug(OMNIMON_VERSION)).toBe('v6-7-0-release');
-    expect(buildReleaseSlug(OMNIMON_VERSION, 'es')).toBe('v6-7-0-release-es');
+    expect(buildReleaseSlug(OMNIMON_VERSION)).toBe(
+      `v${OMNIMON_VERSION.replaceAll('.', '-')}-release`,
+    );
+    expect(buildReleaseSlug(OMNIMON_VERSION, 'es')).toBe(
+      `v${OMNIMON_VERSION.replaceAll('.', '-')}-release-es`,
+    );
   });
 
   test('keeps english blog metadata aligned with src/consts.ts', () => {

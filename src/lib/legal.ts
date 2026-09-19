@@ -26,7 +26,7 @@ export function resolveLegalStrings(locale: ConsentLocale) {
         'OmniMon is a local desktop monitor. This page covers the public website at omnimon.com.mx.',
         'The landing uses technical cookies and optional PostHog analytics only after you accept the cookie banner. The choice is stored in this browser for 365 days. We do not sell personal data.',
         'The desktop app processes process, window, and network telemetry on your machine. Optional AI features send redacted or user-supplied context only when you enable them and provide a provider key. They are not covered by website analytics consent.',
-        'Source and issue reports: github.com/chochy2001/omnimon. Manifests may show 6.7.0 while the latest published GitHub tag remains v6.6.6 until a release is cut.',
+        'Source and issue reports: github.com/chochy2001/omnimon. Manifests may show 6.8.0 while the latest published GitHub tag remains v6.6.6 until a release is cut.',
       ],
       termsBody: [
         'OmniMon is open source under the MIT license. Software is provided as-is, without warranty.',
@@ -45,7 +45,7 @@ export function resolveLegalStrings(locale: ConsentLocale) {
       'OmniMon es un monitor de escritorio local. Esta pagina cubre el sitio publico omnimon.com.mx.',
       'La landing usa cookies tecnicas y analiticas opcionales de PostHog solo si aceptas el aviso de cookies. La decision se guarda 365 dias en este navegador. No vendemos datos personales.',
       'La app de escritorio procesa telemetria de procesos, ventanas y red en tu equipo. Las funciones de IA opcionales envian contexto solo si las activas y das una clave de proveedor. No dependen del consentimiento analitico del sitio.',
-      'Codigo e incidencias: github.com/chochy2001/omnimon. Los manifiestos pueden mostrar 6.7.0 mientras el ultimo tag publicado en GitHub siga siendo v6.6.6 hasta que se corte el release.',
+      'Codigo e incidencias: github.com/chochy2001/omnimon. Los manifiestos pueden mostrar 6.8.0 mientras el ultimo tag publicado en GitHub siga siendo v6.6.6 hasta que se corte el release.',
     ],
     termsBody: [
       'OmniMon es codigo abierto bajo licencia MIT. El software se ofrece tal cual, sin garantia.',
