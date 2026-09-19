@@ -1,0 +1,24 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { chromeCopy, homeHref, localeFromPath } from '../lib/locale';
+
+const lang = localeFromPath(Astro.url.pathname);
+const copy = chromeCopy[lang];
+const title = lang === 'es' ? 'Pagina no encontrada | OmniMon' : 'Page not found | OmniMon';
+const lead = lang === 'es'
+	? 'Esa ruta no existe. Vuelve al inicio o al blog.'
+	: 'That path does not exist. Head home or to the blog.';
+---
+
+<Layout title={title} description={lead} lang={lang}>
+	<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-20 sm:px-6">
+		<p class="kicker text-sm uppercase tracking-[0.24em]">404</p>
+		<h1 class="section-title text-4xl font-black">{lang === 'es' ? 'No encontramos esa pagina' : 'We could not find that page'}</h1>
+		<p class="muted text-lg">{lead}</p>
+		<p>
+			<a href={homeHref(lang)} class="inline-flex items-center rounded-full bg-orange-500 px-5 py-2.5 font-semibold text-slate-950 transition hover:bg-orange-400">
+				{copy.footerHome}
+			</a>
+		</p>
+	</main>
+</Layout>

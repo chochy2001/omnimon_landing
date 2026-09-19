@@ -14,22 +14,21 @@
  * Style notes:
  * - Solid backgrounds only (no transparencies / no `backdrop-filter`),
  *   per the workspace UI rule. Border + shadow give depth instead.
- * - Dark by default to match the rest of the site; honors a `.dark` class
- *   on `<html>` if the theme toggle is added later.
+ * - Follows light/dark tokens from `html.dark`.
  */
 ---
 
 <div
   id="omnimon-cookie-banner"
   data-omnimon-cookie-banner
-  class="fixed inset-x-0 bottom-0 z-[100] hidden border-t border-slate-800 bg-slate-950 text-slate-200 shadow-[0_-12px_40px_rgba(2,6,18,0.55)]"
+  class="cookie-banner fixed inset-x-0 bottom-0 z-[100] hidden"
   role="region"
   aria-label="Aviso de cookies"
   aria-live="polite"
 >
   <div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-8">
-    <div class="flex-1 text-sm leading-relaxed text-slate-300">
-      <p class="mb-1 font-semibold text-white" data-omnimon-banner-title>
+    <div class="muted flex-1 text-sm leading-relaxed">
+      <p class="mb-1 font-semibold" style="color: var(--text-main)" data-omnimon-banner-title>
         Cookies y analiticas
       </p>
       <p data-omnimon-banner-body>
@@ -123,11 +122,14 @@
   function hide(banner: Element | null) {
     if (!banner) return;
     banner.classList.add('hidden');
+    document.body.style.paddingBottom = '';
   }
 
   function show(banner: Element | null) {
     if (!banner) return;
     banner.classList.remove('hidden');
+    const height = banner instanceof HTMLElement ? banner.offsetHeight : 0;
+    document.body.style.paddingBottom = height ? `${height}px` : '7rem';
   }
 
   function applyStrings(banner: Element, locale: 'es' | 'en') {

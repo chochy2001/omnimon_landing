@@ -4,6 +4,7 @@ import {
   buildReleaseSlug,
   latestReleasePost,
   latestReleasePostEs,
+  publishedPosts,
 } from './releases';
 
 describe('release metadata', () => {
@@ -26,5 +27,22 @@ describe('release metadata', () => {
     expect(latestReleasePostEs.slug).toBe(buildReleaseSlug(OMNIMON_VERSION, 'es'));
     expect(latestReleasePostEs.title).toContain(`v${OMNIMON_VERSION}`);
     expect(latestReleasePostEs.date).toBe(RELEASE_DATE_ES);
+  });
+
+  test('blog indexes only list posts that have pages', () => {
+    expect(publishedPosts('en').map((post) => post.slug)).toEqual([
+      'v6-8-0-release',
+      'v6-7-0-release',
+      'v6-6-0-release',
+      'v6-5-0-release',
+      'v6-4-1-release',
+    ]);
+    expect(publishedPosts('es').map((post) => post.slug)).toEqual([
+      'v6-8-0-release-es',
+      'v6-7-0-release-es',
+      'v6-6-0-release-es',
+      'v6-5-0-release-es',
+      'v6-4-1-release-es',
+    ]);
   });
 });

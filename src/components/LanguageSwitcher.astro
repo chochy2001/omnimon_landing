@@ -1,0 +1,33 @@
+---
+import type { ConsentLocale } from '../lib/consent';
+import { chromeCopy, switchLocalePath } from '../lib/locale';
+
+interface Props {
+	lang: ConsentLocale;
+}
+
+const { lang } = Astro.props;
+const copy = chromeCopy[lang];
+const path = Astro.url.pathname;
+const enHref = lang === 'en' ? path : switchLocalePath(path, 'es');
+const esHref = lang === 'es' ? path : switchLocalePath(path, 'en');
+---
+
+<div class="lang-pill" role="group" aria-label={copy.langGroup}>
+	<a
+		href={enHref}
+		hreflang="en"
+		aria-current={lang === 'en' ? 'page' : undefined}
+		class:list={['lang-pill__opt', lang === 'en' && 'is-active']}
+	>
+		{copy.langEn}
+	</a>
+	<a
+		href={esHref}
+		hreflang="es"
+		aria-current={lang === 'es' ? 'page' : undefined}
+		class:list={['lang-pill__opt', lang === 'es' && 'is-active']}
+	>
+		{copy.langEs}
+	</a>
+</div>

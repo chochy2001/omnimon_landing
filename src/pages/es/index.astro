@@ -1,5 +1,5 @@
 ---
-/* La landing principal (/) ya esta en espanol.
-   Esta ruta redirige para evitar contenido duplicado. */
-return Astro.redirect('/', 301);
+import HomePage from '../../components/HomePage.astro';
 ---
+
+<HomePage locale="es" />
