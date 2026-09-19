@@ -37,9 +37,22 @@ Landing publica de OmniMon ubicada en `/Users/jorge/Documents/Apps/omnimon_apps/
 
 ## Workflows y automatizacion
 
-- CI de esta landing: `.github/workflows/ci.yml` (`bun run test` + `bun run build` en `[self-hosted, ci-web-tools]`).
+- CI de esta landing: `.github/workflows/ci.yml` (`bun run test` + `bun run build` en `ubuntu-latest`, GitHub-hosted desde `e59914c`).
+- Despliegue: `.github/workflows/deploy-hostinger.yml`. Se encadena por `workflow_run` sobre `Landing CI`, construye el SHA exacto que CI dejo en verde, lo sube por FTP a Hostinger y despues vuelve a leer `https://omnimon.com.mx` para exigir que la huella servida sea ese SHA. Si no lo es, el despliegue falla.
 - Los workflows `../.github/workflows/omnimon-ci.yml` y `../.github/workflows/release-policy.yml` pertenecen al repo `macmon` (cargo + bun del desktop). `omnimon_landing/` esta en el gitignore de macmon.
-- Publicacion Hostinger de la landing no forma parte de esta ola.
+
+## Despliegue
+
+El pipeline no puede correr hasta que el operador cargue los secretos
+`FTP_HOST`, `FTP_USER` y `FTP_PASSWORD` y las variables `FTP_PORT` y
+`FTP_REMOTE_DIR`. Nombres, origen de cada valor, modo de disparo, reversion y
+limites conocidos estan en [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
+
+Medido el 2026-09-19 contra el origen publico, antes de que existiera este
+pipeline: `https://omnimon.com.mx/` servia `OmniMon 6.3.0` con `main` en
+`6.7.0`, y `/privacy/`, `/terms/`, `/es/privacy/`, `/es/terms/`,
+`/blog/v6-6-0-release/` y `/blog/v6-7-0-release/` respondian `404` aun
+existiendo en `main`.
 
 ## Comandos locales utiles
 
