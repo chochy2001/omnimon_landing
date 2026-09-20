@@ -34,6 +34,27 @@ const nf = notFoundCopy(lang);
 					home.setAttribute('href', '/es/');
 					home.textContent = 'Inicio';
 				}
+				var navHome = document.getElementById('omnimon-nav-home');
+				var navBlog = document.getElementById('omnimon-nav-blog');
+				var footerHome = document.getElementById('omnimon-footer-home');
+				if (navHome) navHome.setAttribute('href', '/es/');
+				if (navBlog) navBlog.setAttribute('href', '/es/blog/');
+				if (footerHome) {
+					footerHome.setAttribute('href', '/es/');
+					footerHome.textContent = 'Inicio';
+				}
+				var langEn = document.getElementById('omnimon-lang-en');
+				var langEs = document.getElementById('omnimon-lang-es');
+				if (langEn) {
+					langEn.classList.remove('is-active');
+					langEn.removeAttribute('aria-current');
+					langEn.setAttribute('href', '/');
+				}
+				if (langEs) {
+					langEs.classList.add('is-active');
+					langEs.setAttribute('aria-current', 'page');
+					langEs.setAttribute('href', path);
+				}
 				document.title = 'Pagina no encontrada | OmniMon';
 			} catch (_) {}
 		})();

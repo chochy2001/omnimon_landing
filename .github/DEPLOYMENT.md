@@ -123,7 +123,8 @@ origen ya sirve.
    `src/layouts/Layout.astro` lo emite como
    `<meta name="omnimon-build" content="...">`. El build aborta si alguna pagina
    construida no lleva la huella y tampoco es una redireccion estatica de Astro
-   (hoy solo `/es/`, que redirige a `/`). Eso tambien detecta una pagina nueva
+   (hoy `/en/` y `/en`, que redirigen a `/`; `/es/` es la home en espanol y
+   lleva huella). Eso tambien detecta una pagina nueva
    que se olvide de usar `Layout.astro`.
 3. **Verificacion contra la URL publica.** Tras la subida, el workflow lee
    `https://omnimon.com.mx` con un parametro anticache y exige que la huella

@@ -18,4 +18,13 @@ describe('brand assets', () => {
     expect(ico.length).toBeGreaterThan(1000);
     expect(Array.from(ico.subarray(0, 4))).toEqual([0, 0, 1, 0]);
   });
+
+  test('Layout.astro cache-busts favicons with the build SHA query', () => {
+    const layout = readFileSync(join(import.meta.dir, '../layouts/Layout.astro'), 'utf8');
+    expect(layout).toContain('favicon.svg?v=');
+    expect(layout).toContain('favicon-32.png?v=');
+    expect(layout).toContain('favicon.ico?v=');
+    expect(layout).toContain('apple-touch-icon.png?v=');
+    expect(layout).toContain('src={`/favicon.svg?v=${buildSha}`}');
+  });
 });

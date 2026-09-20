@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
 import { OMNIMON_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
@@ -53,5 +53,21 @@ describe('release metadata', () => {
       'v6-5-0-release-es',
       'v6-4-1-release-es',
     ]);
+  });
+
+  test('v6.8.0 posts document pid+start_time kill identity and published tag v6.6.6', () => {
+    const en = readFileSync(
+      join(import.meta.dir, '../pages/blog/v6-8-0-release.astro'),
+      'utf8',
+    );
+    const es = readFileSync(
+      join(import.meta.dir, '../pages/es/blog/v6-8-0-release-es.astro'),
+      'utf8',
+    );
+    for (const body of [en, es]) {
+      expect(body).toContain('pid');
+      expect(body).toContain('start_time');
+      expect(body).toContain('6.6.6');
+    }
   });
 });
