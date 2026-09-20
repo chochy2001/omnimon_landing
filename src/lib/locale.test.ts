@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
 import {
   homeHref,
@@ -65,5 +67,52 @@ describe('locale chrome', () => {
     expect(switchLocalePath('/es/privacy/', 'es')).toBe('/privacy/');
     expect(switchLocalePath('/terms', 'en')).toBe('/es/terms/');
     expect(switchLocalePath('/es/terms', 'es')).toBe('/terms/');
+  });
+
+  test('spanish ErrorDocument 404 patches nav, footer home, and language pill', () => {
+    const page = readFileSync(join(import.meta.dir, '../pages/404.astro'), 'utf8');
+    const layout = readFileSync(join(import.meta.dir, '../layouts/Layout.astro'), 'utf8');
+    const switcher = readFileSync(
+      join(import.meta.dir, '../components/LanguageSwitcher.astro'),
+      'utf8',
+    );
+
+    expect(layout).toContain('id="omnimon-nav-home"');
+    expect(layout).toContain('id="omnimon-nav-blog"');
+    expect(layout).toContain('id="omnimon-footer-home"');
+    expect(switcher).toContain('id="omnimon-lang-en"');
+    expect(switcher).toContain('id="omnimon-lang-es"');
+
+    for (const id of [
+      'omnimon-nav-home',
+      'omnimon-nav-blog',
+      'omnimon-footer-home',
+      'omnimon-lang-en',
+      'omnimon-lang-es',
+    ]) {
+      expect(page).toContain(`getElementById('${id}')`);
+    }
+    expect(page).toContain("setAttribute('href', '/es/')");
+    expect(page).toContain("setAttribute('href', '/es/blog/')");
+    expect(page).toContain("removeAttribute('aria-current')");
+    expect(page).toContain("setAttribute('aria-current', 'page')");
+    expect(page).toContain("classList.remove('is-active')");
+    expect(page).toContain("classList.add('is-active')");
+  });
+
+  test('deploy docs treat /es/ as a Spanish home and /en/ as the 301 to /', () => {
+    const deployment = readFileSync(
+      join(import.meta.dir, '../../.github/DEPLOYMENT.md'),
+      'utf8',
+    );
+    const workflow = readFileSync(
+      join(import.meta.dir, '../../.github/workflows/deploy-hostinger.yml'),
+      'utf8',
+    );
+    expect(deployment).not.toMatch(/\/es\/[`']?, que redirige a/);
+    expect(workflow).not.toContain('/es/ -> /');
+    expect(deployment).toMatch(/\/en\/.*301|\/en\/.*redirige|hoy `\/en\/`/i);
+    expect(workflow).toContain('/en/ -> /');
+    expect(workflow).toMatch(/\/es\/.*home|\/es\/ es /i);
   });
 });

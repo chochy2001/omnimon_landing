@@ -288,7 +288,8 @@ jobs:
               stamped=$((stamped + 1))
             elif grep -qF 'http-equiv="refresh"' "$file"; then
               # Astro emite una pagina puente para cada redireccion estatica
-              # (hoy /es/ -> /). No pasa por Layout.astro, asi que no lleva
+              # (hoy /en/ -> /). /es/ es la home en espanol y lleva huella.
+              # No pasa por Layout.astro, asi que no lleva
               # huella y solo se le exige 200 en el smoke.
               echo "redireccion estatica sin huella: ${route}"
             else

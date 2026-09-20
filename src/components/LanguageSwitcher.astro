@@ -15,6 +15,7 @@ const esHref = lang === 'es' ? path : switchLocalePath(path, 'en');
 
 <div class="lang-pill" role="group" aria-label={copy.langGroup}>
 	<a
+		id="omnimon-lang-en"
 		href={enHref}
 		hreflang="en"
 		aria-current={lang === 'en' ? 'page' : undefined}
@@ -23,6 +24,7 @@ const esHref = lang === 'es' ? path : switchLocalePath(path, 'en');
 		{copy.langEn}
 	</a>
 	<a
+		id="omnimon-lang-es"
 		href={esHref}
 		hreflang="es"
 		aria-current={lang === 'es' ? 'page' : undefined}

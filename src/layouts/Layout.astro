@@ -78,10 +78,10 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 				}
 			})();
 		</script>
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-		<link rel="icon" href="/favicon.ico" sizes="any" />
-		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link rel="icon" type="image/svg+xml" href={`/favicon.svg?v=${buildSha}`} />
+		<link rel="icon" type="image/png" sizes="32x32" href={`/favicon-32.png?v=${buildSha}`} />
+		<link rel="icon" href={`/favicon.ico?v=${buildSha}`} sizes="any" />
+		<link rel="apple-touch-icon" href={`/apple-touch-icon.png?v=${buildSha}`} />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="omnimon-build" content={buildSha} />
 		<meta property="og:type" content="website" />
@@ -100,9 +100,9 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 	<body class="font-sans antialiased min-h-screen pt-16">
 		<nav class="site-nav fixed inset-x-0 top-0 z-50">
 			<div class="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
-				<a href={homeUrl} class="flex min-w-0 flex-1 items-center gap-2 tracking-tight sm:gap-2.5">
+				<a id="omnimon-nav-home" href={homeUrl} class="flex min-w-0 flex-1 items-center gap-2 tracking-tight sm:gap-2.5">
 					<img
-						src="/favicon.svg"
+						src={`/favicon.svg?v=${buildSha}`}
 						alt=""
 						width="32"
 						height="32"
@@ -112,7 +112,7 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 					<span class="hidden rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] text-cyan-400 sm:inline">v{OMNIMON_VERSION}</span>
 				</a>
 				<div class="hidden items-center gap-6 text-sm md:flex">
-					<a href={blogUrl} class="transition hover:text-[var(--text-main)]">{copy.blog}</a>
+					<a id="omnimon-nav-blog" href={blogUrl} class="transition hover:text-[var(--text-main)]">{copy.blog}</a>
 					<a href={docsUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.docs}</a>
 					<a href={githubUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.github}</a>
 					<a href={downloadUrl} target="_blank" rel="noreferrer" class="inline-flex items-center rounded-full bg-orange-500 px-4 py-1.5 font-semibold text-slate-950 transition hover:bg-orange-400">{copy.download}</a>
@@ -141,7 +141,7 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 			<div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
 				<p>&copy; {new Date().getFullYear()} {copy.footerCopy}</p>
 				<div class="flex flex-wrap items-center gap-4">
-					<a href={homeUrl} class="transition hover:text-[var(--text-main)]">{copy.footerHome}</a>
+					<a id="omnimon-footer-home" href={homeUrl} class="transition hover:text-[var(--text-main)]">{copy.footerHome}</a>
 					<a href={blogUrl} class="transition hover:text-[var(--text-main)]">{copy.blog}</a>
 					<a href={docsUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.docs}</a>
 					<a href={githubUrl} target="_blank" rel="noreferrer" class="transition hover:text-[var(--text-main)]">{copy.github}</a>
