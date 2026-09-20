@@ -18,9 +18,9 @@ bun run build
 bun run preview
 ```
 
-## Verified 2026-09-19 CST / 2026-09-20 UTC
+## Verified 2026-09-20 UTC
 
-Live origin `omnimon-build` SHA **`ffc87ddc8e7b`** (= this repo `origin/main` at that measurement). Until a new deploy, treat that SHA as the last measured public origin.
+Live origin `omnimon-build` SHA **`2ca253f9fb309eaee2f74459d8c2dba14780c9da`** (landing `#17`; `#18` was docs-only and did not change origin HTML). Until GitHub CD has `HOSTINGER_FTPS_HOST`, treat that SHA as the last measured public origin. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404.
 
 | Surface | Status |
 |---------|--------|
