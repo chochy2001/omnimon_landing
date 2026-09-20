@@ -66,6 +66,31 @@ export function localeFromPath(pathname: string): ConsentLocale {
   return 'en';
 }
 
+export function canonicalRedirectPath(pathname: string): string | null {
+  const p = normalizePath(pathname);
+  if (p === '/en/') return '/';
+  return null;
+}
+
+export function notFoundCopy(locale: ConsentLocale): {
+  title: string;
+  h1: string;
+  lead: string;
+} {
+  if (locale === 'es') {
+    return {
+      title: 'Pagina no encontrada | OmniMon',
+      h1: 'No encontramos esa pagina',
+      lead: 'Esa ruta no existe. Vuelve al inicio o al blog.',
+    };
+  }
+  return {
+    title: 'Page not found | OmniMon',
+    h1: 'We could not find that page',
+    lead: 'That path does not exist. Head home or to the blog.',
+  };
+}
+
 export function homeHref(locale: ConsentLocale): string {
   return locale === 'es' ? '/es/' : '/';
 }

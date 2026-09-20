@@ -5,6 +5,8 @@ import {
   switchLocalePath,
   localeFromPath,
   chromeCopy,
+  canonicalRedirectPath,
+  notFoundCopy,
 } from './locale';
 
 describe('locale chrome', () => {
@@ -31,6 +33,21 @@ describe('locale chrome', () => {
     expect(chromeCopy.es.theme).toBe('Cambiar tema de color');
     expect(chromeCopy.en.langEn).toBe('EN');
     expect(chromeCopy.es.langEs).toBe('ES');
+  });
+
+  test('legacy /en aliases redirect to the english home', () => {
+    expect(canonicalRedirectPath('/en')).toBe('/');
+    expect(canonicalRedirectPath('/en/')).toBe('/');
+    expect(canonicalRedirectPath('/')).toBeNull();
+    expect(canonicalRedirectPath('/es/')).toBeNull();
+    expect(canonicalRedirectPath('/blog/')).toBeNull();
+  });
+
+  test('not-found copy follows the URL language, including ErrorDocument paths', () => {
+    expect(notFoundCopy('en').h1).toContain('could not find');
+    expect(notFoundCopy('es').h1).toContain('No encontramos');
+    expect(localeFromPath('/does-not-exist')).toBe('en');
+    expect(localeFromPath('/es/does-not-exist')).toBe('es');
   });
 
   test('language switch maps home, legal, blog index and release posts', () => {

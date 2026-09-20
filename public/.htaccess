@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteBase /
+
+# English home is `/`. The old `/en` alias must not hit Hostinger's generic 404.
+RewriteRule ^en/?$ / [R=301,L]
+
+# Serve the product 404 (Layout + EN/ES + theme), not the Hostinger stock page.
+ErrorDocument 404 /404.html
