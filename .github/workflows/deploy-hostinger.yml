@@ -555,10 +555,15 @@ jobs:
           # contestar 200 a cualquier cosa, el smoke de arriba dejaria de
           # significar algo. Medido el 2026-09-19: omnimon.com.mx devuelve 404.
           probe="/omnimon-deploy-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/"
-          probe_code="$(curl -sS -L -o /dev/null -w '%{http_code}' --max-time 25 "${base}${probe}" || echo 000)"
+          probe_body="$(mktemp)"
+          probe_code="$(curl -sS -o "$probe_body" -w '%{http_code}' --max-time 25 "${base}${probe}" || echo 000)"
           echo "$probe_code ${base}${probe}"
           if [ "$probe_code" != "404" ]; then
             echo "::error::Se esperaba 404 en una ruta inexistente, llego ${probe_code}. El origen no distingue lo que existe de lo que no."
+            fail=1
+          fi
+          if ! grep -q 'omnimon-build' "$probe_body" || ! grep -q 'theme-toggle' "$probe_body"; then
+            echo "::error::El 404 no es la pagina de producto. Hostinger generico o un ErrorDocument viejo no cuentan."
             fail=1
           fi
 

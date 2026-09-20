@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
 import { OMNIMON_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
 import {
@@ -30,6 +32,13 @@ describe('release metadata', () => {
   });
 
   test('blog indexes only list posts that have pages', () => {
+    const pages = join(import.meta.dir, '../pages');
+    for (const post of publishedPosts('en')) {
+      expect(existsSync(join(pages, 'blog', `${post.slug}.astro`))).toBe(true);
+    }
+    for (const post of publishedPosts('es')) {
+      expect(existsSync(join(pages, 'es/blog', `${post.slug}.astro`))).toBe(true);
+    }
     expect(publishedPosts('en').map((post) => post.slug)).toEqual([
       'v6-8-0-release',
       'v6-7-0-release',
