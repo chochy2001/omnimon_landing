@@ -1,24 +1,41 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { chromeCopy, homeHref, localeFromPath } from '../lib/locale';
+import { chromeCopy, homeHref, localeFromPath, notFoundCopy } from '../lib/locale';
 
 const lang = localeFromPath(Astro.url.pathname);
 const copy = chromeCopy[lang];
-const title = lang === 'es' ? 'Pagina no encontrada | OmniMon' : 'Page not found | OmniMon';
-const lead = lang === 'es'
-	? 'Esa ruta no existe. Vuelve al inicio o al blog.'
-	: 'That path does not exist. Head home or to the blog.';
+const nf = notFoundCopy(lang);
 ---
 
-<Layout title={title} description={lead} lang={lang}>
+<Layout title={nf.title} description={nf.lead} lang={lang}>
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-20 sm:px-6">
 		<p class="kicker text-sm uppercase tracking-[0.24em]">404</p>
-		<h1 class="section-title text-4xl font-black">{lang === 'es' ? 'No encontramos esa pagina' : 'We could not find that page'}</h1>
-		<p class="muted text-lg">{lead}</p>
+		<h1 id="omnimon-not-found-h1" class="section-title text-4xl font-black">{nf.h1}</h1>
+		<p id="omnimon-not-found-lead" class="muted text-lg">{nf.lead}</p>
 		<p>
-			<a href={homeHref(lang)} class="inline-flex items-center rounded-full bg-orange-500 px-5 py-2.5 font-semibold text-slate-950 transition hover:bg-orange-400">
+			<a id="omnimon-not-found-home" href={homeHref(lang)} class="inline-flex items-center rounded-full bg-orange-500 px-5 py-2.5 font-semibold text-slate-950 transition hover:bg-orange-400">
 				{copy.footerHome}
 			</a>
 		</p>
 	</main>
+	<script is:inline>
+		(function () {
+			try {
+				var path = location.pathname || '/';
+				var es = path === '/es' || path.indexOf('/es/') === 0;
+				if (!es) return;
+				document.documentElement.lang = 'es';
+				var h1 = document.getElementById('omnimon-not-found-h1');
+				var lead = document.getElementById('omnimon-not-found-lead');
+				var home = document.getElementById('omnimon-not-found-home');
+				if (h1) h1.textContent = 'No encontramos esa pagina';
+				if (lead) lead.textContent = 'Esa ruta no existe. Vuelve al inicio o al blog.';
+				if (home) {
+					home.setAttribute('href', '/es/');
+					home.textContent = 'Inicio';
+				}
+				document.title = 'Pagina no encontrada | OmniMon';
+			} catch (_) {}
+		})();
+	</script>
 </Layout>

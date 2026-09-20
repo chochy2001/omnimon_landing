@@ -1,0 +1,6 @@
+---
+import { canonicalRedirectPath } from '../../lib/locale';
+
+const target = canonicalRedirectPath(Astro.url.pathname) ?? '/';
+return Astro.redirect(target, 301);
+---
