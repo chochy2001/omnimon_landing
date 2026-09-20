@@ -41,10 +41,8 @@ Operator secrets: `HOSTINGER_FTPS_HOST` (hostname under `*.hstgr.io`, **not** th
 
 Until `HOSTINGER_FTPS_HOST` is set, GitHub CD is blocked and production is published by local FTPS of `dist/` stamped with `PUBLIC_BUILD_SHA`. Details: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
 
-## Residual (not claimed fixed)
+## Residual (operator)
 
-- `HOSTINGER_FTPS_HOST` is missing on the GitHub repo, so GitHub CD cannot run.
-- Leftover HTML from the previous site can still 200 on old blog URLs **without** `<meta name="omnimon-build">`; those paths are not in the current sitemap.
+- `HOSTINGER_FTPS_HOST` is missing on the GitHub repo, so GitHub CD cannot run. Live origin is published by local FTPS.
 - Published desktop tag remains **v6.6.6**; landing titles may still mention workspace 6.8.0.
-- Spanish blog slugs end with `-es`.
-- macOS/Windows desktop e2e is not this repo.
+- Cutting a `v6.8.0` Universal DMG is a release decision, not a landing deploy.
