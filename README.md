@@ -5,7 +5,7 @@ Git: `chochy2001/omnimon_landing`. Nested under `omnimon_apps/macmon/omnimon_lan
 
 ## Stack
 
-- Astro 5 + Tailwind 4 + Bun
+- Astro 7 + Tailwind 4 + Bun
 - Site URL: `https://omnimon.com.mx` (`astro.config.mjs`)
 - Analytics: PostHog only after the cookie banner
 
