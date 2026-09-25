@@ -11,9 +11,9 @@
     "test:coverage": "bun test --coverage src/lib"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.2.1",
-    "astro": "^7.3.3",
-    "posthog-js": "^1.369.0",
-    "tailwindcss": "^4.2.1"
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.5",
+    "posthog-js": "^1.434.14",
+    "tailwindcss": "^4.3.3"
   }
 }
