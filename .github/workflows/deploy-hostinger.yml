@@ -496,6 +496,11 @@ jobs:
             --ftp-pasv --disable-epsv
             --user "$FTPS_USERNAME:$FTPS_PASSWORD"
             --connect-to "$CONNECT_TO"
+            # Bounded retry on network errors (measured 2026-09-25 in run
+            # 36165110047: curl 56 mid-upload killed the deploy). Each upload
+            # attempt rewrites the whole file, so a retry is safe; the
+            # sha256 read-back afterwards still proves what landed.
+            --retry 3 --retry-all-errors --retry-delay 5
           )
           # La cuenta FTP de Hostinger puede estar enjaulada en la raiz del
           # dominio, y entonces FTP_REMOTE_DIR apunta a un sitio que Apache no
