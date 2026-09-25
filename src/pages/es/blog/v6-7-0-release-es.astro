@@ -7,7 +7,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 
 <Layout
 	title="OmniMon v6.7.0: Zombie Killer y Endurecimiento de IA | Blog"
-	description="OmniMon v6.7.0 estrena el motor Zombie Killer, modo de privacidad de IA con redaccion seudonima estable, presupuesto diario de IA, endurecimiento del keyring, badge DPI de transparencia y un refactor con breaking change en el evaluador de alertas de red."
+	description="Vista previa pre-release de OmniMon v6.7.0: el motor Zombie Killer, modo de privacidad de IA con redaccion seudonima estable, presupuesto diario de IA, endurecimiento del keyring, badge DPI de transparencia y un refactor con breaking change en el evaluador de alertas de red."
 	lang="es"
 >
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -21,13 +21,13 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.7.0: Zombie Killer y Endurecimiento de IA</h1>
 				<div class="flex items-center gap-4 text-sm text-slate-400">
 					<time>17 Abr 2026</time>
-					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Nuevo release</span>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Vista previa</span>
 				</div>
 			</header>
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					La version 6.7.0 estrena el <strong class="text-white">Zombie Killer</strong>, un motor en segundo plano que detecta procesos consumiendo CPU o RAM de forma sostenida y los ofrece para terminar con confirmacion del usuario, mas una segunda ronda de endurecimiento de la superficie de IA (modo de privacidad, presupuesto diario, confirmacion frontend de herramientas destructivas, borrado previo del keyring legacy) y un badge de transparencia DPI.
+					La version 6.7.0 es una vista previa pre-release. Estrena el <strong class="text-white">Zombie Killer</strong>, un motor en segundo plano que detecta procesos consumiendo CPU o RAM de forma sostenida y los ofrece para terminar con confirmacion del usuario, mas una segunda ronda de endurecimiento de la superficie de IA (modo de privacidad, presupuesto diario, confirmacion frontend de herramientas destructivas, borrado previo del keyring legacy) y un badge de transparencia DPI.
 				</p>
 
 				<h2 class="text-2xl font-bold text-white">Zombie Killer</h2>
@@ -81,7 +81,10 @@ let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history, 
 					<li><strong class="text-white">Clippy limpio bajo Rust 1.95</strong>: diez call sites preexistentes arreglados para los nuevos lints <code>unnecessary_sort_by</code> y <code>collapsible_match</code>.</li>
 				</ul>
 
-				<h2 class="text-2xl font-bold text-white">Descarga</h2>
+				<h2 class="text-2xl font-bold text-white">Descarga el ultimo release publicado</h2>
+				<p class="text-slate-400">
+					Estos botones sirven el ultimo tag publicado en GitHub (actualmente v6.6.6), no esta vista previa. Homebrew sigue el mismo tag publicado.
+				</p>
 				<div class="grid gap-4 sm:grid-cols-3">
 					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
 						<p class="text-sm uppercase tracking-[0.24em] text-orange-200">macOS</p>

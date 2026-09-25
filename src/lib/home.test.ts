@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { OMNIMON_VERSION } from '../consts';
+import { OMNIMON_VERSION, PUBLISHED_VERSION } from '../consts';
 import { homeCopy } from './home';
 
 describe('home copy', () => {
@@ -33,5 +33,27 @@ describe('home copy', () => {
     expect(homeCopy.en.highlights).toHaveLength(4);
     expect(homeCopy.es.highlights).toHaveLength(4);
     expect(homeCopy.en.highlights[0]?.title.toLowerCase()).toContain('memory guard');
+  });
+
+  test('unreleased version is framed as pre-release, never as shipped', () => {
+    for (const copy of [homeCopy.en, homeCopy.es]) {
+      expect(copy.releaseWord).toBe('Pre-release');
+      expect(copy.releaseKicker).toContain('Pre-release');
+      expect(copy.lead).toContain('pre-release');
+      expect(copy.description.toLowerCase()).toContain('pre-release');
+      expect(copy.lead).not.toMatch(/\bships\b/);
+    }
+    expect(homeCopy.en.badgeNew).toBe('Next');
+    expect(homeCopy.es.badgeNew).toBe('Proximo');
+  });
+
+  test('download section names the published tag and carries no unreleased version', () => {
+    for (const copy of [homeCopy.en, homeCopy.es]) {
+      expect(copy.downloadH2).not.toContain(OMNIMON_VERSION);
+      expect(copy.downloadLead).toContain(`v${PUBLISHED_VERSION}`);
+    }
+    const page = readFileSync(join(import.meta.dir, '../components/HomePage.astro'), 'utf8');
+    expect(page).toContain('version: {PUBLISHED_VERSION}');
+    expect(page).toContain('[DONE] OmniMon {PUBLISHED_VERSION} is ready');
   });
 });

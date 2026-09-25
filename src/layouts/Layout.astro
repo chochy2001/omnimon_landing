@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { OMNIMON_VERSION } from '../consts';
+import { PUBLISHED_VERSION } from '../consts';
 import PostHogInit from '../components/analytics/PostHogInit.astro';
 import ThemeToggle from '../components/ThemeToggle.astro';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
@@ -17,7 +17,7 @@ interface Props {
 
 const {
 	title,
-	description = `OmniMon ${OMNIMON_VERSION}: observabilidad, seguridad activa y asistentes de IA para macOS, Windows y Linux.`,
+	description = `OmniMon: observabilidad, seguridad activa y asistentes de IA para macOS, Windows y Linux.`,
 	lang = localeFromPath(Astro.url.pathname),
 } = Astro.props;
 const copy = chromeCopy[lang];
@@ -28,6 +28,7 @@ const otherUrl = Astro.site ? new URL(otherPath, Astro.site).toString() : otherP
 const defaultUrl = Astro.site ? new URL('/', Astro.site).toString() : '/';
 const privacyHref = legalHref(lang, 'privacy');
 const termsHref = legalHref(lang, 'terms');
+const cookiesHref = legalHref(lang, 'cookies');
 const homeUrl = homeHref(lang);
 const blogUrl = blogHref(lang);
 const docsUrl = 'https://github.com/chochy2001/omnimon#readme';
@@ -49,12 +50,8 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 		<link rel="alternate" hreflang={lang} href={canonicalUrl} />
 		<link rel="alternate" hreflang={otherLang} href={otherUrl} />
 		<link rel="alternate" hreflang="x-default" href={defaultUrl} />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
-		/>
+		<link rel="preload" href="/fonts/ibm-plex-sans-400.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/ibm-plex-sans-700.woff2" as="font" type="font/woff2" crossorigin />
 
 		<script is:inline>
 			(function () {
@@ -109,7 +106,7 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 						class="h-8 w-8 shrink-0 rounded-lg"
 					/>
 					<span class="truncate font-mono text-base font-bold sm:text-lg" style="color: var(--text-main)">OmniMon</span>
-					<span class="hidden rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] text-cyan-400 sm:inline">v{OMNIMON_VERSION}</span>
+					<span class="hidden rounded-full border border-cyan-400/20 bg-cyan-400/10 px-2 py-0.5 font-mono text-[10px] text-cyan-400 sm:inline" title="Latest published release">v{PUBLISHED_VERSION}</span>
 				</a>
 				<div class="hidden items-center gap-6 text-sm md:flex">
 					<a id="omnimon-nav-blog" href={blogUrl} class="transition hover:text-[var(--text-main)]">{copy.blog}</a>
@@ -149,6 +146,7 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 					<a href={sponsorUrl} target="_blank" rel="noreferrer" class="transition hover:text-orange-400">{copy.footerSponsor}</a>
 					<a href={privacyHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'privacy')}</a>
 					<a href={termsHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'terms')}</a>
+					<a href={cookiesHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'cookies')}</a>
 				</div>
 			</div>
 		</footer>

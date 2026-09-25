@@ -74,6 +74,21 @@ describe('banner strings and CSP fragments', () => {
     expect(en.privacy).toContain('Privacy');
   });
 
+  test('banner strings include the cookies href and a complete prefs dialog copy', () => {
+    const es = resolveBannerStrings('es');
+    const en = resolveBannerStrings('en');
+    expect(es.cookiesHref).toBe(legalHref('es', 'cookies'));
+    expect(en.cookiesHref).toBe(legalHref('en', 'cookies'));
+    for (const s of [es, en]) {
+      expect(s.prefsTitle.length).toBeGreaterThan(0);
+      expect(s.prefsNecessary.length).toBeGreaterThan(0);
+      expect(s.prefsAnalytics).toContain('PostHog');
+      expect(s.prefsSave.length).toBeGreaterThan(0);
+      expect(s.prefsCancel.length).toBeGreaterThan(0);
+    }
+    expect(es.prefsSave).not.toBe(en.prefsSave);
+  });
+
   test('buildPostHogCspFragments is empty without host', () => {
     expect(buildPostHogCspFragments(null)).toEqual({ scriptSrcExtra: '', connectSrcExtra: '' });
   });
