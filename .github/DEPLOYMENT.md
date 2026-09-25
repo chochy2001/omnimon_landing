@@ -181,7 +181,7 @@ origen ya sirve.
   hPanel. Los restos de subidas manuales antiguas siguen donde estaban. Lo que
   si esta garantizado no cambia: la huella y los assets del build
   promocionado se leen de vuelta del origen publico y tienen que coincidir
-  byte a byte.
+  con el artefacto (sha256, salvo las dos excepciones del punto siguiente).
 - **Verificacion del certificado FTPS: estricta, en dos capas.** El paso
   `Verify the strict FTPS endpoint before sending credentials` comprueba con
   `openssl` (`-verify_hostname` mas `-verify_return_error`) **antes** de que
@@ -201,6 +201,22 @@ origen ya sirve.
   `--connect-to`. La huella de la hoja se registra en el log solo para
   auditoria: el emisor (Let's Encrypt) rota el certificado y fijarla
   convertiria cada renovacion en un despliegue roto.
+- **Dos excepciones medidas en la comprobacion de assets, ninguna debilita
+  la red** (las fallo el run 36161664902 y las fija este diseno):
+  - Hostinger re-encodea y reescala los PNG entre la subida y la respuesta
+    HTTP: con `Accept-Encoding: identity` y un `x-hcdn-cache-status: MISS`,
+    el origen sirve un PNG valido pero distinto (`apple-touch-icon.png`:
+    dist 31959 bytes sha256 `0ba2aea2`, servido 28144 bytes sha256
+    `8548f685` con las mismas dimensiones; `omnimon-screenshot.png`: dist
+    3456x2022, servido 1600x936). Los PNG se comparan por identidad
+    estructural (`scripts/png_compare.sh`: firma PNG, mismo aspecto dentro
+    del 1%, trailer IEND completo), que sigue detectando truncados, paginas
+    de error e imagenes de distinto aspecto. Residual honesto: un cambio de
+    imagen del mismo aspecto no se detecta. El resto de assets sigue
+    exigiendo sha256 identico.
+  - Los ficheros ocultos de `dist` (hoy `.htaccess`) se suben pero Apache no
+    los sirve: se les exige 403 o 404, nunca 200. Un 200 en un fichero
+    oculto es una fuga de configuracion y falla el despliegue.
 - **El runner es GitHub-hosted a proposito.** Este repositorio es publico y no
   tiene runners propios, y los runners self-hosted de CAPDESIS no sirven a un
   repositorio personal. Entregar credenciales FTP de produccion a un runner
