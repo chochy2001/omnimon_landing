@@ -39,6 +39,7 @@ jobs:
       - name: Deploy FTPS identity and strictness tests
         run: |
           bash scripts/tests/ftps_identity_test.sh
+          bash scripts/tests/png_compare_test.sh
           bash scripts/tests/deploy_strict_contract_test.sh
 
       - name: Build

@@ -663,11 +663,26 @@ jobs:
       # Por eso se compara el cuerpo servido contra el fichero de dist con
       # sha256, y no por tamano. El tamano es mas barato y ya distingue truncado
       # de completo, pero no ve un fichero viejo que pese lo mismo, que es justo
-      # lo que los nombres sin hash permiten. El artefacto entero pesa unos
-      # 340 KB, asi que bajar los cuerpos no es un coste real.
+      # lo que los nombres sin hash permiten. El artefacto entero pesa poco mas
+      # de 1 MB, asi que bajar los cuerpos no es un coste real.
+      #
+      # Dos excepciones medidas, ninguna debilita la red:
+      # - Los PNG se comparan por identidad estructural
+      #   (scripts/png_compare.sh: firma PNG, mismo aspecto dentro del 1%,
+      #   trailer IEND completo), no por sha256. Hostinger re-encodea y
+      #   reescala los PNG entre la subida y la respuesta HTTP (medido
+      #   2026-09-25 en el run 36161664902), asi que ni los bytes ni las
+      #   dimensiones se pueden exigir aunque la subida sea perfecta. Un
+      #   truncado, una pagina de error o una imagen de distinto aspecto
+      #   siguen fallando; un cambio de imagen del mismo aspecto no se
+      #   detecta y queda documentado en .github/DEPLOYMENT.md.
+      # - Los ficheros ocultos de dist (hoy `.htaccess`) tienen que existir en
+      #   el servidor pero Apache no los sirve: se les exige 403 o 404, nunca
+      #   200. Un 200 en un fichero oculto es una fuga de configuracion y falla.
       - name: Assert live assets match the built artifact byte for byte
         run: |
           set -euo pipefail
+          . scripts/png_compare.sh
           base="$SITE_URL"
           assets_file="${RUNNER_TEMP}/deploy-assets.txt"
           live_dir="${RUNNER_TEMP}/live"
@@ -692,6 +707,8 @@ jobs:
 
           fail=0
           compared=0
+          png_compared=0
+          dotfiles_checked=0
           while IFS= read -r asset; do
             [ -n "$asset" ] || continue
             rm -f "$body_file"
@@ -704,6 +721,22 @@ jobs:
             size="${result##* }"
             case "$size" in
               ''|*[!0-9]*) size=0 ;;
+            esac
+            # dotfiles-are-not-served: un fichero oculto de dist tiene que
+            # estar subido pero Apache no debe servirlo jamas.
+            base_name="${asset##*/}"
+            case "$base_name" in
+              .*)
+                if [ "$code" = "403" ] || [ "$code" = "404" ]; then
+                  dotfiles_checked=$((dotfiles_checked + 1))
+                  echo "$code $size fichero oculto no servido ${base}${asset}"
+                else
+                  echo "$code $size ${base}${asset}"
+                  echo "::error::El fichero oculto ${asset} se sirve con ${code}. La configuracion del servidor no debe ser contenido publico."
+                  fail=1
+                fi
+                continue
+                ;;
             esac
             if [ "$code" != "200" ]; then
               echo "$code $size ${base}${asset}"
@@ -724,6 +757,26 @@ jobs:
               fi
               continue
             fi
+
+            # png-structural-identity: Hostinger re-encodea y reescala los
+            # PNG, asi que aqui no valen sha256 ni dimensiones. La identidad
+            # estructural (firma, aspecto, IEND) sigue detectando truncados,
+            # paginas de error e imagenes de distinto aspecto.
+            # Ver scripts/png_compare.sh.
+            case "$asset" in
+              *.png|*.PNG)
+                if png_matches "$local_file" "$body_file" 2>"${body_file}.pngerr"; then
+                  compared=$((compared + 1))
+                  png_compared=$((png_compared + 1))
+                  echo "$code $size png estructuralmente identico a dist ${base}${asset}"
+                else
+                  echo "$code $size ${base}${asset}"
+                  echo "::error::El asset ${asset} no es el PNG construido: $(cat "${body_file}.pngerr")."
+                  fail=1
+                fi
+                continue
+                ;;
+            esac
 
             local_size="$(wc -c < "$local_file" | tr -d ' ')"
             served_sum="$(sha256sum "$body_file" | cut -d ' ' -f 1)"
@@ -746,7 +799,7 @@ jobs:
             echo "::error::Solo ${compared} assets se compararon contra dist. La comprobacion no cubre el artefacto."
             fail=1
           fi
-          echo "assets comparados byte a byte contra dist: ${compared}"
+          echo "assets comparados contra dist: ${compared} (sha256 o identidad PNG), ficheros ocultos no servidos: ${dotfiles_checked}"
           exit "$fail"
 
       - name: Deploy summary
