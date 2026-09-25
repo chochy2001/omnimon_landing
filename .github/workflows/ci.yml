@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # Advisories are a gate, not a local courtesy: bun audit exits 1 when
+      # the locked tree has a known vulnerability, so this step fails the job
+      # instead of letting a CVE batch sit on main behind green tests.
+      - name: Dependency advisories (bun audit)
+        run: bun audit
+
       - name: Test
         run: bun run test
 
