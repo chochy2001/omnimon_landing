@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { OMNIMON_VERSION } from '../consts';
+import { OMNIMON_VERSION, PUBLISHED_VERSION } from '../consts';
 import type { ConsentLocale } from '../lib/consent';
 import { homeCopy } from '../lib/home';
 
@@ -80,7 +80,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 						<p class="text-slate-400">{copy.snapshotLine3}</p>
 						<p class="text-slate-400">{copy.snapshotLine4}</p>
 						<p class="text-slate-400">{copy.snapshotLine5}</p>
-						<p class="text-orange-300">version: {OMNIMON_VERSION}</p>
+						<p class="text-orange-300">version: {PUBLISHED_VERSION} · next: {OMNIMON_VERSION} pre-release</p>
 					</div>
 					<div class="mt-5 grid gap-3 text-sm sm:grid-cols-2" style="color: var(--text-soft)">
 						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border)">
@@ -164,7 +164,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 [OK] Native keyring storage enforced
 [OK] AI rules rate limiting active
 [OK] Alerts grouped by process
-[DONE] OmniMon {OMNIMON_VERSION} is ready</code></pre>
+[DONE] OmniMon {PUBLISHED_VERSION} is ready</code></pre>
 				</div>
 			</div>
 		</section>

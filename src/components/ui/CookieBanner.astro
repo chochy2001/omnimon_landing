@@ -9,6 +9,8 @@
  *   (and any other tracker that listens) can fire `posthog.init()`.
  * - On reject, stores `{ accepted: false }` so the banner does not
  *   re-appear for 365 days.
+ * - Configure opens an inline preferences panel (essentials always on,
+ *   one analytics toggle). Save persists and dispatches the same event.
  * - Bilingual: picks Spanish or English from `document.documentElement.lang`.
  *
  * Style notes:
@@ -51,6 +53,14 @@
         >
           Terminos
         </a>
+        <span class="mx-2 text-slate-600" aria-hidden="true">·</span>
+        <a
+          data-omnimon-banner-cookies
+          href="/es/cookies"
+          class="font-medium underline-offset-2 transition hover:underline" style="color: var(--accent)"
+        >
+          Politica de cookies
+        </a>
       </p>
     </div>
     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
@@ -64,6 +74,8 @@
       <button
         type="button"
         data-omnimon-banner-configure
+        aria-expanded="false"
+        aria-controls="omnimon-cookie-prefs"
         class="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400" style="border-color: var(--surface-border); background: var(--bg-elevated); color: var(--text-main)"
       >
         Configurar
@@ -74,6 +86,46 @@
         class="inline-flex items-center justify-center rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-orange-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
       >
         Aceptar todas
+      </button>
+    </div>
+  </div>
+  <div
+    id="omnimon-cookie-prefs"
+    data-omnimon-cookie-prefs
+    class="mx-auto hidden max-w-7xl flex-col gap-3 px-4 pb-5 sm:px-6 lg:px-8"
+    role="group"
+    aria-label="Preferencias de cookies"
+  >
+    <p class="text-sm font-semibold" style="color: var(--text-main)" data-omnimon-prefs-title>
+      Preferencias de cookies
+    </p>
+    <p class="muted text-sm" data-omnimon-prefs-necessary>
+      Esenciales: siempre activas. Guardan tu eleccion, tema e idioma en este navegador.
+    </p>
+    <label class="flex cursor-pointer items-start gap-3 text-sm" style="color: var(--text-main)">
+      <input
+        type="checkbox"
+        data-omnimon-prefs-analytics
+        class="mt-1 h-4 w-4 shrink-0 accent-orange-500"
+      />
+      <span data-omnimon-prefs-analytics-label>
+        Analitica (PostHog): mide visitas e interacciones. Solo se carga si la activas.
+      </span>
+    </label>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+      <button
+        type="button"
+        data-omnimon-prefs-save
+        class="inline-flex items-center justify-center rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-orange-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+      >
+        Guardar eleccion
+      </button>
+      <button
+        type="button"
+        data-omnimon-prefs-cancel
+        class="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400" style="border-color: var(--surface-border); background: var(--bg-elevated); color: var(--text-main)"
+      >
+        Volver
       </button>
     </div>
   </div>
@@ -142,6 +194,13 @@
     const configure = banner.querySelector('[data-omnimon-banner-configure]');
     const privacy = banner.querySelector('[data-omnimon-banner-privacy]');
     const terms = banner.querySelector('[data-omnimon-banner-terms]');
+    const cookies = banner.querySelector('[data-omnimon-banner-cookies]');
+    const prefsTitle = banner.querySelector('[data-omnimon-prefs-title]');
+    const prefsNecessary = banner.querySelector('[data-omnimon-prefs-necessary]');
+    const prefsAnalytics = banner.querySelector('[data-omnimon-prefs-analytics-label]');
+    const prefsSave = banner.querySelector('[data-omnimon-prefs-save]');
+    const prefsCancel = banner.querySelector('[data-omnimon-prefs-cancel]');
+    const prefsGroup = banner.querySelector('[data-omnimon-cookie-prefs]');
     if (title) title.textContent = s.title;
     if (body) body.textContent = s.body;
     if (accept) accept.textContent = s.accept;
@@ -155,6 +214,16 @@
       terms.textContent = s.terms;
       terms.setAttribute('href', s.termsHref);
     }
+    if (cookies instanceof HTMLAnchorElement) {
+      cookies.textContent = s.cookies;
+      cookies.setAttribute('href', s.cookiesHref);
+    }
+    if (prefsTitle) prefsTitle.textContent = s.prefsTitle;
+    if (prefsNecessary) prefsNecessary.textContent = s.prefsNecessary;
+    if (prefsAnalytics) prefsAnalytics.textContent = s.prefsAnalytics;
+    if (prefsSave) prefsSave.textContent = s.prefsSave;
+    if (prefsCancel) prefsCancel.textContent = s.prefsCancel;
+    if (prefsGroup) prefsGroup.setAttribute('aria-label', s.prefsTitle);
   }
 
   function init() {
@@ -174,6 +243,10 @@
     const accept = banner.querySelector('[data-omnimon-banner-accept]');
     const reject = banner.querySelector('[data-omnimon-banner-reject]');
     const configure = banner.querySelector('[data-omnimon-banner-configure]');
+    const prefs = banner.querySelector('[data-omnimon-cookie-prefs]');
+    const analyticsBox = banner.querySelector('[data-omnimon-prefs-analytics]');
+    const prefsSave = banner.querySelector('[data-omnimon-prefs-save]');
+    const prefsCancel = banner.querySelector('[data-omnimon-prefs-cancel]');
 
     function onAccept() {
       persist(true);
@@ -186,14 +259,32 @@
       hide(banner);
     }
 
+    function setPrefsOpen(open: boolean) {
+      if (!prefs) return;
+      prefs.classList.toggle('hidden', !open);
+      prefs.classList.toggle('flex', open);
+      if (configure) configure.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
     if (accept) accept.addEventListener('click', onAccept);
     if (reject) reject.addEventListener('click', onReject);
     if (configure) {
       configure.addEventListener('click', () => {
-        const privacy = banner.querySelector('[data-omnimon-banner-privacy]');
-        const href =
-          privacy instanceof HTMLAnchorElement ? privacy.getAttribute('href') : '/es/privacy';
-        if (href) window.location.assign(href);
+        const isOpen = prefs ? !prefs.classList.contains('hidden') : false;
+        setPrefsOpen(!isOpen);
+      });
+    }
+    if (prefsSave) {
+      prefsSave.addEventListener('click', () => {
+        const enabled = analyticsBox instanceof HTMLInputElement ? analyticsBox.checked === true : false;
+        persist(enabled);
+        dispatch(enabled);
+        hide(banner);
+      });
+    }
+    if (prefsCancel) {
+      prefsCancel.addEventListener('click', () => {
+        setPrefsOpen(false);
       });
     }
   }

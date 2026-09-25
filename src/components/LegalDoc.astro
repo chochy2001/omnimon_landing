@@ -10,9 +10,9 @@ interface Props {
 
 const { locale, page } = Astro.props;
 const copy = resolveLegalStrings(locale);
-const title = page === 'privacy' ? copy.privacyTitle : copy.termsTitle;
-const body = page === 'privacy' ? copy.privacyBody : copy.termsBody;
-const otherPage: LegalPage = page === 'privacy' ? 'terms' : 'privacy';
+const title = page === 'privacy' ? copy.privacyTitle : page === 'terms' ? copy.termsTitle : copy.cookiesTitle;
+const body = page === 'privacy' ? copy.privacyBody : page === 'terms' ? copy.termsBody : copy.cookiesBody;
+const otherPages: LegalPage[] = (['privacy', 'terms', 'cookies'] as LegalPage[]).filter((p) => p !== page);
 const otherLocale: ConsentLocale = locale === 'es' ? 'en' : 'es';
 ---
 
@@ -32,10 +32,12 @@ const otherLocale: ConsentLocale = locale === 'es' ? 'en' : 'es';
         <p>{paragraph}</p>
       ))}
     </article>
-    <p class="text-sm text-slate-400">
-      <a href={legalHref(locale, otherPage)} class="transition hover:text-white">
-        {legalLinkLabel(locale, otherPage)}
-      </a>
+    <p class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-400">
+      {otherPages.map((other) => (
+        <a href={legalHref(locale, other)} class="transition hover:text-white">
+          {legalLinkLabel(locale, other)}
+        </a>
+      ))}
     </p>
   </main>
 </Layout>

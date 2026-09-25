@@ -7,7 +7,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 
 <Layout
 	title="OmniMon v6.7.0: Zombie Killer & AI Safety Hardening | Blog"
-	description="OmniMon v6.7.0 ships the Zombie Killer engine, AI privacy mode with stable pseudonymous redaction, a daily AI budget, keyring hardening, a DPI transparency badge, and a breaking refactor of the network-alerts evaluator state."
+	description="Pre-release preview of OmniMon v6.7.0: the Zombie Killer engine, AI privacy mode with stable pseudonymous redaction, a daily AI budget, keyring hardening, a DPI transparency badge, and a breaking refactor of the network-alerts evaluator state."
 	lang="en"
 >
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -21,13 +21,13 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.7.0: Zombie Killer &amp; AI Safety Hardening</h1>
 				<div class="flex items-center gap-4 text-sm text-slate-400">
 					<time>17 Apr 2026</time>
-					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">New release</span>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Preview</span>
 				</div>
 			</header>
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					Version 6.7.0 introduces the <strong class="text-white">Zombie Killer</strong>, a background engine that detects processes burning CPU or RAM for long stretches and offers them for user-confirmed termination, plus a second round of AI safety hardening (privacy mode, daily budget, frontend-confirmed automation tool calls, keyring delete-first) and a DPI transparency badge.
+					Version 6.7.0 is a pre-release preview. It introduces the <strong class="text-white">Zombie Killer</strong>, a background engine that detects processes burning CPU or RAM for long stretches and offers them for user-confirmed termination, plus a second round of AI safety hardening (privacy mode, daily budget, frontend-confirmed automation tool calls, keyring delete-first) and a DPI transparency badge.
 				</p>
 
 				<h2 class="text-2xl font-bold text-white">Zombie Killer</h2>
@@ -81,7 +81,10 @@ let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history, 
 					<li><strong class="text-white">Clippy clean under Rust 1.95</strong>: ten pre-existing call sites fixed to satisfy the new <code>unnecessary_sort_by</code> and <code>collapsible_match</code> lints.</li>
 				</ul>
 
-				<h2 class="text-2xl font-bold text-white">Download</h2>
+				<h2 class="text-2xl font-bold text-white">Download the latest published release</h2>
+				<p class="text-slate-400">
+					These buttons serve the latest published GitHub tag (currently v6.6.6), not this preview. Homebrew tracks the same published tag.
+				</p>
 				<div class="grid gap-4 sm:grid-cols-3">
 					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
 						<p class="text-sm uppercase tracking-[0.24em] text-orange-200">macOS</p>

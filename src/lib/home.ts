@@ -1,4 +1,4 @@
-import { OMNIMON_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
+import { OMNIMON_VERSION, PUBLISHED_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
 import type { ConsentLocale } from './consent';
 
 export type HomeCopy = {
@@ -67,13 +67,13 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
   es: {
     lang: 'es',
     title: `OmniMon ${v} | Observabilidad, seguridad e IA para tu sistema`,
-    description: `Landing oficial de OmniMon ${v} con Memory Guard, tutorial, descargas verificables y accesos para macOS, Windows y Linux.`,
-    badgeNew: 'Nuevo',
+    description: `Vista previa de OmniMon ${v} (pre-release): Memory Guard, tutorial, descargas verificables y accesos para macOS, Windows y Linux.`,
+    badgeNew: 'Proximo',
     versionWord: 'Version',
-    releaseWord: 'Release',
+    releaseWord: 'Pre-release',
     releaseDate: RELEASE_DATE_ES,
     h1: 'Observabilidad real, seguridad activa y asistencia IA en una sola consola.',
-    lead: `OmniMon ${v} une desktop nativo, CLI y TUI para monitorear procesos, red y alertas, con Memory Guard en macOS para leftovers idle sin falsos positivos.`,
+    lead: `OmniMon ${v} (pre-release) une desktop nativo, CLI y TUI para monitorear procesos, red y alertas, con Memory Guard en macOS para leftovers idle sin falsos positivos.`,
     ctaDownload: 'Descargar ultima version',
     ctaDocs: 'Ver documentacion',
     ctaSponsors: 'GitHub Sponsors',
@@ -83,8 +83,8 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     securityValue: 'Firmas Ed25519 + SHA-256',
     aiKicker: 'IA opcional',
     aiValue: 'Local o cloud segun tu flujo',
-    snapshotKicker: 'Vista del release',
-    snapshotCta: 'Ver release',
+    snapshotKicker: 'Vista previa',
+    snapshotCta: 'Ver releases',
     snapshotLine2: 'desktop: ready',
     snapshotLine3: 'security: privacy mode, signed releases, keyring delete-first',
     snapshotLine4: 'macos: memory guard leftovers only, never Warp/Chrome/fseventsd',
@@ -93,8 +93,8 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     qaBody: 'Cobertura, ramas criticas y regresiones bajo control.',
     cliTitle: 'CLI + GUI',
     cliBody: 'Paridad funcional para diagnostico local y remoto.',
-    releaseKicker: `Release ${v}`,
-    releaseH2: 'Lo mas importante que cambia en esta version',
+    releaseKicker: `Pre-release ${v}`,
+    releaseH2: 'Lo mas importante que trae esta pre-release',
     releaseLead:
       'Memory Guard en macOS, Zombie Killer en la app, y el mismo contrato: no matar lo que estas usando.',
     highlights: [
@@ -179,9 +179,8 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
       },
     ],
     downloadKicker: 'Descarga e instalacion',
-    downloadH2: `Instala OmniMon ${v} en minutos`,
-    downloadLead:
-      'Usa el ultimo release, Homebrew o el instalador web. Valida siempre el checksum publicado.',
+    downloadH2: 'Instala OmniMon en minutos',
+    downloadLead: `Descargas del ultimo release publicado (v${PUBLISHED_VERSION}), Homebrew o el instalador web. Valida siempre el checksum publicado.`,
     artifacts: [
       {
         platform: 'macOS',
@@ -236,18 +235,18 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     navBlog: 'Blog',
     navDocs: 'Docs',
     navDownload: 'Descargar',
-    screenshotAlt: `OmniMon ${v} — captura de la aplicacion de escritorio`,
+    screenshotAlt: `OmniMon ${v} - captura de la aplicacion de escritorio`,
   },
   en: {
     lang: 'en',
     title: `OmniMon ${v} | System observability, security, and optional AI`,
-    description: `Official OmniMon ${v} landing: Memory Guard for macOS, downloads, and docs for macOS, Windows, and Linux.`,
-    badgeNew: 'New',
+    description: `OmniMon ${v} pre-release preview: Memory Guard for macOS, downloads, and docs for macOS, Windows, and Linux.`,
+    badgeNew: 'Next',
     versionWord: 'Version',
-    releaseWord: 'Release',
+    releaseWord: 'Pre-release',
     releaseDate: RELEASE_DATE,
     h1: 'Real observability, active security, and optional AI in one console.',
-    lead: `OmniMon ${v} ships a native desktop app, CLI, and TUI, plus a macOS Memory Guard that reaps idle leftovers without touching Warp, Chrome, or fseventsd.`,
+    lead: `OmniMon ${v} (pre-release) brings together a native desktop app, CLI, and TUI, plus a macOS Memory Guard that reaps idle leftovers without touching Warp, Chrome, or fseventsd.`,
     ctaDownload: 'Download latest',
     ctaDocs: 'Read the docs',
     ctaSponsors: 'GitHub Sponsors',
@@ -257,8 +256,8 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     securityValue: 'Ed25519 signatures + SHA-256',
     aiKicker: 'Optional AI',
     aiValue: 'Local or cloud, when you want it',
-    snapshotKicker: 'Release snapshot',
-    snapshotCta: 'View release',
+    snapshotKicker: 'Preview snapshot',
+    snapshotCta: 'View releases',
     snapshotLine2: 'desktop: ready',
     snapshotLine3: 'security: privacy mode, signed releases, keyring delete-first',
     snapshotLine4: 'macos: memory guard leftovers only, never Warp/Chrome/fseventsd',
@@ -267,8 +266,8 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     qaBody: 'Coverage, critical paths, and regression checks stay on.',
     cliTitle: 'CLI + GUI',
     cliBody: 'Same capabilities for local and remote diagnosis.',
-    releaseKicker: `Release ${v}`,
-    releaseH2: 'What actually changes in this version',
+    releaseKicker: `Pre-release ${v}`,
+    releaseH2: 'What this pre-release brings',
     releaseLead:
       'Memory Guard on macOS, Zombie Killer in the app, and the same rule: do not kill what you are using.',
     highlights: [
@@ -352,9 +351,8 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
       },
     ],
     downloadKicker: 'Download and install',
-    downloadH2: `Install OmniMon ${v} in minutes`,
-    downloadLead:
-      'Use the latest GitHub release, Homebrew, or the web installer. Always check the published checksum.',
+    downloadH2: 'Install OmniMon in minutes',
+    downloadLead: `Downloads from the latest published release (v${PUBLISHED_VERSION}), Homebrew, or the web installer. Always check the published checksum.`,
     artifacts: [
       {
         platform: 'macOS',
@@ -408,6 +406,6 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     navBlog: 'Blog',
     navDocs: 'Docs',
     navDownload: 'Download',
-    screenshotAlt: `OmniMon ${v} — desktop app screenshot`,
+    screenshotAlt: `OmniMon ${v} - desktop app screenshot`,
   },
 };

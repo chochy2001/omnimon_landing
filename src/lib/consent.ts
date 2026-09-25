@@ -27,8 +27,15 @@ export const CONSENT_STRINGS: Record<
     aria: string;
     privacy: string;
     terms: string;
+    cookies: string;
     privacyHref: string;
     termsHref: string;
+    cookiesHref: string;
+    prefsTitle: string;
+    prefsNecessary: string;
+    prefsAnalytics: string;
+    prefsSave: string;
+    prefsCancel: string;
   }
 > = {
   es: {
@@ -40,8 +47,15 @@ export const CONSENT_STRINGS: Record<
     aria: 'Aviso de cookies',
     privacy: 'Politica de privacidad',
     terms: 'Terminos',
+    cookies: 'Politica de cookies',
     privacyHref: '/es/privacy',
     termsHref: '/es/terms',
+    cookiesHref: '/es/cookies',
+    prefsTitle: 'Preferencias de cookies',
+    prefsNecessary: 'Esenciales: siempre activas. Guardan tu eleccion, tema e idioma en este navegador.',
+    prefsAnalytics: 'Analitica (PostHog): mide visitas e interacciones. Solo se carga si la activas.',
+    prefsSave: 'Guardar eleccion',
+    prefsCancel: 'Volver',
   },
   en: {
     title: 'Cookies and analytics',
@@ -52,8 +66,15 @@ export const CONSENT_STRINGS: Record<
     aria: 'Cookie notice',
     privacy: 'Privacy policy',
     terms: 'Terms',
+    cookies: 'Cookie policy',
     privacyHref: '/privacy',
     termsHref: '/terms',
+    cookiesHref: '/cookies',
+    prefsTitle: 'Cookie preferences',
+    prefsNecessary: 'Essentials: always on. They store your choice, theme, and language in this browser.',
+    prefsAnalytics: 'Analytics (PostHog): measures visits and interactions. Loads only if you enable it.',
+    prefsSave: 'Save choice',
+    prefsCancel: 'Back',
   },
 };
 
