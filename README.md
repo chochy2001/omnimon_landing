@@ -29,7 +29,7 @@ Live origin `omnimon-build` SHA **`2ca253f9fb309eaee2f74459d8c2dba14780c9da`** (
 | `/en` `/en/` | 301 → `/` |
 | Unknown path | 404 **product** page (`ErrorDocument 404 /404.html`) |
 | Favicon | OmniMon gear+cyan SVG + app ICO (not Astro starter `M50.4 78.5`) |
-| Blog index | Only posts that exist as Astro pages (v6.4.1–v6.8.0 EN/ES) |
+| Blog index | Only posts that exist as Astro pages (v6.4.1-v6.8.0 EN/ES) |
 | Legal | `/privacy` `/terms` `/es/privacy` `/es/terms` |
 
 `src/consts.ts` version is **6.8.0** (workspace). Latest published GitHub tag for the desktop app is still **v6.6.6** (a Universal DMG exists for that tag; there is no 6.8.0 binary). Download CTAs say "Download latest" / "Descargar ultima version" and point at `releases/latest`. Spanish blog slugs end with `-es` (example: `/es/blog/v6-8-0-release-es/`).
@@ -37,7 +37,7 @@ Live origin `omnimon-build` SHA **`2ca253f9fb309eaee2f74459d8c2dba14780c9da`** (
 ## Deploy
 
 GitHub Actions: `.github/workflows/deploy-hostinger.yml` (GitHub-hosted, FTPS strict).
-Operator secrets: `HOSTINGER_FTPS_HOST` (hostname under `*.hstgr.io`, **not** the IP), `FTP_USER`, `FTP_PASSWORD`. Variables: `FTP_PORT=21`, `FTP_REMOTE_DIR=./`.
+Operator secrets: `HOSTINGER_FTPS_HOST` (TLS name under `*.hstgr.io`, **not** the IP, need not resolve), `FTP_HOST` (TCP address, the pool IP), `FTP_USER`, `FTP_PASSWORD`. Variables: `FTP_PORT=21`, `FTP_REMOTE_DIR` (measured at deploy time, `./` or `public_html/`).
 
 Until `HOSTINGER_FTPS_HOST` is set, GitHub CD is blocked and production is published by local FTPS of `dist/` stamped with `PUBLIC_BUILD_SHA`. Details: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
 
