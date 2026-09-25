@@ -36,5 +36,10 @@ jobs:
       - name: Test
         run: bun run test
 
+      - name: Deploy FTPS identity and strictness tests
+        run: |
+          bash scripts/tests/ftps_identity_test.sh
+          bash scripts/tests/deploy_strict_contract_test.sh
+
       - name: Build
         run: bun run build

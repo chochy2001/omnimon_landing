@@ -34,7 +34,8 @@ antes de tocar el origen.
 
 | Nombre | Contenido | De donde sale |
 |--------|-----------|----------------|
-| `HOSTINGER_FTPS_HOST` | Nombre de servidor FTPS de Hostinger que el certificado cubre. **No vale una IP** | hPanel > Archivos > Cuentas FTP. El certificado servido por el FTP de esta cuenta, medido el 2026-09-19, es `CN=*.hstgr.io` con SAN `*.hstgr.io` y `hstgr.io`, asi que el valor tiene que ser un nombre bajo `hstgr.io`. El `FTP_HOST` del `.env.local` local es la IP `31.170.161.105` y **no sirve aqui**: con `security: strict` la verificacion de nombre la rechaza |
+| `HOSTINGER_FTPS_HOST` | Identidad TLS: nombre bajo `hstgr.io` que el certificado cubre. **No vale una IP**, y **no necesita resolver** en DNS publico | Valor actual: `omnimon-upload.hstgr.io`. El certificado del pool, medido el 2026-09-25, es `CN=*.hstgr.io` con SAN `*.hstgr.io` y `hstgr.io`. Medido el mismo dia: ningun nombre bajo `hstgr.io` resuelve a la IP del pool (`*-upload.hstgr.io` es NXDOMAIN, la IP no tiene PTR, el servidor ignora el SNI), asi que la identidad TLS y la direccion TCP son dos secretos distintos y curl los une con `--connect-to` |
+| `FTP_HOST` | Direccion TCP del servidor FTPS, normalmente la IP del pool | hPanel > Archivos > Cuentas FTP. Valor actual: `31.170.161.105`. Acepta IP o nombre que resuelva; nunca se verifica por nombre contra el certificado |
 | `FTP_USER` | Usuario FTP | mismo origen, clave `FTP_USER` |
 | `FTP_PASSWORD` | Contrasena FTP | mismo origen, clave `FTP_PASSWORD`. Si no se conoce, se regenera en hPanel |
 
@@ -53,10 +54,15 @@ Ninguno de los dos es una credencial.
 
 Sobre `FTP_REMOTE_DIR`: las cuentas FTP de Hostinger suelen quedar enjauladas en
 la raiz del dominio, asi que el valor util suele ser `./` y no
-`/public_html/algo/`. Verificar el valor real contra el panel o contra el
-`.env.local` local. Si se pone mal, la subida escribe en un sitio que Apache no
-sirve, y el paso `Assert live build fingerprint on public origin` falla con ese
-mensaje exacto en vez de reportar un despliegue verde de un sitio que nadie ve.
+`public_html/`. El workflow lo mide antes de subir nada: el paso de subida
+lista `FTP_REMOTE_DIR` en el servidor sin `--ftp-create-dirs`, y si el
+directorio no existe falla ahi con el valor de curl y el consejo exacto, en
+vez de crear el directorio equivocado en silencio y publicar en el vacio. Si
+ese paso falla, cambia la variable al otro valor (`./` o `public_html/`) y
+repite el despliegue con `workflow_dispatch`. El paso
+`Assert live build fingerprint on public origin` sigue siendo la red final: si
+la subida escribio donde Apache no sirve, falla nombrando `FTP_REMOTE_DIR` en
+vez de reportar un despliegue verde de un sitio que nadie ve.
 
 ### Opcionales
 
@@ -69,11 +75,12 @@ mensaje exacto en vez de reportar un despliegue verde de un sitio que nadie ve.
 
 ```bash
 gh secret set HOSTINGER_FTPS_HOST -R chochy2001/omnimon_landing
+gh secret set FTP_HOST -R chochy2001/omnimon_landing
 gh secret set FTP_USER -R chochy2001/omnimon_landing
 gh secret set FTP_PASSWORD -R chochy2001/omnimon_landing
 
 gh variable set FTP_PORT -R chochy2001/omnimon_landing --body '21'
-gh variable set FTP_REMOTE_DIR -R chochy2001/omnimon_landing --body './'
+gh variable set FTP_REMOTE_DIR -R chochy2001/omnimon_landing --body 'public_html/'
 
 # opcional
 gh secret set PUBLIC_POSTHOG_KEY -R chochy2001/omnimon_landing
@@ -162,47 +169,38 @@ origen ya sirve.
 
 ## Limites conocidos
 
-- **El origen si pierde ficheros, aunque `dangerous-clean-slate` sea `false`.**
-  Las dos cosas son distintas y conviene no confundirlas.
-  `dangerous-clean-slate: true` borraria el directorio remoto ENTERO antes de
-  subir; con `false` eso no ocurre nunca. Pero la accion tambien borra por
-  diferencia de estado, y eso si ocurre. Medido leyendo el `dist/index.js` de
-  `SamKirkland/FTP-Deploy-Action` v4.4.0 (SHA `110f9186`), que es el bundle que
-  el runner ejecuta:
-  - La accion deja un inventario, `.ftp-deploy-sync-state.json`, dentro del
-    directorio remoto al terminar cada subida (`syncLocalToServer`).
-  - Al empezar intenta leerlo. Si no existe registra
-    `this must be your first publish` y toma el estado del servidor como vacio
-    (`getServerFiles` devuelve `data: []`), asi que el primer run **no borra
-    nada**.
-  - A partir del segundo run el inventario ya esta. `HashDiff.getDiffs` mete en
-    `deleteList` todo fichero o carpeta que figure en ese inventario y que el
-    build nuevo ya no emita, y `syncLocalToServer` los elimina con `removeFile`
-    y `removeFolder`. Ese camino **no consulta `dangerous-clean-slate`**.
-
-  O sea: lo que este pipeline subio en un despliegue anterior y el build actual
-  deja de emitir **se borra**. Lo que nunca estuvo en el inventario no se toca,
-  y ahi es donde estan los restos de las subidas manuales antiguas (entradas de
-  blog que el fuente ya no emite, `sitemap-index.xml`, imagenes, `.htaccess`):
-  esos si sobreviven, porque el primer run del pipeline solo apunto el contenido
-  de `dist/`. Borrar el inventario a mano en el servidor devuelve la accion al
-  modo primera publicacion y suspende los borrados hasta el siguiente run.
-- **Verificacion del certificado FTPS: estricta.** Se usa `protocol: ftps` con
-  `security: strict`. La clave no es decorativa: en el `dist/index.js` de la
-  accion fijada, la entrada `security` se rellena con `"loose"` cuando no se
-  pasa, y el codigo hace
-  `const rejectUnauthorized = args.security === "strict";` antes de mandarlo tal
-  cual en `secureOptions`. Sin la clave, `protocol: ftps` da un canal cifrado
-  pero **no autenticado**: no se valida ni la cadena ni el nombre del servidor,
-  y quien pueda interponerse en la ruta se queda con la contrasena FTP de
-  produccion. Consecuencia operativa: `HOSTINGER_FTPS_HOST` debe ser un nombre
-  que el certificado cubra. El certificado servido por el FTP de esta cuenta,
-  medido el 2026-09-19 con `openssl s_client -starttls ftp`, es `CN=*.hstgr.io`
-  con SAN `*.hstgr.io` y `hstgr.io`; una IP o un `ftp.omnimon.com.mx` fallan la
-  verificacion de nombre. El paso `Verify the strict FTPS endpoint before
-  sending credentials` lo comprueba con `openssl` **antes** de que el workflow
-  entregue usuario o contrasena a nadie, asi que un valor mal puesto falla con
-  un mensaje legible en vez de morir dentro de la subida.
+- **La subida nunca borra nada en el origen.** Hasta el 2026-09-25 se usaba
+  `SamKirkland/FTP-Deploy-Action`, que borra por diferencia de estado contra su
+  inventario `.ftp-deploy-sync-state.json`. Esa accion no sirve aqui: abre su
+  propia conexion TLS contra el valor de `server` y no permite fijar el TCP a
+  una IP, que es justo lo que hace falta porque el nombre que el certificado
+  cubre no resuelve. La subida actual es curl fichero a fichero, que solo
+  escribe. Consecuencias honestas: los assets viejos con hash de contenido se
+  acumulan (pocos KB por despliegue, inofensivos) y una pagina que el fuente
+  deje de emitir sobrevive en el origen hasta que alguien la borre a mano en
+  hPanel. Los restos de subidas manuales antiguas siguen donde estaban. Lo que
+  si esta garantizado no cambia: la huella y los assets del build
+  promocionado se leen de vuelta del origen publico y tienen que coincidir
+  byte a byte.
+- **Verificacion del certificado FTPS: estricta, en dos capas.** El paso
+  `Verify the strict FTPS endpoint before sending credentials` comprueba con
+  `openssl` (`-verify_hostname` mas `-verify_return_error`) **antes** de que
+  el workflow entregue usuario o contrasena a nadie, asi que un valor mal
+  puesto falla con un mensaje legible en vez de morir dentro de la subida. La
+  subida con curl repite la verificacion estricta por defecto (`--ssl-reqd`
+  exige FTPS explicito y curl valida cadena y nombre contra el host de la
+  URL). Sin verificacion de nombre, FTPS da un canal cifrado pero **no
+  autenticado**: no se valida ni la cadena ni el nombre del servidor, y quien
+  pueda interponerse en la ruta se queda con la contrasena FTP de
+  produccion. El test de contrato
+  `scripts/tests/deploy_strict_contract_test.sh`, cableado en CI, falla si
+  desaparece cualquier marcador de esa verificacion o si aparece `--insecure`
+  o un modo laxo. Detalles medidos: el certificado del pool es
+  `CN=*.hstgr.io` con SAN `*.hstgr.io` y `hstgr.io` (2026-09-25); la conexion
+  TCP va a `FTP_HOST` y el SNI lleva `HOSTINGER_FTPS_HOST`, unidos con
+  `--connect-to`. La huella de la hoja se registra en el log solo para
+  auditoria: el emisor (Let's Encrypt) rota el certificado y fijarla
+  convertiria cada renovacion en un despliegue roto.
 - **El runner es GitHub-hosted a proposito.** Este repositorio es publico y no
   tiene runners propios, y los runners self-hosted de CAPDESIS no sirven a un
   repositorio personal. Entregar credenciales FTP de produccion a un runner
