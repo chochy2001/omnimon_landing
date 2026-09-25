@@ -20,7 +20,7 @@ bun run preview
 
 ## Verified 2026-09-25 UTC
 
-Live origin `omnimon-build` SHA **`c4b9cc7e0e3fca7d6fcdae80c5b75849ca7da009`** (= `origin/main`), published by GitHub CD run 36163409304 (42 files, 20 fingerprinted pages, 19 assets, 0 console errors in headless Chrome). First pipeline deploy: before it, the origin served `2ca253f9` from a manual FTPS upload. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404.
+Live origin tracks `origin/main` via GitHub CD: every merge to `main` with green CI is promoted and read back (fingerprint, smoke, assets). First pipeline deploy 2026-09-25: `c4b9cc7` via run 36163409304 (42 files, 20 fingerprinted pages, 19 assets, 0 console errors in headless Chrome); before it, the origin served `2ca253f9` from a manual FTPS upload. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404.
 
 | Surface | Status |
 |---------|--------|
