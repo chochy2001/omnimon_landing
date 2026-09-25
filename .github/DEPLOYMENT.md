@@ -80,7 +80,10 @@ gh secret set FTP_USER -R chochy2001/omnimon_landing
 gh secret set FTP_PASSWORD -R chochy2001/omnimon_landing
 
 gh variable set FTP_PORT -R chochy2001/omnimon_landing --body '21'
-gh variable set FTP_REMOTE_DIR -R chochy2001/omnimon_landing --body 'public_html/'
+gh variable set FTP_REMOTE_DIR -R chochy2001/omnimon_landing --body './'
+# FTP_REMOTE_DIR measured 2026-09-25: the FTP account is jailed at the
+# domain root. public_html/ failed with curl 9 (server denied CWD) in
+# deploy run 36161439264; ./ listed and deployed green in 36163409304.
 
 # opcional
 gh secret set PUBLIC_POSTHOG_KEY -R chochy2001/omnimon_landing

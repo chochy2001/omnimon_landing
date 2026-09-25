@@ -18,9 +18,9 @@ bun run build
 bun run preview
 ```
 
-## Verified 2026-09-20 UTC
+## Verified 2026-09-25 UTC
 
-Live origin `omnimon-build` SHA **`2ca253f9fb309eaee2f74459d8c2dba14780c9da`** (landing `#17`; `#18` was docs-only and did not change origin HTML). Until GitHub CD has `HOSTINGER_FTPS_HOST`, treat that SHA as the last measured public origin. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404.
+Live origin `omnimon-build` SHA **`c4b9cc7e0e3fca7d6fcdae80c5b75849ca7da009`** (= `origin/main`), published by GitHub CD run 36163409304 (42 files, 20 fingerprinted pages, 19 assets, 0 console errors in headless Chrome). First pipeline deploy: before it, the origin served `2ca253f9` from a manual FTPS upload. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404.
 
 | Surface | Status |
 |---------|--------|
@@ -37,12 +37,11 @@ Live origin `omnimon-build` SHA **`2ca253f9fb309eaee2f74459d8c2dba14780c9da`** (
 ## Deploy
 
 GitHub Actions: `.github/workflows/deploy-hostinger.yml` (GitHub-hosted, FTPS strict).
-Operator secrets: `HOSTINGER_FTPS_HOST` (TLS name under `*.hstgr.io`, **not** the IP, need not resolve), `FTP_HOST` (TCP address, the pool IP), `FTP_USER`, `FTP_PASSWORD`. Variables: `FTP_PORT=21`, `FTP_REMOTE_DIR` (measured at deploy time, `./` or `public_html/`).
+Operator secrets: `HOSTINGER_FTPS_HOST` (TLS name under `*.hstgr.io`, **not** the IP, need not resolve), `FTP_HOST` (TCP address, the pool IP), `FTP_USER`, `FTP_PASSWORD`. Variables: `FTP_PORT=21`, `FTP_REMOTE_DIR=./` (measured 2026-09-25: the FTP account is jailed at the domain root).
 
-Until `HOSTINGER_FTPS_HOST` is set, GitHub CD is blocked and production is published by local FTPS of `dist/` stamped with `PUBLIC_BUILD_SHA`. Details: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
+GitHub CD is live: every push to `main` with green CI promotes that exact SHA to the origin and reads it back (fingerprint, smoke, assets). Details: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
 
 ## Residual (operator)
 
-- `HOSTINGER_FTPS_HOST` is missing on the GitHub repo, so GitHub CD cannot run. Live origin is published by local FTPS.
 - Published desktop tag remains **v6.6.6**; landing titles may still mention workspace 6.8.0.
 - Cutting a `v6.8.0` Universal DMG is a release decision, not a landing deploy.
