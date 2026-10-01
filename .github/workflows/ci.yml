@@ -39,6 +39,12 @@ jobs:
       - name: Dependency advisories (bun audit)
         run: bun audit
 
+      - name: Build
+        run: bun run build
+
+      - name: Install Chromium for responsive smoke
+        run: bunx playwright install chromium
+
       - name: Test
         run: bun run test
 
@@ -47,6 +53,3 @@ jobs:
           bash scripts/tests/ftps_identity_test.sh
           bash scripts/tests/png_compare_test.sh
           bash scripts/tests/deploy_strict_contract_test.sh
-
-      - name: Build
-        run: bun run build

@@ -138,8 +138,8 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 		</section>
 
 		<section class="glass-panel overflow-hidden rounded-[2rem]">
-			<div class="grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
-				<div class="border-b px-6 py-8 lg:border-b-0 lg:border-r lg:px-8 lg:py-10" style="border-color: var(--surface-border)">
+			<div class="grid min-w-0 gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+				<div class="min-w-0 border-b px-6 py-8 lg:border-b-0 lg:border-r lg:px-8 lg:py-10" style="border-color: var(--surface-border)">
 					<p class="kicker text-sm uppercase tracking-[0.24em]">{copy.flowKicker}</p>
 					<h2 class="section-title mt-3 text-3xl font-bold">{copy.flowH2}</h2>
 					<div class="muted mt-8 space-y-6 text-sm leading-7">
@@ -152,7 +152,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 					</div>
 				</div>
 
-				<div class="terminal-panel px-6 py-8 lg:px-8 lg:py-10">
+				<div class="terminal-panel min-w-0 px-6 py-8 lg:px-8 lg:py-10">
 					<div class="mb-4 flex gap-2">
 						<div class="h-3 w-3 rounded-full bg-rose-400"></div>
 						<div class="h-3 w-3 rounded-full bg-amber-300"></div>
@@ -194,9 +194,9 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 				<p class="muted mx-auto max-w-3xl">{copy.downloadLead}</p>
 			</div>
 
-			<div class="mt-8 grid gap-4 lg:grid-cols-3">
+			<div class="mt-8 grid min-w-0 gap-4 lg:grid-cols-3">
 				{copy.artifacts.map((artifact) => (
-					<a href={artifact.platform === 'Linux' ? installScriptUrl : releaseUrl} target="_blank" rel="noreferrer" class="rounded-3xl border p-6 text-left transition hover:border-orange-400/50" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-base) 55%, transparent)">
+					<a href={artifact.platform === 'Linux' ? installScriptUrl : releaseUrl} target="_blank" rel="noreferrer" class="min-w-0 rounded-3xl border p-6 text-left transition hover:border-orange-400/50" style="border-color: var(--surface-border); background: color-mix(in srgb, var(--bg-base) 55%, transparent)">
 						<p class={`text-sm uppercase tracking-[0.24em] ${artifact.accent}`}>{artifact.platform}</p>
 						<h3 class="mt-3 text-xl font-semibold">{artifact.name}</h3>
 						<p class="muted mt-2 text-sm leading-7">{artifact.description}</p>
@@ -206,13 +206,13 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 				))}
 			</div>
 
-			<div class="mt-8 grid gap-4 lg:grid-cols-2">
-				<div class="rounded-3xl border p-6" style="border-color: var(--surface-border)">
+			<div class="mt-8 grid min-w-0 gap-4 lg:grid-cols-2">
+				<div class="min-w-0 rounded-3xl border p-6" style="border-color: var(--surface-border)">
 					<p class="text-sm uppercase tracking-[0.24em]" style="color: var(--text-faint)">{copy.brewKicker}</p>
 					<pre class="terminal-panel mt-4 overflow-x-auto rounded-2xl p-4 text-sm leading-7"><code>brew tap chochy2001/omnimon
 brew install --cask omnimon</code></pre>
 				</div>
-				<div class="rounded-3xl border p-6" style="border-color: var(--surface-border)">
+				<div class="min-w-0 rounded-3xl border p-6" style="border-color: var(--surface-border)">
 					<p class="text-sm uppercase tracking-[0.24em]" style="color: var(--text-faint)">{copy.shaKicker}</p>
 					<pre class="terminal-panel mt-4 overflow-x-auto rounded-2xl p-4 text-sm leading-7"><code>shasum -a 256 OmniMon-6.6.6-macOS-Universal.dmg
 cat SHA256SUMS.txt</code></pre>

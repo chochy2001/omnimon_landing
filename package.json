@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "bun test src/lib",
+    "test": "bun test src/lib scripts/tests/responsive_home.test.ts",
     "test:coverage": "bun test --coverage src/lib"
   },
   "dependencies": {
@@ -15,5 +15,8 @@
     "astro": "^7.3.5",
     "posthog-js": "^1.434.14",
     "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
   }
 }
