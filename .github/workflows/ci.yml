@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: landing-ci-${{ github.ref }}
+  group: landing-ci-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
   cancel-in-progress: true
 
 jobs:
