@@ -6,3 +6,37 @@ RewriteRule ^en/?$ / [R=301,L]
 
 # Serve the product 404 (Layout + EN/ES + theme), not the Hostinger stock page.
 ErrorDocument 404 /404.html
+
+# Security headers
+# NOTE: Hostinger's hcdn CDN (static hosting) may or may not honour
+# mod_headers directives. Verify with `curl -I https://omnimon.com.mx/`
+# after deploy. If headers are absent, enable Cloudflare proxy and add
+# security headers via Cloudflare Transform Rules instead.
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Referrer policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Strict Transport Security (HSTS) - 1 year
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+    # Permissions Policy - disable unused browser features
+    Header always set Permissions-Policy "accelerometer=(), camera=(), microphone=(), geolocation=(), usb=()"
+
+    # Content Security Policy
+    # Allowlist: self + PostHog analytics + Cloudflare Turnstile (not used
+    # on this site, but kept for future use) + Google Fonts (used for icon
+    # fonts). Tighten once PostHog EU/US host is confirmed in env.
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://us-assets.i.posthog.com https://eu-assets.i.posthog.com; connect-src 'self' https://us.i.posthog.com https://eu.i.posthog.com; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# Force HTTPS
+<IfModule mod_rewrite.c>
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>

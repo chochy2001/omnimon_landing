@@ -3,8 +3,9 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "generate:og": "node scripts/generate-og.mjs",
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "node scripts/generate-og.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "test": "bun test src/lib scripts/tests/responsive_home.test.ts",
@@ -17,6 +18,7 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "playwright": "1.63.0"
+    "playwright": "1.63.0",
+    "sharp": "^0.35.5"
   }
 }
