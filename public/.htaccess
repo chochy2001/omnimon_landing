@@ -4,6 +4,11 @@ RewriteBase /
 # English home is `/`. The old `/en` alias must not hit Hostinger's generic 404.
 RewriteRule ^en/?$ / [R=301,L]
 
+# Canonical legal URLs (LEGALS 2026-10-11): typed /privacidad and /terminos
+# 404ed while the Spanish pages live at /es/privacy/ and /es/terms/.
+RewriteRule ^privacidad/?$ /es/privacy/ [R=301,L]
+RewriteRule ^terminos/?$ /es/terms/ [R=301,L]
+
 # Serve the product 404 (Layout + EN/ES + theme), not the Hostinger stock page.
 ErrorDocument 404 /404.html
 
