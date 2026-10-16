@@ -142,10 +142,10 @@ origen ya sirve.
    huella. Una subida parcial que deje la raiz nueva y el resto viejo tambien
    falla.
 4. **Smoke de rutas reales.** Las rutas salen del `dist` recien construido, no
-   de una lista escrita a mano ni del sitemap del origen: ese sitemap lo dejo un
-   despliegue manual viejo, ya no lo emite este build y describe un sitio que no
-   es el que se publica. Todas deben responder `200`, y una ruta inexistente
-   debe responder `404`.
+   de una lista escrita a mano ni del sitemap: `public/sitemap.xml` se copia a
+   `dist/` tal cual, pero es una lista mantenida a mano y puede ir por delante
+   o por detras de las paginas que el build emite. Todas deben responder `200`,
+   y una ruta inexistente debe responder `404`.
 5. **Assets identicos al artefacto, byte a byte.** Se comprueba cada fichero de
    `dist` que no sea HTML y cada asset que referencia el HTML vivo: `200` y
    cuerpo con el mismo `sha256` que el fichero construido. El fallo clasico del
@@ -164,9 +164,10 @@ origen ya sirve.
    invertido dejarian que el run del commit viejo subiera el ultimo y terminara
    verde con produccion por detras de `main`, porque la verificacion posterior
    solo comprueba su propia huella. Casos permitidos de forma explicita: que el
-   origen no sirva ninguna huella todavia (el primer despliegue del pipeline,
-   que es la situacion de hoy) y que sirva exactamente el mismo SHA
-   (republicacion). Si el origen sirve una huella que no es un SHA de 40
+   origen no sirva ninguna huella todavia (fue el caso del estreno del pipeline
+   el 2026-09-25; hoy el origen sirve la huella de `main`) y que sirva
+   exactamente el mismo SHA (republicacion). Si el origen sirve una huella que
+   no es un SHA de 40
    caracteres, o un SHA que no existe en el repositorio, o uno que no es
    ancestro, el job falla antes de tocar el origen.
 

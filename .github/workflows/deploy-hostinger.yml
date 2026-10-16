@@ -385,8 +385,8 @@ jobs:
             | head -n 1 | sed -E 's/.*content="//; s/"$//' || true)"
 
           if [ -z "$served" ]; then
-            # Hoy el origen sirve HTML de una subida manual vieja, sin huella
-            # ninguna. El estreno del pipeline tiene que poder ocurrir.
+            # Historico: el estreno del pipeline (2026-09-25) necesitaba poder
+            # publicar sobre un origen sin huella. Hoy el origen sirve huella.
             echo "El origen no sirve ninguna huella ${BUILD_META_NAME} todavia: primer despliegue del pipeline, se permite."
             exit 0
           fi
@@ -604,9 +604,9 @@ jobs:
           mkdir -p "$live_dir"
 
           # Las rutas salen del dist recien construido, no de una lista escrita
-          # a mano ni del sitemap del origen: ese sitemap lo dejo un despliegue
-          # manual viejo y ya no lo emite este build, asi que describe un sitio
-          # que no es el que se acaba de publicar.
+          # a mano ni del sitemap: public/sitemap.xml se copia a dist/ tal
+          # cual, pero es una lista mantenida a mano y puede no coincidir con
+          # las paginas que el build emite.
           fail=0
           checked=0
           while IFS= read -r route; do

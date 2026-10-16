@@ -13,14 +13,14 @@ Git: `chochy2001/omnimon_landing`. Nested under `omnimon_apps/macmon/omnimon_lan
 
 ```bash
 bun install
-bun run test      # bun test src/lib
+bun run test      # bun test src/lib scripts/tests/responsive_home.test.ts
 bun run build
 bun run preview
 ```
 
-## Verified 2026-09-25 UTC
+## Verified 2026-09-25 UTC (parity re-checked 2026-10-13)
 
-Live origin tracks `origin/main` via GitHub CD: every merge to `main` with green CI is promoted and read back (fingerprint, smoke, assets). First pipeline deploy 2026-09-25: `c4b9cc7` via run 36163409304 (42 files, 20 fingerprinted pages, 19 assets, 0 console errors in headless Chrome); before it, the origin served `2ca253f9` from a manual FTPS upload. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404.
+Live origin tracks `origin/main` via GitHub CD: every merge to `main` with green CI is promoted and read back (fingerprint, smoke, assets). First pipeline deploy 2026-09-25: `c4b9cc7` via run 36163409304 (42 files, 20 fingerprinted pages, 19 assets, 0 console errors in headless Chrome); before it, the origin served `2ca253f9` from a manual FTPS upload. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404. Re-check 2026-10-13: live `<meta name="omnimon-build">` equals `origin/main` HEAD `b636678` (#31).
 
 | Surface | Status |
 |---------|--------|
@@ -31,6 +31,7 @@ Live origin tracks `origin/main` via GitHub CD: every merge to `main` with green
 | Favicon | OmniMon gear+cyan SVG + app ICO (not Astro starter `M50.4 78.5`) |
 | Blog index | Only posts that exist as Astro pages (v6.4.1-v6.8.0 EN/ES) |
 | Legal | `/privacy` `/terms` `/es/privacy` `/es/terms` |
+| Legal aliases | `/privacidad` → `/es/privacy/`, `/terminos` → `/es/terms/` (301, `public/.htaccess`, pinned by `src/lib/legal-aliases.test.ts`) |
 
 `src/consts.ts` version is **6.8.0** (workspace). Latest published GitHub tag for the desktop app is still **v6.6.6** (a Universal DMG exists for that tag; there is no 6.8.0 binary). Download CTAs say "Download latest" / "Descargar ultima version" and point at `releases/latest`. Spanish blog slugs end with `-es` (example: `/es/blog/v6-8-0-release-es/`).
 

@@ -1,5 +1,16 @@
 # CLAUDE.md
 
+> **Repo reality overrides the generic block below.** This repo
+> (`chochy2001/omnimon_landing`, personal, public) does NOT use
+> self-hosted runners, staging-node, web-app-proxy, or Monday promotion:
+> `Landing CI` and `deploy-hostinger.yml` both run on `ubuntu-latest`
+> (GitHub-hosted; the deploy job fails on any other runner), and every
+> green `main` commit auto-promotes to the Hostinger origin
+> (`https://omnimon.com.mx`) over strict FTPS with read-back
+> verification. Source of truth: [README.md](README.md) and
+> [.github/DEPLOYMENT.md](.github/DEPLOYMENT.md). The CAPDESIS block
+> underneath describes fleet topology, not this repo's delivery path.
+
 <!-- CAPDESIS INFRA START -->
 ## CAPDESIS Architecture And Delivery Policy
 
