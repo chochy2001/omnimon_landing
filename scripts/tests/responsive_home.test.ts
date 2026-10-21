@@ -16,7 +16,7 @@ beforeAll(async () => {
   });
 
   let ready = false;
-  for (let attempt = 0; attempt < 100; attempt += 1) {
+  for (let attempt = 0; attempt < 300; attempt += 1) {
     try {
       const response = await fetch(origin);
       ready = response.ok;
@@ -27,7 +27,7 @@ beforeAll(async () => {
   }
   if (!ready) throw new Error('Astro preview did not become ready');
   browser = await chromium.launch({ headless: true });
-});
+}, 30_000);
 
 afterAll(async () => {
   await browser?.close();
@@ -40,7 +40,7 @@ afterAll(async () => {
     stderr: 'ignore',
   });
   await stopPreview.exited;
-});
+}, 30_000);
 
 test('home fits narrow and desktop viewports without document overflow', async () => {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });

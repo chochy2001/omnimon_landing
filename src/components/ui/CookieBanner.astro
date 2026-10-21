@@ -232,13 +232,14 @@
 
     applyStrings(banner, detectLocale(document.documentElement.lang));
 
+    // Handlers are always attached so the preferences panel keeps working when
+    // the visitor reopens it from the footer after a choice was stored.
     const stored = readStored();
     if (stored) {
       hide(banner);
-      return;
+    } else {
+      show(banner);
     }
-
-    show(banner);
 
     const accept = banner.querySelector('[data-omnimon-banner-accept]');
     const reject = banner.querySelector('[data-omnimon-banner-reject]');
@@ -285,6 +286,21 @@
     if (prefsCancel) {
       prefsCancel.addEventListener('click', () => {
         setPrefsOpen(false);
+      });
+    }
+
+    // Footer control: reopen the banner with the preferences panel, showing the
+    // stored choice. Withdrawing consent must be as easy as giving it.
+    const reopen = document.querySelector('[data-omnimon-cookie-reopen]');
+    if (reopen) {
+      reopen.addEventListener('click', () => {
+        const current = readStored();
+        if (analyticsBox instanceof HTMLInputElement) {
+          analyticsBox.checked = !!(current && current.accepted);
+        }
+        show(banner);
+        setPrefsOpen(true);
+        if (analyticsBox instanceof HTMLElement) analyticsBox.focus();
       });
     }
   }
