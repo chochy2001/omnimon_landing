@@ -8,7 +8,7 @@
     "build": "node scripts/generate-og.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "test": "bun test src/lib scripts/tests/responsive_home.test.ts",
+    "test": "bun test src/lib scripts/tests/responsive_home.test.ts && bun test scripts/tests/legal_a11y.test.ts",
     "test:coverage": "bun test --coverage src/lib"
   },
   "dependencies": {
@@ -18,10 +18,12 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "axe-core": "4.11.0",
     "playwright": "1.63.0",
     "sharp": "^0.35.5"
   },
   "overrides": {
+    "vite": "8.3.3",
     "http-cache-semantics": "^4.3.0",
     "source-map-js": "^1.2.2",
     "sharp": "^0.35.5"

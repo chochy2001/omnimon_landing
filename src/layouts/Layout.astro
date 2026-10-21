@@ -6,7 +6,7 @@ import ThemeToggle from '../components/ThemeToggle.astro';
 import LanguageSwitcher from '../components/LanguageSwitcher.astro';
 import CookieBanner from '../components/ui/CookieBanner.astro';
 import { legalHref, legalLinkLabel } from '../lib/legal';
-import type { ConsentLocale } from '../lib/consent';
+import { CONSENT_STRINGS, type ConsentLocale } from '../lib/consent';
 import { blogHref, chromeCopy, homeHref, localeFromPath, switchLocalePath } from '../lib/locale';
 
 interface Props {
@@ -37,6 +37,8 @@ const downloadUrl = 'https://github.com/chochy2001/omnimon/releases/latest';
 const sponsorUrl = 'https://github.com/sponsors/chochy2001';
 
 const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
+const skipLabel = lang === 'en' ? 'Skip to content' : 'Saltar al contenido';
+const cookiePrefsLabel = CONSENT_STRINGS[lang].prefsTitle;
 ---
 
 <!doctype html>
@@ -97,6 +99,10 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 		<PostHogInit />
 	</head>
 	<body class="font-sans antialiased min-h-screen pt-16">
+		<a
+			href="#main-content"
+			class="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[200] focus:rounded-full focus:bg-orange-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-slate-950"
+		>{skipLabel}</a>
 		<nav class="site-nav fixed inset-x-0 top-0 z-50">
 			<div class="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
 				<a id="omnimon-nav-home" href={homeUrl} class="flex min-w-0 flex-1 items-center gap-2 tracking-tight sm:gap-2.5">
@@ -135,7 +141,9 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 				</div>
 			</div>
 		</nav>
-		<slot />
+		<div id="main-content" tabindex="-1" class="outline-none">
+			<slot />
+		</div>
 		<footer class="site-footer py-8 text-sm">
 			<div class="mx-auto flex max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
 				<p>&copy; {new Date().getFullYear()} {copy.footerCopy}</p>
@@ -149,6 +157,7 @@ const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 					<a href={privacyHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'privacy')}</a>
 					<a href={termsHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'terms')}</a>
 					<a href={cookiesHref} class="transition hover:text-[var(--text-main)]">{legalLinkLabel(lang, 'cookies')}</a>
+					<button type="button" data-omnimon-cookie-reopen class="transition hover:text-[var(--text-main)]">{cookiePrefsLabel}</button>
 				</div>
 			</div>
 		</footer>
