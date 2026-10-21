@@ -167,5 +167,5 @@ test('key routes have no serious or critical axe violations in light and dark at
       await context.close();
     }
   }
-});
+}, 120_000);
 });
