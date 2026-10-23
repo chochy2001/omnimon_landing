@@ -8,6 +8,9 @@
     "build": "node scripts/generate-og.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "optimize:screenshot": "node scripts/optimize-screenshot.mjs",
+    "lint": "astro check",
+    "check": "astro check",
     "test": "bun test src/lib scripts/tests/responsive_home.test.ts && bun test scripts/tests/legal_a11y.test.ts",
     "test:coverage": "bun test --coverage src/lib"
   },
@@ -18,9 +21,11 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.9",
     "axe-core": "4.11.0",
     "playwright": "1.63.0",
-    "sharp": "^0.35.5"
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3"
   },
   "overrides": {
     "vite": "8.3.3",
