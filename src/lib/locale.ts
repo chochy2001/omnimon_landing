@@ -106,6 +106,7 @@ export function switchLocalePath(pathname: string, from: ConsentLocale): string 
     if (p === '/es/') return '/';
     if (p.startsWith('/es/privacy')) return '/privacy/';
     if (p.startsWith('/es/terms')) return '/terms/';
+    if (p.startsWith('/es/cookies')) return '/cookies/';
     if (p === '/es/blog/') return '/blog/';
     if (p.startsWith('/es/blog/')) {
       const slug = p.slice('/es/blog/'.length).replace(/\/$/, '').replace(/-es$/, '');
@@ -117,6 +118,7 @@ export function switchLocalePath(pathname: string, from: ConsentLocale): string 
   if (p === '/') return '/es/';
   if (p.startsWith('/privacy')) return '/es/privacy/';
   if (p.startsWith('/terms')) return '/es/terms/';
+  if (p.startsWith('/cookies')) return '/es/cookies/';
   if (p === '/blog/') return '/es/blog/';
   if (p.startsWith('/blog/')) {
     const slug = p.slice('/blog/'.length).replace(/\/$/, '');

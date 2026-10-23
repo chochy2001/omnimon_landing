@@ -67,6 +67,8 @@ describe('locale chrome', () => {
     expect(switchLocalePath('/es/privacy/', 'es')).toBe('/privacy/');
     expect(switchLocalePath('/terms', 'en')).toBe('/es/terms/');
     expect(switchLocalePath('/es/terms', 'es')).toBe('/terms/');
+    expect(switchLocalePath('/cookies/', 'en')).toBe('/es/cookies/');
+    expect(switchLocalePath('/es/cookies/', 'es')).toBe('/cookies/');
   });
 
   test('spanish ErrorDocument 404 patches nav, footer home, and language pill', () => {

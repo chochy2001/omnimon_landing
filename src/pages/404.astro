@@ -7,7 +7,7 @@ const copy = chromeCopy[lang];
 const nf = notFoundCopy(lang);
 ---
 
-<Layout title={nf.title} description={nf.lead} lang={lang}>
+<Layout title={nf.title} description={nf.lead} lang={lang} noindex>
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-20 sm:px-6">
 		<p class="kicker text-sm uppercase tracking-[0.24em]">404</p>
 		<h1 id="omnimon-not-found-h1" class="section-title text-4xl font-black">{nf.h1}</h1>
