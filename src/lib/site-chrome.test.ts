@@ -70,6 +70,15 @@ describe('configure preferences dialog', () => {
   });
 });
 
+describe('404 indexing', () => {
+  test('404 page is noindex and emits no canonical', () => {
+    const layout = src('layouts/Layout.astro');
+    const page = src('pages/404.astro');
+    expect(layout).toContain('content="noindex"');
+    expect(page).toContain('noindex');
+  });
+});
+
 describe('terminal contrast exemption', () => {
   test('light-theme remap is undone inside dark terminal panels', () => {
     const css = src('styles/global.css');
