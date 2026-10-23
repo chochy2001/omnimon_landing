@@ -98,14 +98,18 @@ const installScriptUrl = 'https://raw.githubusercontent.com/chochy2001/omnimon/m
 
 		<section aria-label={copy.screenshotAlt}>
 			<div class="screenshot-frame">
-				<img
-					src="/omnimon-screenshot.png"
-					alt={copy.screenshotAlt}
-					width="1728"
-					height="1011"
-					loading="eager"
-					decoding="async"
-				/>
+				<picture>
+					<source srcset="/omnimon-screenshot.avif" type="image/avif" />
+					<source srcset="/omnimon-screenshot.webp" type="image/webp" />
+					<img
+						src="/omnimon-screenshot.png"
+						alt={copy.screenshotAlt}
+						width="1728"
+						height="1011"
+						loading="eager"
+						decoding="async"
+					/>
+				</picture>
 			</div>
 		</section>
 
