@@ -23,6 +23,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "axe-core": "4.11.0",
+    "bun-types": "^1.4.4",
     "playwright": "1.63.0",
     "sharp": "^0.35.5",
     "typescript": "^6.0.3"
