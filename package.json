@@ -11,7 +11,7 @@
     "optimize:screenshot": "node scripts/optimize-screenshot.mjs",
     "lint": "astro check",
     "check": "astro check",
-    "test": "bun test src/lib scripts/tests/responsive_home.test.ts && bun test scripts/tests/legal_a11y.test.ts",
+    "test": "bun test src/lib scripts/tests/responsive_home.test.ts scripts/tests/repo_links.test.ts && bun test scripts/tests/legal_a11y.test.ts",
     "test:coverage": "bun test --coverage src/lib"
   },
   "dependencies": {

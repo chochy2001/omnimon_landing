@@ -31,7 +31,7 @@ export function resolveLegalStrings(locale: ConsentLocale) {
       cookiesTitle: 'Cookie policy',
       updated: '2026-09-25',
       privacyBody: [
-        'OmniMon is a local desktop monitor. This page covers the public website at omnimon.com.mx. The controller is Jorge Salgado Miranda (Mexico City). Privacy contact: jorgesalgadomiranda@protonmail.com. Source code and issue reports: github.com/chochy2001/omnimon.',
+        'OmniMon is a local desktop monitor. This page covers the public website at omnimon.com.mx. The controller is Jorge Salgado Miranda (Mexico City). Privacy contact: jorgesalgadomiranda@protonmail.com. Source code and issue reports: github.com/CAPDESIS/omnimon.',
         'This notice follows the Mexican LFPDPPP (Diario Oficial de la Federacion 20/03/2025, in force since 21/03/2025). The competent Mexican authority is the Secretaria Anticorrupcion y Buen Gobierno.',
         'The landing stores strictly necessary data in your browser: your cookie choice (omnimon-cookie-consent, 365 days), theme (omnimon-theme) and language. None of it leaves your device and none of it is used for tracking.',
         'Optional PostHog analytics (pageviews, page-leaves, interaction events) run only after you press Accept all or enable analytics in Configure. PostHog is hosted in the United States and builds a person profile only when a visitor is identified. Essentials only loads no analytics at all.',
@@ -63,7 +63,7 @@ export function resolveLegalStrings(locale: ConsentLocale) {
     cookiesTitle: 'Politica de cookies',
     updated: '2026-09-25',
     privacyBody: [
-      'OmniMon es un monitor de escritorio local. Esta pagina cubre el sitio publico omnimon.com.mx. El responsable es Jorge Salgado Miranda (Ciudad de Mexico). Contacto de privacidad: jorgesalgadomiranda@protonmail.com. Codigo e incidencias: github.com/chochy2001/omnimon.',
+      'OmniMon es un monitor de escritorio local. Esta pagina cubre el sitio publico omnimon.com.mx. El responsable es Jorge Salgado Miranda (Ciudad de Mexico). Contacto de privacidad: jorgesalgadomiranda@protonmail.com. Codigo e incidencias: github.com/CAPDESIS/omnimon.',
       'Este aviso sigue la LFPDPPP mexicana (Diario Oficial de la Federacion 20/03/2025, vigente desde el 21/03/2025). La autoridad mexicana competente es la Secretaria Anticorrupcion y Buen Gobierno.',
       'La landing guarda datos estrictamente necesarios en tu navegador: tu eleccion de cookies (omnimon-cookie-consent, 365 dias), tema (omnimon-theme) e idioma. Nada sale de tu dispositivo ni se usa para rastreo.',
       'La analitica opcional de PostHog (vistas de pagina, salidas de pagina, eventos de interaccion) solo se ejecuta si presionas Aceptar todas o activas analitica en Configurar. PostHog esta alojado en Estados Unidos y crea un perfil de persona solo cuando un visitante se identifica. Solo esenciales no carga ninguna analitica.',
