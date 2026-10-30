@@ -52,4 +52,6 @@ jobs:
         run: |
           bash scripts/tests/ftps_identity_test.sh
           bash scripts/tests/png_compare_test.sh
+          bash scripts/tests/robots_check_test.sh
+          bash scripts/tests/deploy_asset_gate_test.sh
           bash scripts/tests/deploy_strict_contract_test.sh
