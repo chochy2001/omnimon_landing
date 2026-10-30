@@ -184,7 +184,7 @@ origen ya sirve.
   hPanel. Los restos de subidas manuales antiguas siguen donde estaban. Lo que
   si esta garantizado no cambia: la huella y los assets del build
   promocionado se leen de vuelta del origen publico y tienen que coincidir
-  con el artefacto (sha256, salvo las dos excepciones del punto siguiente).
+  con el artefacto (sha256, salvo las tres excepciones del punto siguiente).
 - **Verificacion del certificado FTPS: estricta, en dos capas.** El paso
   `Verify the strict FTPS endpoint before sending credentials` comprueba con
   `openssl` (`-verify_hostname` mas `-verify_return_error`) **antes** de que
@@ -204,8 +204,9 @@ origen ya sirve.
   `--connect-to`. La huella de la hoja se registra en el log solo para
   auditoria: el emisor (Let's Encrypt) rota el certificado y fijarla
   convertiria cada renovacion en un despliegue roto.
-- **Dos excepciones medidas en la comprobacion de assets, ninguna debilita
-  la red** (las fallo el run 36161664902 y las fija este diseno):
+- **Tres excepciones medidas en la comprobacion de assets, ninguna debilita
+  la red** (las dos primeras las fallo el run 36161664902; la tercera, los runs
+  40987479394, 40993534823 y 41003280664):
   - Hostinger re-encodea y reescala los PNG entre la subida y la respuesta
     HTTP: con `Accept-Encoding: identity` y un `x-hcdn-cache-status: MISS`,
     el origen sirve un PNG valido pero distinto (`apple-touch-icon.png`:
@@ -220,6 +221,29 @@ origen ya sirve.
   - Los ficheros ocultos de `dist` (hoy `.htaccess`) se suben pero Apache no
     los sirve: se les exige 403 o 404, nunca 200. Un 200 en un fichero
     oculto es una fuga de configuracion y falla el despliegue.
+  - **Solo `/robots.txt`**, por igualdad exacta de ruta (un `fonts/robots.txt`
+    sigue comparandose por sha256). El dominio esta detras de Cloudflare con el
+    robots.txt gestionado (AI crawl control): Cloudflare antepone su propio
+    bloque y anade el fichero del origen sin tocarlo. Medido el 2026-10-30 con
+    GET: `dist/robots.txt` 68 bytes (sha256 `739f7b56`), servido 2744 bytes
+    (sha256 `3b76bd29`), `200 text/plain`, y los ultimos 68 bytes servidos son
+    el fichero de `dist`. Los tres despliegues citados fallaron solo en esa
+    ruta, con los otros 22 assets identicos. Como Cloudflare edita su bloque
+    con el tiempo, no se fija hash ni tamano. En su lugar
+    (`scripts/robots_check.sh`): `200`, tipo `text/plain`, al menos una linea
+    `User-agent` y cada directiva de `dist` (la linea `Sitemap:` incluida)
+    presente como linea completa en el cuerpo servido. Un origen que devuelve
+    404 y deja a Cloudflare servir solo su bloque, una copia vieja con otra URL
+    de sitemap, o una pagina HTML con tipo `text/plain` siguen fallando.
+    Residual honesto: `User-agent: *` y `Allow: /` tambien aparecen en el
+    bloque de Cloudflare, asi que esas dos lineas las satisface Cloudflare
+    mismo; lo que protege la comprobacion son las lineas que solo aporta
+    nuestro fichero, hoy `Sitemap:`. Si se apaga el ajuste en Cloudflare, el
+    cuerpo servido iguala a `dist` y la comprobacion sigue pasando sin tocar
+    el workflow. Tests: `scripts/tests/robots_check_test.sh` (la funcion) y
+    `scripts/tests/deploy_asset_gate_test.sh` (el paso real extraido del
+    workflow contra un origen local: Cloudflare pasa, cualquier otro asset
+    corrupto sigue fallando).
 - **El runner es GitHub-hosted a proposito.** Este repositorio es publico y no
   tiene runners propios, y los runners self-hosted de CAPDESIS no sirven a un
   repositorio personal. Entregar credenciales FTP de produccion a un runner

@@ -671,7 +671,7 @@ jobs:
       # lo que los nombres sin hash permiten. El artefacto entero pesa poco mas
       # de 1 MB, asi que bajar los cuerpos no es un coste real.
       #
-      # Dos excepciones medidas, ninguna debilita la red:
+      # Tres excepciones medidas, ninguna debilita la red:
       # - Los PNG se comparan por identidad estructural
       #   (scripts/png_compare.sh: firma PNG, mismo aspecto dentro del 1%,
       #   trailer IEND completo), no por sha256. Hostinger re-encodea y
@@ -684,10 +684,21 @@ jobs:
       # - Los ficheros ocultos de dist (hoy `.htaccess`) tienen que existir en
       #   el servidor pero Apache no los sirve: se les exige 403 o 404, nunca
       #   200. Un 200 en un fichero oculto es una fuga de configuracion y falla.
+      # - SOLO /robots.txt: Cloudflare (robots.txt gestionado, AI crawl control)
+      #   antepone su propio bloque y anade el fichero del origen sin tocarlo.
+      #   Medido el 2026-10-30 con GET: dist 68 bytes, servido 2744 bytes, y los
+      #   ultimos 68 bytes servidos son el fichero de dist. Los runs 40987479394,
+      #   40993534823 y 41003280664 fallaron solo aqui, con los otros 22 assets
+      #   identicos. El bloque de Cloudflare cambia con el tiempo, asi que no se
+      #   puede fijar ni hash ni tamano. En su lugar se exige 200, text/plain,
+      #   una linea User-agent y que cada directiva de dist (Sitemap incluida)
+      #   este en el cuerpo servido. Ver scripts/robots_check.sh. Ningun otro
+      #   asset entra en esta excepcion.
       - name: Assert live assets match the built artifact byte for byte
         run: |
           set -euo pipefail
           . scripts/png_compare.sh
+          . scripts/robots_check.sh
           base="$SITE_URL"
           assets_file="${RUNNER_TEMP}/deploy-assets.txt"
           live_dir="${RUNNER_TEMP}/live"
@@ -713,17 +724,20 @@ jobs:
           fail=0
           compared=0
           png_compared=0
+          robots_checked=0
           dotfiles_checked=0
           while IFS= read -r asset; do
             [ -n "$asset" ] || continue
             rm -f "$body_file"
             # Accept-Encoding: identity para comparar el cuerpo tal cual esta en
             # disco y no una version comprimida por el servidor.
-            result="$(curl -sS -L -o "$body_file" -w '%{http_code} %{size_download}' --max-time 25 \
+            result="$(curl -sS -L -o "$body_file" -w '%{http_code} %{size_download} %{content_type}' --max-time 25 \
               -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' -H 'Accept-Encoding: identity' \
               "${base}${asset}?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" || echo '000 0')"
-            code="${result%% *}"
-            size="${result##* }"
+            # El tipo de contenido puede llevar espacios ("text/plain; charset=
+            # utf-8"): read -r deja el resto de la linea en el tercer campo.
+            ctype=""
+            read -r code size ctype <<<"$result"
             case "$size" in
               ''|*[!0-9]*) size=0 ;;
             esac
@@ -762,6 +776,26 @@ jobs:
               fi
               continue
             fi
+
+            # robots-cloudflare-managed: la unica ruta exenta de sha256 es
+            # /robots.txt, comparada por igualdad exacta de ruta. Cloudflare
+            # sirve su bloque gestionado mas el fichero del origen, asi que los
+            # bytes nunca coinciden; se exige 200 (ya comprobado arriba),
+            # text/plain, User-agent y cada directiva de dist en el cuerpo.
+            # Ver scripts/robots_check.sh.
+            case "$asset" in
+              /robots.txt)
+                if robots_matches "$local_file" "$body_file" "$ctype" 2>"${body_file}.robotserr"; then
+                  robots_checked=$((robots_checked + 1))
+                  echo "$code $size robots.txt text/plain con las directivas de dist, sin exigir igualdad de bytes ${base}${asset}"
+                else
+                  echo "$code $size ${base}${asset}"
+                  echo "::error::El asset ${asset} no cumple las comprobaciones de robots.txt: $(cat "${body_file}.robotserr")."
+                  fail=1
+                fi
+                continue
+                ;;
+            esac
 
             # png-structural-identity: Hostinger re-encodea y reescala los
             # PNG, asi que aqui no valen sha256 ni dimensiones. La identidad
@@ -804,7 +838,7 @@ jobs:
             echo "::error::Solo ${compared} assets se compararon contra dist. La comprobacion no cubre el artefacto."
             fail=1
           fi
-          echo "assets comparados contra dist: ${compared} (sha256 o identidad PNG), ficheros ocultos no servidos: ${dotfiles_checked}"
+          echo "assets comparados contra dist: ${compared} (sha256 o identidad PNG), robots.txt verificado por directivas: ${robots_checked}, ficheros ocultos no servidos: ${dotfiles_checked}"
           exit "$fail"
 
       - name: Deploy summary
