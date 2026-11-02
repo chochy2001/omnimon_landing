@@ -281,6 +281,23 @@ jobs:
           test -f dist/index.html
           test -d dist/_astro
 
+          # Marcador de paridad /version.json (AUDIT-GO-3). La huella meta
+          # omnimon-build ya probaba que SHA sirve el origen, pero las sondas
+          # de flota leen /version.json y sin el esta superficie era
+          # NO_MEDIBLE. Se escribe ANTES de enumerar los assets, asi que entra
+          # en la subida FTP y en la comparacion sha256 contra dist como un
+          # asset mas: una copia vieja servida falla el despliegue.
+          node scripts/write-version-json.mjs --sha "$PUBLIC_BUILD_SHA" --out dist/version.json
+          test -s dist/version.json
+          EXPECTED_SHA="$PUBLIC_BUILD_SHA" node -e '
+            const fs = require("node:fs");
+            const d = JSON.parse(fs.readFileSync("dist/version.json", "utf8"));
+            if (d.sha !== process.env.EXPECTED_SHA) {
+              console.error(`dist/version.json sha ${d.sha} != ${process.env.EXPECTED_SHA}`);
+              process.exit(1);
+            }
+          '
+
           routes_file="${RUNNER_TEMP}/deploy-routes.txt"
           fingerprint_file="${RUNNER_TEMP}/deploy-fingerprint-routes.txt"
           assets_file="${RUNNER_TEMP}/deploy-assets.txt"
@@ -565,6 +582,36 @@ jobs:
             exit 1
           fi
           echo "huella correcta / -> ${RELEASE_SHA}"
+
+          # El marcador /version.json servido tiene que ser el mismo SHA. Es
+          # la lectura que hacen las sondas de paridad de la flota: si la meta
+          # avanza y el marcador no, la superficie volveria a ser NO_MEDIBLE
+          # con el deploy en verde.
+          marker_file="${RUNNER_TEMP}/served-version.json"
+          marker_ok=0
+          for attempt in 1 2 3 4 5 6; do
+            if curl -sS --fail --max-time 25 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              -o "$marker_file" \
+              "${base}/version.json?deploycheck=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}" 2>/dev/null; then
+              if SERVED_FILE="$marker_file" EXPECTED_SHA="$RELEASE_SHA" node -e '
+                const fs = require("node:fs");
+                try {
+                  const d = JSON.parse(fs.readFileSync(process.env.SERVED_FILE, "utf8"));
+                  process.exit(d.sha === process.env.EXPECTED_SHA ? 0 : 1);
+                } catch { process.exit(1); }
+              ' 2>/dev/null; then
+                marker_ok=1
+                break
+              fi
+            fi
+            sleep 10
+          done
+          if [ "$marker_ok" -ne 1 ]; then
+            echo "::error::${base}/ no sirve el version.json del build ${RELEASE_SHA} (servido: $(cat "$marker_file" 2>/dev/null || echo 'sin respuesta')). La subida FTP no llego al origen publico: revisa FTP_REMOTE_DIR."
+            exit 1
+          fi
+          echo "version.json correcto /version.json -> ${RELEASE_SHA}"
 
           # Y luego todas las demas paginas con huella. Una subida parcial deja
           # la raiz nueva y el resto viejo, y eso tambien debe fallar.
