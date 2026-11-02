@@ -55,3 +55,4 @@ jobs:
           bash scripts/tests/robots_check_test.sh
           bash scripts/tests/deploy_asset_gate_test.sh
           bash scripts/tests/deploy_strict_contract_test.sh
+          bash scripts/tests/version_json_test.sh
