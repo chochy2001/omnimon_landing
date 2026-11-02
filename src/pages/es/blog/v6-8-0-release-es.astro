@@ -6,7 +6,7 @@ const releaseUrl = 'https://github.com/CAPDESIS/omnimon/releases/latest';
 
 <Layout
 	title="OmniMon v6.8.0: Memory Guard para macOS | Blog"
-	description="Vista previa pre-release de OmniMon v6.8.0: un LaunchAgent opcional de Memory Guard que cierra leftovers idle sin matar Warp, Chrome ni fseventsd."
+	description="OmniMon v6.8.0 incorpora un LaunchAgent opcional de Memory Guard en macOS que cierra leftovers idle sin matar Warp, Chrome ni fseventsd, con instaladores firmados para macOS, Windows y Linux."
 	lang="es"
 >
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -19,14 +19,14 @@ const releaseUrl = 'https://github.com/CAPDESIS/omnimon/releases/latest';
 				</div>
 				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.8.0: Memory Guard para macOS</h1>
 				<div class="flex items-center gap-4 text-sm text-slate-400">
-					<time>19 Sep 2026</time>
-					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Vista previa</span>
+					<time>26 Oct 2026</time>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Nuevo release</span>
 				</div>
 			</header>
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					La version 6.8.0 es una vista previa pre-release. Anade <strong class="text-white">Memory Guard</strong>, un LaunchAgent opcional de macOS en <code>tools/macos-memory-guard/</code>, MIT, que complementa el Zombie Killer de la app.
+					La version 6.8.0 anade <strong class="text-white">Memory Guard</strong>, un LaunchAgent opcional de macOS en <code>tools/macos-memory-guard/</code>, bajo licencia MIT, que complementa el Zombie Killer de la app.
 				</p>
 				<ul class="list-disc space-y-2 pl-6">
 					<li>Solo leftovers idle huerfanos (padre 1, CPU quieta, al menos 1 hora).</li>
@@ -34,7 +34,7 @@ const releaseUrl = 'https://github.com/CAPDESIS/omnimon/releases/latest';
 					<li>Un proceso, muestreo cada 15 s, sin dialogos en el loop. <code>omnimon-memory-guard prove</code> es el contrato.</li>
 				</ul>
 				<p>
-					Instalar: <code>bash tools/macos-memory-guard/install-memory-guard.sh</code>. Los kills identificados (confirmacion de Zombie Killer y automatizaciones) usan (pid, start_time) para rechazar un PID reciclado. Homebrew y el tag publicado siguen en v6.6.6 hasta que exista un DMG Universal.
+					Instalar Memory Guard: <code>bash tools/macos-memory-guard/install-memory-guard.sh</code> y verificar con <code>omnimon-memory-guard prove</code>. Los kills identificados (confirmacion de Zombie Killer y automatizaciones) usan <code>(pid, start_time)</code> para rechazar un PID reciclado. El release publicado v6.8.0 en GitHub incluye instaladores firmados para macOS (<code>OmniMon-6.8.0-macOS-Universal.dmg</code>), Windows (<code>OmniMon-6.8.0-Windows.msi</code>) y Linux (<code>.AppImage</code>, <code>.deb</code>, <code>.rpm</code>), junto con <code>SHA256SUMS.txt</code>.
 				</p>
 				<p><a class="text-sky-300 hover:text-white" href={releaseUrl}>Releases en GitHub</a></p>
 			</section>

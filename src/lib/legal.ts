@@ -1,3 +1,4 @@
+import { PUBLISHED_VERSION } from '../consts';
 import type { ConsentLocale } from './consent';
 
 export type LegalPage = 'privacy' | 'terms' | 'cookies';
@@ -42,7 +43,7 @@ export function resolveLegalStrings(locale: ConsentLocale) {
       ],
       termsBody: [
         'OmniMon is open source under the MIT license. Software is provided as-is, without warranty.',
-        'Download installers only from official GitHub Releases. The landing shows the latest published tag (currently v6.6.6) for downloads; version 6.8.0 content is a pre-release preview until a release is cut. Homebrew casks track the last published tag, not an unreleased workspace version.',
+        `Download installers only from official GitHub Releases. The landing links the latest published GitHub tag (currently v${PUBLISHED_VERSION}) for direct downloads, and Homebrew casks distribute published release artifacts rather than unreleased workspace versions.`,
         'This site takes no payments. OmniMon is free software; voluntary support goes through GitHub Sponsors under their own terms.',
         'Lua plugins run in an embedded VM with a restricted standard library, memory cap, and time budget. That is not a security sandbox. Only load scripts you trust.',
         'These terms cover the website and distributed binaries. They do not create a hosted SaaS contract or a production Mac fleet SLA. Disputes are governed by the laws of Mexico, courts of Mexico City.',
@@ -74,7 +75,7 @@ export function resolveLegalStrings(locale: ConsentLocale) {
     ],
     termsBody: [
       'OmniMon es codigo abierto bajo licencia MIT. El software se ofrece tal cual, sin garantia.',
-      'Descarga instaladores solo desde GitHub Releases oficiales. La landing muestra el ultimo tag publicado (actualmente v6.6.6) para descargas; el contenido de la version 6.8.0 es una vista previa pre-release hasta que se corte el release. La formula de Homebrew sigue el ultimo tag publicado, no una version de workspace sin publicar.',
+      `Descarga instaladores solo desde GitHub Releases oficiales. La landing enlaza al ultimo tag publicado en GitHub (actualmente v${PUBLISHED_VERSION}) para descargas directas, y el tap de Homebrew distribuye artefactos de releases publicados, nunca versiones de workspace sin publicar.`,
       'Este sitio no cobra. OmniMon es software gratuito; el apoyo voluntario va por GitHub Sponsors bajo sus propios terminos.',
       'Los plugins Lua corren en una VM embebida con stdlib restringida, tope de memoria y presupuesto de tiempo. Eso no es un sandbox de seguridad. Carga solo scripts en los que confies.',
       'Estos terminos cubren el sitio y los binarios distribuidos. No crean un contrato SaaS ni un SLA de flota Mac en produccion. Disputas bajo las leyes de Mexico, tribunales de la Ciudad de Mexico.',

@@ -88,16 +88,23 @@ describe('terminal contrast exemption', () => {
   });
 });
 
-describe('unreleased blog posts are framed as previews', () => {
+describe('release and preview blog post framing', () => {
+  test('v6.8.0 blog posts carry a release badge, not an unreleased preview badge', () => {
+    const en = src('pages/blog/v6-8-0-release.astro');
+    const es = src('pages/es/blog/v6-8-0-release-es.astro');
+    expect(en).toContain('>New release<');
+    expect(en).not.toContain('>Preview<');
+    expect(es).toContain('>Nuevo release<');
+    expect(es).not.toContain('>Vista previa<');
+  });
+
   const previews = [
     'pages/blog/v6-7-0-release.astro',
-    'pages/blog/v6-8-0-release.astro',
     'pages/es/blog/v6-7-0-release-es.astro',
-    'pages/es/blog/v6-8-0-release-es.astro',
   ];
 
   for (const rel of previews) {
-    test(`${rel} carries a preview badge, not a release badge`, () => {
+    test(`${rel} keeps a preview badge since v6.7.0 had no standalone GitHub tag`, () => {
       const body = src(rel);
       expect(body).not.toContain('>New release<');
       expect(body).not.toContain('>Nuevo release<');
@@ -106,9 +113,10 @@ describe('unreleased blog posts are framed as previews', () => {
     });
   }
 
-  test('6.7.0 download sections name the published tag', () => {
-    for (const rel of ['pages/blog/v6-7-0-release.astro', 'pages/es/blog/v6-7-0-release-es.astro']) {
-      expect(src(rel)).toContain('v6.6.6');
+  test('6.7.0 download sections name the current published tag v6.8.0, not v6.6.6', () => {
+    for (const rel of previews) {
+      expect(src(rel)).toContain('v6.8.0');
+      expect(src(rel)).not.toContain('v6.6.6');
     }
   });
 });

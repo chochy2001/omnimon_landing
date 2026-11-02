@@ -66,8 +66,12 @@ describe('legal copy', () => {
   test('terms name the published tag and the no-payments rule', () => {
     const es = resolveLegalStrings('es');
     const en = resolveLegalStrings('en');
-    expect(es.termsBody.join(' ')).toContain('v6.6.6');
-    expect(en.termsBody.join(' ')).toContain('v6.6.6');
+    expect(es.termsBody.join(' ')).toContain('v6.8.0');
+    expect(en.termsBody.join(' ')).toContain('v6.8.0');
+    expect(es.termsBody.join(' ')).not.toContain('v6.6.6');
+    expect(en.termsBody.join(' ')).not.toContain('v6.6.6');
+    expect(es.termsBody.join(' ')).not.toMatch(/pre-release/i);
+    expect(en.termsBody.join(' ')).not.toMatch(/pre-release/i);
     expect(es.termsBody.join(' ')).toContain('no cobra');
     expect(en.termsBody.join(' ')).toContain('no payments');
   });
