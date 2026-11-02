@@ -32,7 +32,7 @@ Live origin tracks `origin/main` via GitHub CD: every merge to `main` with green
 | Blog index | Only posts that exist as Astro pages (v6.4.1-v6.8.0 EN/ES) |
 | Legal | `/privacy` `/terms` `/es/privacy` `/es/terms` |
 
-`src/consts.ts` version is **6.8.0** (workspace). Latest published GitHub tag for the desktop app is still **v6.6.6** (a Universal DMG exists for that tag; there is no 6.8.0 binary). Download CTAs say "Download latest" / "Descargar ultima version" and point at `releases/latest`. Spanish blog slugs end with `-es` (example: `/es/blog/v6-8-0-release-es/`).
+`src/consts.ts` pins **6.8.0** (`26 Oct 2026`), matching the latest published GitHub release **`v6.8.0`** on `CAPDESIS/omnimon` (`OmniMon-6.8.0-macOS-Universal.dmg`, `OmniMon-6.8.0-Windows.msi`, Linux `.AppImage`/`.deb`/`.rpm`, `releases.json`, and `SHA256SUMS.txt`). Download CTAs say "Download latest" / "Descargar ultima version" and point at `releases/latest`. Spanish blog slugs end with `-es` (example: `/es/blog/v6-8-0-release-es/`).
 
 ## Deploy
 
@@ -41,7 +41,6 @@ Operator secrets: `HOSTINGER_FTPS_HOST` (TLS name under `*.hstgr.io`, **not** th
 
 GitHub CD is live: every push to `main` with green CI promotes that exact SHA to the origin and reads it back (fingerprint, smoke, assets). Details: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
 
-## Residual (operator)
+## Release Sync
 
-- Published desktop tag remains **v6.6.6**; landing titles may still mention workspace 6.8.0.
-- Cutting a `v6.8.0` Universal DMG is a release decision, not a landing deploy.
+- Latest published desktop tag on `CAPDESIS/omnimon` is **v6.8.0** (`2026-10-26`). Bump `OMNIMON_VERSION`, `PUBLISHED_VERSION`, and `RELEASE_DATE` in `src/consts.ts` when a new GitHub release is cut.

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
-import { OMNIMON_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
+import { OMNIMON_VERSION, PUBLISHED_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
 import {
   buildReleaseSlug,
   latestReleasePost,
@@ -10,6 +10,13 @@ import {
 } from './releases';
 
 describe('release metadata', () => {
+  test('pins published release v6.8.0 on 26 Oct 2026', () => {
+    expect(OMNIMON_VERSION).toBe('6.8.0');
+    expect(PUBLISHED_VERSION).toBe('6.8.0');
+    expect(RELEASE_DATE).toBe('26 Oct 2026');
+    expect(RELEASE_DATE_ES).toBe('26 Oct 2026');
+  });
+
   test('builds locale-aware release slugs from the central version', () => {
     expect(buildReleaseSlug(OMNIMON_VERSION)).toBe(
       `v${OMNIMON_VERSION.replaceAll('.', '-')}-release`,
@@ -55,7 +62,7 @@ describe('release metadata', () => {
     ]);
   });
 
-  test('v6.8.0 posts document pid+start_time kill identity and published tag v6.6.6', () => {
+  test('v6.8.0 posts document pid+start_time kill identity and published v6.8.0 installers', () => {
     const en = readFileSync(
       join(import.meta.dir, '../pages/blog/v6-8-0-release.astro'),
       'utf8',
@@ -65,9 +72,14 @@ describe('release metadata', () => {
       'utf8',
     );
     for (const body of [en, es]) {
+      expect(body).toContain('26 Oct 2026');
       expect(body).toContain('pid');
       expect(body).toContain('start_time');
-      expect(body).toContain('6.6.6');
+      expect(body).toContain('v6.8.0');
+      expect(body).toContain('OmniMon-6.8.0-macOS-Universal.dmg');
+      expect(body).toContain('OmniMon-6.8.0-Windows.msi');
+      expect(body).not.toContain('6.6.6');
+      expect(body.toLowerCase()).not.toContain('pre-release');
     }
   });
 });
