@@ -7,7 +7,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 <Layout
 	title="OmniMon v6.7.0: Zombie Killer y Endurecimiento de IA | Blog"
-	description="Vista previa pre-release de OmniMon v6.7.0: el motor Zombie Killer, modo de privacidad de IA con redaccion seudonima estable, presupuesto diario de IA, endurecimiento del keyring, badge DPI de transparencia y un refactor con breaking change en el evaluador de alertas de red."
+	description="Vista previa pre-release de OmniMon v6.7.0: el motor Zombie Killer, modo de privacidad de IA con redacción seudónima estable, presupuesto diario de IA, endurecimiento del keyring, badge DPI de transparencia y un refactor con breaking change en el evaluador de alertas de red."
 	lang="es"
 >
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -27,44 +27,44 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					La version 6.7.0 fue una vista previa pre-release cuyos cambios se publicaron en v6.8.0. Estrena el <strong class="text-white">Zombie Killer</strong>, un motor en segundo plano que detecta procesos consumiendo CPU o RAM de forma sostenida y los ofrece para terminar con confirmacion del usuario, mas una segunda ronda de endurecimiento de la superficie de IA (modo de privacidad, presupuesto diario, confirmacion frontend de herramientas destructivas, borrado previo del keyring legacy) y un badge de transparencia DPI.
+					La versión 6.7.0 fue una vista previa pre-release cuyos cambios se publicaron en v6.8.0. Estrena el <strong class="text-white">Zombie Killer</strong>, un motor en segundo plano que detecta procesos consumiendo CPU o RAM de forma sostenida y los ofrece para terminar con confirmación del usuario, más una segunda ronda de endurecimiento de la superficie de IA (modo de privacidad, presupuesto diario, confirmación frontend de herramientas destructivas, borrado previo del keyring legacy) y un badge de transparencia DPI.
 				</p>
 
 				<h2 class="text-2xl font-bold text-white">Zombie Killer</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Deteccion de uso sostenido.</strong> Un nuevo motor vigila procesos cuyo CPU o RAM se mantiene por encima de un umbral durante una ventana configurable (defaults: 50% de CPU sostenido 1h, uptime mayor a 7 dias) y los ofrece como candidatos.</li>
-					<li><strong class="text-white">A salvo de reuso de PID.</strong> Cada candidato se identifica por <code>(pid, start_time)</code>, asi que un PID reciclado nunca se confunde con un zombie todavia vivo.</li>
-					<li><strong class="text-white">Tick a prueba de panic.</strong> El cuerpo del tick corre bajo <code>catch_unwind</code>; un proceso problematico no puede tumbar el hilo de fondo.</li>
+					<li><strong class="text-white">Detección de uso sostenido.</strong> Un nuevo motor vigila procesos cuyo CPU o RAM se mantiene por encima de un umbral durante una ventana configurable (defaults: 50% de CPU sostenido 1h, uptime mayor a 7 días) y los ofrece como candidatos.</li>
+					<li><strong class="text-white">A salvo de reúso de PID.</strong> Cada candidato se identifica por <code>(pid, start_time)</code>, así que un PID reciclado nunca se confunde con un zombie todavía vivo.</li>
+					<li><strong class="text-white">Tick a prueba de panic.</strong> El cuerpo del tick corre bajo <code>catch_unwind</code>; un proceso problemático no puede tumbar el hilo de fondo.</li>
 					<li><strong class="text-white">Modal con atajo de teclado.</strong> <code>Cmd/Ctrl+Shift+Z</code> abre <code>ZombieKiller.svelte</code>, que lista candidatos, permite matar uno o todos, ajustar los umbrales y mantener una blocklist <code>never_kill</code>, todo con i18n EN y ES.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Modo de Privacidad de IA</h2>
-				<p>Cuando se activa (<code>Settings.ai_privacy_mode</code>, default <code>false</code>), todo lo que se envia al LLM pasa por redaccion seudonima estable:</p>
+				<p>Cuando se activa (<code>Settings.ai_privacy_mode</code>, default <code>false</code>), todo lo que se envía al LLM pasa por redacción seudónima estable:</p>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Nombres de proceso, paths, URLs, titulos de pestana, hostnames.</strong> Se reemplazan por tokens SipHash de 24 bits para que el modelo pueda seguir razonando sobre identidad entre llamadas sin ver los strings reales.</li>
+					<li><strong class="text-white">Nombres de proceso, paths, URLs, títulos de pestaña, hostnames.</strong> Se reemplazan por tokens SipHash de 24 bits para que el modelo pueda seguir razonando sobre identidad entre llamadas sin ver los strings reales.</li>
 					<li><strong class="text-white">IPs privadas colapsan a <code>&lt;lan&gt;</code>.</strong> RFC 1918, loopback, link-local, <code>fc00::/7</code>, <code>fe80::/10</code>, todas se aplanan a un solo bucket.</li>
-					<li><strong class="text-white">Controles visibles.</strong> El toggle, un contador de uso vivo y el input del presupuesto diario viven en la nueva seccion "AI Privacy &amp; Budget" de Profile Settings.</li>
+					<li><strong class="text-white">Controles visibles.</strong> El toggle, un contador de uso vivo y el input del presupuesto diario viven en la nueva sección "AI Privacy &amp; Budget" de Profile Settings.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Presupuesto Diario de IA</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Tope por dia UTC.</strong> <code>Settings.ai_daily_limit</code> (default <code>200</code>, <code>0</code> = ilimitado) complementa el token bucket existente: el burst limita la tasa, el diario limita el gasto.</li>
+					<li><strong class="text-white">Tope por día UTC.</strong> <code>Settings.ai_daily_limit</code> (default <code>200</code>, <code>0</code> = ilimitado) complementa el token bucket existente: el burst limita la tasa, el diario limita el gasto.</li>
 					<li><strong class="text-white">Compartido entre proveedores.</strong> La cubeta cubre <code>ai_chat</code>, <code>analyze_processes</code>, <code>analyze_context</code> y <code>validate_api_key</code>.</li>
-					<li><strong class="text-white">Observabilidad.</strong> Nuevo IPC <code>get_ai_daily_usage</code> que devuelve <code>(usado, limite)</code>; la UI muestra el contador con un boton de refresh.</li>
+					<li><strong class="text-white">Observabilidad.</strong> Nuevo IPC <code>get_ai_daily_usage</code> que devuelve <code>(usado, límite)</code>; la UI muestra el contador con un botón de refresh.</li>
 				</ul>
 
-				<h2 class="text-2xl font-bold text-white">Llamadas de IA Mas Seguras</h2>
+				<h2 class="text-2xl font-bold text-white">Llamadas de IA Más Seguras</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Las reglas de automatizacion requieren confirmacion.</strong> <code>add_automation_rule</code> y <code>remove_automation_rule</code> ya no se ejecutan server-side dentro de <code>ai_chat</code>; devuelven un plan y <code>AIChat.svelte</code> invoca el IPC real solo tras confirmacion explicita, mismo patron que <code>kill_process</code>, <code>kill_by_name</code>, <code>close_tabs</code> y <code>close_connection</code>.</li>
-					<li><strong class="text-white">Keyring con borrado previo.</strong> <code>get_api_key_with_fallback</code> borra el almacen legacy en texto plano antes de escribir al keyring seguro. Una interrupcion a mitad del flujo ya no puede dejar la API key legible en disco.</li>
-					<li><strong class="text-white">CSP con Ollama local.</strong> <code>tauri.conf.json</code> permite <code>http://localhost:11434</code> y <code>http://127.0.0.1:11434</code> sin relajar el resto de la politica.</li>
+					<li><strong class="text-white">Las reglas de automatización requieren confirmación.</strong> <code>add_automation_rule</code> y <code>remove_automation_rule</code> ya no se ejecutan server-side dentro de <code>ai_chat</code>; devuelven un plan y <code>AIChat.svelte</code> invoca el IPC real solo tras confirmación explícita, mismo patrón que <code>kill_process</code>, <code>kill_by_name</code>, <code>close_tabs</code> y <code>close_connection</code>.</li>
+					<li><strong class="text-white">Keyring con borrado previo.</strong> <code>get_api_key_with_fallback</code> borra el almacén legacy en texto plano antes de escribir al keyring seguro. Una interrupción a mitad del flujo ya no puede dejar la API key legible en disco.</li>
+					<li><strong class="text-white">CSP con Ollama local.</strong> <code>tauri.conf.json</code> permite <code>http://localhost:11434</code> y <code>http://127.0.0.1:11434</code> sin relajar el resto de la política.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Badge DPI de Transparencia</h2>
-				<p>Nuevo indicador en el StatusBar (icono Radar de lucide, <code>aria-live="polite"</code>) que aparece siempre que la telemetria DPI esta activa. El tooltip deja claro que OmniMon lee metadatos de paquete unicamente (nunca payload) y apunta al ajuste que desactiva DPI.</p>
+				<p>Nuevo indicador en el StatusBar (icono Radar de lucide, <code>aria-live="polite"</code>) que aparece siempre que la telemetría DPI está activa. El tooltip deja claro que OmniMon lee metadatos de paquete únicamente (nunca payload) y apunta al ajuste que desactiva DPI.</p>
 
 				<h2 class="text-2xl font-bold text-white">Breaking: <code>network_alerts::EvaluatorState</code></h2>
-				<p>El evaluador de alertas tenia sus contadores de debounce y el mapa de cooldown en un singleton de proceso <code>OnceLock&lt;RwLock&lt;EvaluatorState&gt;&gt;</code>, lo que causaba tests flaky cuando hilos paralelos se contaminaban el mapa <code>consecutive_matches</code>. El arreglo elimina el global y plumea <code>&amp;mut EvaluatorState</code> a traves de cada call site:</p>
+				<p>El evaluador de alertas tenía sus contadores de debounce y el mapa de cooldown en un singleton de proceso <code>OnceLock&lt;RwLock&lt;EvaluatorState&gt;&gt;</code>, lo que causaba tests flaky cuando hilos paralelos se contaminaban el mapa <code>consecutive_matches</code>. El arreglo elimina el global y plumea <code>&amp;mut EvaluatorState</code> a través de cada call site:</p>
 				<pre class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300"><code>// Antes
 let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history);
 
@@ -72,7 +72,7 @@ let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history);
 let mut state = network_alerts::EvaluatorState::new();
 let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history, &amp;mut state);
 // conservar `state` vivo entre ticks para preservar debounce + cooldown.</code></pre>
-				<p>Los call sites internos del workspace ya estan actualizados; los consumidores fuera del arbol deben instanciar su propio estado o envolver ambas funciones.</p>
+				<p>Los call sites internos del workspace ya están actualizados; los consumidores fuera del árbol deben instanciar su propio estado o envolver ambas funciones.</p>
 
 				<h2 class="text-2xl font-bold text-white">Calidad</h2>
 				<ul class="list-disc space-y-2 pl-6">
@@ -81,9 +81,9 @@ let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history, 
 					<li><strong class="text-white">Clippy limpio bajo Rust 1.95</strong>: diez call sites preexistentes arreglados para los nuevos lints <code>unnecessary_sort_by</code> y <code>collapsible_match</code>.</li>
 				</ul>
 
-				<h2 class="text-2xl font-bold text-white">Descarga el ultimo release publicado</h2>
+				<h2 class="text-2xl font-bold text-white">Descarga el último release publicado</h2>
 				<p class="text-slate-400">
-					Estos botones sirven el ultimo release publicado en GitHub (actualmente v6.8.0, que incluye todos los cambios de 6.7.0 descritos arriba); v6.7.0 fue un hito de vista previa sin tag separado en GitHub.
+					Estos botones sirven el último release publicado en GitHub (actualmente v6.8.0, que incluye todos los cambios de 6.7.0 descritos arriba); v6.7.0 fue un hito de vista previa sin tag separado en GitHub.
 				</p>
 				<div class="grid gap-4 sm:grid-cols-3">
 					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">

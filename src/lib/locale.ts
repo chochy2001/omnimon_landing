@@ -40,8 +40,8 @@ export const chromeCopy: Record<ConsentLocale, ChromeCopy> = {
     github: 'GitHub',
     download: 'Descargar',
     theme: 'Cambiar tema de color',
-    menu: 'Abrir menu',
-    closeMenu: 'Cerrar menu',
+    menu: 'Abrir menú',
+    closeMenu: 'Cerrar menú',
     langEn: 'EN',
     langEs: 'ES',
     langGroup: 'Idioma',
@@ -79,8 +79,8 @@ export function notFoundCopy(locale: ConsentLocale): {
 } {
   if (locale === 'es') {
     return {
-      title: 'Pagina no encontrada | OmniMon',
-      h1: 'No encontramos esa pagina',
+      title: 'Página no encontrada | OmniMon',
+      h1: 'No encontramos esa página',
       lead: 'Esa ruta no existe. Vuelve al inicio o al blog.',
     };
   }

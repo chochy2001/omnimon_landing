@@ -7,7 +7,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 <Layout
 	title="OmniMon v6.4.1: Reality Fix Release | Blog"
-	description="OmniMon v6.4.1 incluye colores solidos en la UI, iconos Lucide SVG, streaming real de IA, i18n completo, Modo Profesional y 87% de cobertura."
+	description="OmniMon v6.4.1 incluye colores sólidos en la UI, iconos Lucide SVG, streaming real de IA, i18n completo, Modo Profesional y 87% de cobertura."
 	lang="es"
 >
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -27,29 +27,29 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					La version 6.4.1 es el <strong class="text-white">Sprint 4 Reality Fix</strong>: un release enfocado que corrige tres bugs criticos de UI encontrados en una auditoria profesional, agrega streaming real de IA y sube la calidad en todos los frentes.
+					La versión 6.4.1 es el <strong class="text-white">Sprint 4 Reality Fix</strong>: un release enfocado que corrige tres bugs críticos de UI encontrados en una auditoría profesional, agrega streaming real de IA y sube la calidad en todos los frentes.
 				</p>
 
-				<h2 class="text-2xl font-bold text-white">Que se corrigio</h2>
-				<p>Una auditoria externa detecto tres problemas evidentes en v6.3.0:</p>
+				<h2 class="text-2xl font-bold text-white">Qué se corrigió</h2>
+				<p>Una auditoría externa detectó tres problemas evidentes en v6.3.0:</p>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Fondos transparentes en toda la UI.</strong> Paneles, tarjetas y badges dependian de <code>backdrop-filter: blur()</code> y fondos <code>rgba()</code>. Cuando el compositing del OS fallaba o el usuario desactivaba transparencias, el texto se volvia ilegible. v6.4.1 impone colores solidos desde variables del tema en los 3 temas (dark, light, alto contraste).</li>
-					<li><strong class="text-white">35+ emojis usados como iconos.</strong> Items del sidebar, headers de tabs y badges de alertas usaban emojis en vez de iconos vectoriales. Se veian distinto en cada plataforma y rompian la jerarquia visual. Todos reemplazados por iconos Lucide SVG que respetan el tema activo.</li>
-					<li><strong class="text-white">Respuestas de IA llegaban como un bloque.</strong> Los usuarios tenian que esperar la respuesta completa antes de ver algo. Ahora OpenAI y Anthropic hacen streaming via Server-Sent Events, mostrando tokens conforme llegan.</li>
+					<li><strong class="text-white">Fondos transparentes en toda la UI.</strong> Paneles, tarjetas y badges dependían de <code>backdrop-filter: blur()</code> y fondos <code>rgba()</code>. Cuando el compositing del OS fallaba o el usuario desactivaba transparencias, el texto se volvía ilegible. v6.4.1 impone colores sólidos desde variables del tema en los 3 temas (dark, light, alto contraste).</li>
+					<li><strong class="text-white">35+ emojis usados como iconos.</strong> Items del sidebar, headers de tabs y badges de alertas usaban emojis en vez de iconos vectoriales. Se veían distinto en cada plataforma y rompían la jerarquía visual. Todos reemplazados por iconos Lucide SVG que respetan el tema activo.</li>
+					<li><strong class="text-white">Respuestas de IA llegaban como un bloque.</strong> Los usuarios tenían que esperar la respuesta completa antes de ver algo. Ahora OpenAI y Anthropic hacen streaming vía Server-Sent Events, mostrando tokens conforme llegan.</li>
 				</ul>
 
-				<h2 class="text-2xl font-bold text-white">Que se agrego</h2>
+				<h2 class="text-2xl font-bold text-white">Qué se agregó</h2>
 				<ul class="list-disc space-y-2 pl-6">
 					<li><strong class="text-white">Modo Profesional</strong>: toggle en el chat de IA para mostrar el modelo activo, llamadas a herramientas y conteo de tokens por cada respuesta.</li>
-					<li><strong class="text-white">Layout split redimensionable</strong>: un divisor arrastrable entre la tabla de procesos y los paneles laterales. La posicion persiste entre sesiones.</li>
-					<li><strong class="text-white">i18n completo</strong>: 531 keys de traduccion sincronizadas entre espanol e ingles, cubriendo cada label, tooltip, mensaje de error y placeholder.</li>
+					<li><strong class="text-white">Layout split redimensionable</strong>: un divisor arrastrable entre la tabla de procesos y los paneles laterales. La posición persiste entre sesiones.</li>
+					<li><strong class="text-white">i18n completo</strong>: 531 keys de traducción sincronizadas entre español e inglés, cubriendo cada label, tooltip, mensaje de error y placeholder.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Mejoras de calidad</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Cobertura de tests al 87%</strong> con enforcement automatico: el gate de CI rechaza PRs que bajen del umbral.</li>
-					<li><strong class="text-white">CVE quinn-proto resuelto</strong> (severity 8.7 HIGH): dependencia actualizada a version parcheada.</li>
-					<li>Auditoria CSS: cero <code>backdrop-filter</code>, cero fondos <code>rgba()</code> (excepto overlays de modales), cero <code>opacity</code> en elementos de contenido.</li>
+					<li><strong class="text-white">Cobertura de tests al 87%</strong> con enforcement automático: el gate de CI rechaza PRs que bajen del umbral.</li>
+					<li><strong class="text-white">CVE quinn-proto resuelto</strong> (severity 8.7 HIGH): dependencia actualizada a versión parcheada.</li>
+					<li>Auditoría CSS: cero <code>backdrop-filter</code>, cero fondos <code>rgba()</code> (excepto overlays de modales), cero <code>opacity</code> en elementos de contenido.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Descarga</h2>

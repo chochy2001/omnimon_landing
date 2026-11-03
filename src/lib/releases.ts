@@ -74,21 +74,21 @@ const publishedSpanishPosts: BlogPostPreview[] = [
     title: 'OmniMon v6.6.0: Tabs Nativos en Windows y Herramientas de Desarrollo',
     date: '17 Mar 2026',
     summary:
-      'Deteccion nativa de pestanas en Windows, integracion Bun, scripts de desarrollo y correcciones multiplataforma.',
+      'Detección nativa de pestañas en Windows, integración Bun, scripts de desarrollo y correcciones multiplataforma.',
   },
   {
     slug: 'v6-5-0-release-es',
-    title: 'OmniMon v6.5.0: Kill Inteligente y Graficas Corregidas',
+    title: 'OmniMon v6.5.0: Kill Inteligente y Gráficas Corregidas',
     date: '12 Mar 2026',
     summary:
-      'Dialogo de kill inteligente, consulta IA, graficas dinamicas, temas unificados y pestanas visibles en modo basico.',
+      'Diálogo de kill inteligente, consulta IA, gráficas dinámicas, temas unificados y pestañas visibles en modo básico.',
   },
   {
     slug: 'v6-4-1-release-es',
     title: 'OmniMon v6.4.1: Reality Fix Release',
     date: '11 Mar 2026',
     summary:
-      'Colores solidos, iconos Lucide, streaming SSE, i18n completo, Modo Pro y mas cobertura de pruebas.',
+      'Colores sólidos, iconos Lucide, streaming SSE, i18n completo, Modo Pro y más cobertura de pruebas.',
   },
 ];
 

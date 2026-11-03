@@ -10,7 +10,7 @@ describe('home copy', () => {
     expect(homeCopy.es.lang).toBe('es');
     expect(homeCopy.en.h1).not.toBe(homeCopy.es.h1);
     expect(homeCopy.en.ctaDownload).toBe('Download latest');
-    expect(homeCopy.es.ctaDownload).toBe('Descargar ultima version');
+    expect(homeCopy.es.ctaDownload).toBe('Descargar última versión');
     expect(homeCopy.en.ctaDownload).not.toContain(OMNIMON_VERSION);
     expect(homeCopy.es.ctaDownload).not.toContain(OMNIMON_VERSION);
     expect(homeCopy.en.navDownload).toBe('Download');

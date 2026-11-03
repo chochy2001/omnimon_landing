@@ -7,7 +7,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 <Layout
 	title="OmniMon v6.6.0: Tabs Nativos en Windows y Herramientas de Desarrollo | Blog"
-	description="OmniMon v6.6.0 agrega deteccion nativa de pestanas en Windows sin CDP, integracion Bun, scripts automaticos de desarrollo, estabilidad CI mejorada y correcciones multiplataforma."
+	description="OmniMon v6.6.0 agrega detección nativa de pestañas en Windows sin CDP, integración Bun, scripts automáticos de desarrollo, estabilidad CI mejorada y correcciones multiplataforma."
 	lang="es"
 >
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -27,37 +27,37 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					La version 6.6.0 trae <strong class="text-white">deteccion nativa de pestanas de navegador en Windows</strong> usando UI Automation (sin necesidad de CDP), integracion completa de Bun reemplazando npm, scripts automaticos de desarrollo y varias correcciones de estabilidad multiplataforma.
+					La versión 6.6.0 trae <strong class="text-white">detección nativa de pestañas de navegador en Windows</strong> usando UI Automation (sin necesidad de CDP), integración completa de Bun reemplazando npm, scripts automáticos de desarrollo y varias correcciones de estabilidad multiplataforma.
 				</p>
 
-				<h2 class="text-2xl font-bold text-white">Deteccion Nativa de Tabs en Windows</h2>
-				<p>OmniMon ahora detecta pestanas de navegador en Windows sin requerir Chrome DevTools Protocol:</p>
+				<h2 class="text-2xl font-bold text-white">Detección Nativa de Tabs en Windows</h2>
+				<p>OmniMon ahora detecta pestañas de navegador en Windows sin requerir Chrome DevTools Protocol:</p>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">API UI Automation.</strong> Utiliza el arbol de accesibilidad de Windows para recorrer las pestanas del navegador y extraer titulos nativamente, sin flags especiales del navegador.</li>
-					<li><strong class="text-white">Fallback por titulo de ventana.</strong> Cuando UI Automation no esta disponible, lee la pestana activa desde el titulo de la ventana.</li>
+					<li><strong class="text-white">API UI Automation.</strong> Utiliza el árbol de accesibilidad de Windows para recorrer las pestañas del navegador y extraer títulos nativamente, sin flags especiales del navegador.</li>
+					<li><strong class="text-white">Fallback por título de ventana.</strong> Cuando UI Automation no está disponible, lee la pestaña activa desde el título de la ventana.</li>
 					<li><strong class="text-white">Soporte multi-navegador.</strong> Funciona con Chrome, Edge, Brave y Arc en Windows.</li>
-					<li><strong class="text-white">Instrucciones CDP.</strong> Para navegadores que lo soportan, OmniMon muestra instrucciones especificas por plataforma sobre como habilitar CDP para acceso completo a pestanas.</li>
+					<li><strong class="text-white">Instrucciones CDP.</strong> Para navegadores que lo soportan, OmniMon muestra instrucciones específicas por plataforma sobre cómo habilitar CDP para acceso completo a pestañas.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Experiencia de Desarrollo</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Bun en todo el proyecto.</strong> Se reemplazo npm con Bun en todos los scripts de build, flujos CI y comandos de desarrollo para una resolucion de dependencias mas rapida.</li>
-					<li><strong class="text-white">Scripts automaticos.</strong> Nuevos scripts de ejecucion que detectan la plataforma y configuran el entorno de desarrollo automaticamente.</li>
-					<li><strong class="text-white">Documentacion completa.</strong> Se agrego documentacion detallada de prerequisitos para las tres plataformas (macOS, Windows, Linux).</li>
+					<li><strong class="text-white">Bun en todo el proyecto.</strong> Se reemplazó npm con Bun en todos los scripts de build, flujos CI y comandos de desarrollo para una resolución de dependencias más rápida.</li>
+					<li><strong class="text-white">Scripts automáticos.</strong> Nuevos scripts de ejecución que detectan la plataforma y configuran el entorno de desarrollo automáticamente.</li>
+					<li><strong class="text-white">Documentación completa.</strong> Se agregó documentación detallada de prerrequisitos para las tres plataformas (macOS, Windows, Linux).</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Estabilidad Multiplataforma</h2>
 				<ul class="list-disc space-y-2 pl-6">
 					<li><strong class="text-white">Subprocesos en Windows.</strong> Se corrigieron ventanas visibles de PowerShell y netstat durante el monitoreo usando flags <code>CREATE_NO_WINDOW</code>.</li>
 					<li><strong class="text-white">Compatibilidad Clippy 1.94.</strong> Corregido nuevo lint <code>manual_contains</code> de Rust 1.94, asegurando que CI pase en todas las plataformas.</li>
-					<li><strong class="text-white">Race conditions en tests.</strong> Corregida condicion de carrera en tests de AIChat y strings i18n desincronizados entre locales.</li>
-					<li><strong class="text-white">Cierre de app en Windows.</strong> Mejorado el cierre completo de la aplicacion y agregado logging de debug para seguimiento de conexiones.</li>
+					<li><strong class="text-white">Race conditions en tests.</strong> Corregida condición de carrera en tests de AIChat y strings i18n desincronizados entre locales.</li>
+					<li><strong class="text-white">Cierre de app en Windows.</strong> Mejorado el cierre completo de la aplicación y agregado logging de debug para seguimiento de conexiones.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">README Actualizado</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Screenshot de la app.</strong> Se agrego captura de pantalla real de la aplicacion al README del repositorio.</li>
-					<li><strong class="text-white">Documentacion de arquitectura.</strong> Revisada con descripcion actualizada de la arquitectura y detalles precisos del stack.</li>
+					<li><strong class="text-white">Screenshot de la app.</strong> Se agregó captura de pantalla real de la aplicación al README del repositorio.</li>
+					<li><strong class="text-white">Documentación de arquitectura.</strong> Revisada con descripción actualizada de la arquitectura y detalles precisos del stack.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Descargar</h2>
