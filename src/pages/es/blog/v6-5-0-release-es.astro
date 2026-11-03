@@ -6,8 +6,8 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 ---
 
 <Layout
-	title="OmniMon v6.5.0: Kill Inteligente y Graficas Corregidas | Blog"
-	description="OmniMon v6.5.0 incluye dialogo de kill inteligente con pestanas del navegador, boton de IA, graficas dinamicas corregidas, sistema de temas unificado y detalles de proceso mejorados."
+	title="OmniMon v6.5.0: Kill Inteligente y Gráficas Corregidas | Blog"
+	description="OmniMon v6.5.0 incluye diálogo de kill inteligente con pestañas del navegador, botón de IA, gráficas dinámicas corregidas, sistema de temas unificado y detalles de proceso mejorados."
 	lang="es"
 >
 	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
@@ -18,7 +18,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 					<span>|</span>
 					<a href="/blog/v6-5-0-release/" class="transition hover:text-sky-300">Read in English</a>
 				</div>
-				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.5.0: Kill Inteligente y Graficas Corregidas</h1>
+				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.5.0: Kill Inteligente y Gráficas Corregidas</h1>
 				<div class="flex items-center gap-4 text-sm text-slate-400">
 					<time>12 Mar 2026</time>
 					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Nuevo release</span>
@@ -27,35 +27,35 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					La version 6.5.0 es el release del <strong class="text-white">Sprint 5</strong>: una actualizacion enfocada que hace el dialogo de kill mas inteligente, corrige el renderizado de graficas en todas las vistas, unifica el sistema de temas y mejora la visibilidad de detalles de procesos.
+					La versión 6.5.0 es el release del <strong class="text-white">Sprint 5</strong>: una actualización enfocada que hace el diálogo de kill más inteligente, corrige el renderizado de gráficas en todas las vistas, unifica el sistema de temas y mejora la visibilidad de detalles de procesos.
 				</p>
 
-				<h2 class="text-2xl font-bold text-white">Dialogo de Kill Inteligente</h2>
-				<p>Al terminar procesos de navegador, OmniMon ahora muestra exactamente que pestanas se cerraran:</p>
+				<h2 class="text-2xl font-bold text-white">Diálogo de Kill Inteligente</h2>
+				<p>Al terminar procesos de navegador, OmniMon ahora muestra exactamente qué pestañas se cerrarán:</p>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Nombres de pestanas en la confirmacion.</strong> El dialogo lista las pestanas abiertas (hasta 5 visibles, con indicador "+N mas") para que sepas que estas cerrando antes de confirmar.</li>
-					<li><strong class="text-white">Boton "Preguntar a la IA".</strong> Un nuevo boton en el dialogo de kill te permite consultar al asistente de IA si es seguro terminar los procesos seleccionados, con un prompt pre-armado incluyendo los nombres.</li>
-					<li><strong class="text-white">Agrupacion por navegador.</strong> Las pestanas se agrupan por navegador (Chrome, Brave, etc.) y solo se muestran una vez por navegador para evitar duplicados de procesos helper.</li>
+					<li><strong class="text-white">Nombres de pestañas en la confirmación.</strong> El diálogo lista las pestañas abiertas (hasta 5 visibles, con indicador "+N más") para que sepas qué estás cerrando antes de confirmar.</li>
+					<li><strong class="text-white">Botón "Preguntar a la IA".</strong> Un nuevo botón en el diálogo de kill te permite consultar al asistente de IA si es seguro terminar los procesos seleccionados, con un prompt prearmado incluyendo los nombres.</li>
+					<li><strong class="text-white">Agrupación por navegador.</strong> Las pestañas se agrupan por navegador (Chrome, Brave, etc.) y solo se muestran una vez por navegador para evitar duplicados de procesos helper.</li>
 				</ul>
 
-				<h2 class="text-2xl font-bold text-white">Graficas Corregidas</h2>
+				<h2 class="text-2xl font-bold text-white">Gráficas Corregidas</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Escalado dinamico del eje Y.</strong> Se corrigio <code>autoscaleInfoProvider</code> que retornaba <code>null</code> en vez de <code>undefined</code>, rompiendo el renderizado en lightweight-charts v5.</li>
-					<li><strong class="text-white">Mecanismo de reintento.</strong> Las graficas ahora reintentan la inicializacion si el contenedor no tenia dimensiones en el primer intento, corrigiendo sparklines vacias al cargar el dashboard.</li>
-					<li><strong class="text-white">Sincronizacion incremental.</strong> Solo los nuevos puntos de datos se envian a la grafica en cada ciclo de polling, evitando recalculos de layout y mejorando el rendimiento.</li>
+					<li><strong class="text-white">Escalado dinámico del eje Y.</strong> Se corrigió <code>autoscaleInfoProvider</code> que retornaba <code>null</code> en vez de <code>undefined</code>, rompiendo el renderizado en lightweight-charts v5.</li>
+					<li><strong class="text-white">Mecanismo de reintento.</strong> Las gráficas ahora reintentan la inicialización si el contenedor no tenía dimensiones en el primer intento, corrigiendo sparklines vacías al cargar el dashboard.</li>
+					<li><strong class="text-white">Sincronización incremental.</strong> Solo los nuevos puntos de datos se envían a la gráfica en cada ciclo de polling, evitando recálculos de layout y mejorando el rendimiento.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Sistema de Temas Unificado</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Un solo motor de temas.</strong> Se elimino el sistema dual de temas legacy que sobrescribia variables CSS y causaba texto invisible en modo claro.</li>
-					<li><strong class="text-white">Tres temas.</strong> Dark, Light y Cyberpunk, todos manejados por una sola funcion <code>applyThemeTokens()</code> con ratios de contraste adecuados.</li>
-					<li><strong class="text-white">Deteccion automatica.</strong> La opcion "Auto" usa <code>prefers-color-scheme</code> para coincidir con la preferencia del sistema operativo.</li>
+					<li><strong class="text-white">Un solo motor de temas.</strong> Se eliminó el sistema dual de temas legacy que sobrescribía variables CSS y causaba texto invisible en modo claro.</li>
+					<li><strong class="text-white">Tres temas.</strong> Dark, Light y Cyberpunk, todos manejados por una sola función <code>applyThemeTokens()</code> con ratios de contraste adecuados.</li>
+					<li><strong class="text-white">Detección automática.</strong> La opción "Auto" usa <code>prefers-color-scheme</code> para coincidir con la preferencia del sistema operativo.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Detalles de Proceso Mejorados</h2>
 				<ul class="list-disc space-y-2 pl-6">
-					<li><strong class="text-white">Pestanas visibles en modo basico.</strong> El modal de detalles del proceso ahora muestra las pestanas asociadas del navegador sin necesitar activar el Modo Profesional.</li>
-					<li><strong class="text-white">Inicio sin flash blanco.</strong> Fondo oscuro aplicado via estilo inline en el body previene el flash blanco antes de que cargue el tema.</li>
+					<li><strong class="text-white">Pestañas visibles en modo básico.</strong> El modal de detalles del proceso ahora muestra las pestañas asociadas del navegador sin necesitar activar el Modo Profesional.</li>
+					<li><strong class="text-white">Inicio sin flash blanco.</strong> Fondo oscuro aplicado vía estilo inline en el body previene el flash blanco antes de que cargue el tema.</li>
 				</ul>
 
 				<h2 class="text-2xl font-bold text-white">Descarga</h2>

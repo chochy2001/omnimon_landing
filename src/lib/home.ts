@@ -69,20 +69,20 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     title: `OmniMon ${v} | Observabilidad, seguridad e IA para tu sistema`,
     description: `Landing oficial de OmniMon ${v}: Memory Guard para macOS, tutorial, descargas verificables y accesos para macOS, Windows y Linux.`,
     badgeNew: 'Nuevo',
-    versionWord: 'Version',
+    versionWord: 'Versión',
     releaseWord: 'Release',
     releaseDate: RELEASE_DATE_ES,
     h1: 'Observabilidad real, seguridad activa y asistencia IA en una sola consola.',
     lead: `OmniMon ${v} une desktop nativo, CLI y TUI para monitorear procesos, red y alertas, con Memory Guard en macOS para leftovers idle sin falsos positivos.`,
-    ctaDownload: 'Descargar ultima version',
-    ctaDocs: 'Ver documentacion',
+    ctaDownload: 'Descargar última versión',
+    ctaDocs: 'Ver documentación',
     ctaSponsors: 'GitHub Sponsors',
     platformsKicker: 'Plataformas',
     platformsValue: 'macOS, Windows y Linux',
     securityKicker: 'Seguridad',
     securityValue: 'Firmas Ed25519 + SHA-256',
     aiKicker: 'IA opcional',
-    aiValue: 'Local o cloud segun tu flujo',
+    aiValue: 'Local o cloud según tu flujo',
     snapshotKicker: 'Vista del release',
     snapshotCta: 'Ver release',
     snapshotLine2: 'desktop: ready',
@@ -90,28 +90,28 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     snapshotLine4: 'macos: memory guard leftovers only, never Warp/Chrome/fseventsd',
     snapshotLine5: 'alerts: zombie killer + evaluator state refactor',
     qaTitle: 'QA reforzado',
-    qaBody: 'Cobertura, ramas criticas y regresiones bajo control.',
+    qaBody: 'Cobertura, ramas críticas y regresiones bajo control.',
     cliTitle: 'CLI + GUI',
-    cliBody: 'Paridad funcional para diagnostico local y remoto.',
+    cliBody: 'Paridad funcional para diagnóstico local y remoto.',
     releaseKicker: `Release ${v}`,
-    releaseH2: 'Lo mas importante que trae esta version',
+    releaseH2: 'Lo más importante que trae esta versión',
     releaseLead:
-      'Memory Guard en macOS, Zombie Killer en la app, y el mismo contrato: no matar lo que estas usando.',
+      'Memory Guard en macOS, Zombie Killer en la app, y el mismo contrato: no matar lo que estás usando.',
     highlights: [
       {
         title: 'Memory Guard en macOS',
         description:
-          'LaunchAgent opcional que cierra leftovers idle (huerfanos, CPU en 0, >= 1 h). Nunca Warp, Chrome, agentes con padre vivo ni fseventsd.',
+          'LaunchAgent opcional que cierra leftovers idle (huérfanos, CPU en 0, >= 1 h). Nunca Warp, Chrome, agentes con padre vivo ni fseventsd.',
       },
       {
         title: 'Zombie Killer en segundo plano',
         description:
-          'Detecta procesos con CPU o RAM sostenida, los agrupa por (pid, start_time) y pide confirmacion antes de terminar.',
+          'Detecta procesos con CPU o RAM sostenida, los agrupa por (pid, start_time) y pide confirmación antes de terminar.',
       },
       {
         title: 'Modo privacidad para IA',
         description:
-          'Redaccion seudonima estable antes de enviar contexto a proveedores, sin exponer nombres reales fuera de tu equipo.',
+          'Redacción seudónima estable antes de enviar contexto a proveedores, sin exponer nombres reales fuera de tu equipo.',
       },
       {
         title: 'Presupuesto diario de IA',
@@ -122,21 +122,21 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     pillars: [
       {
         title: 'Desktop nativo',
-        description: 'UI en Tauri + Svelte 5 con telemetria en tiempo real y temas claro/oscuro.',
+        description: 'UI en Tauri + Svelte 5 con telemetría en tiempo real y temas claro/oscuro.',
         accent: 'text-sky-300',
       },
       {
         title: 'CLI y TUI',
-        description: 'Las mismas capacidades desde terminal para servidores y automatizacion.',
+        description: 'Las mismas capacidades desde terminal para servidores y automatización.',
         accent: 'text-emerald-300',
       },
       {
         title: 'Seguridad operativa',
-        description: 'Auditoria local, reglas y telemetria de red para detectar anomalias antes.',
+        description: 'Auditoría local, reglas y telemetría de red para detectar anomalías antes.',
         accent: 'text-orange-300',
       },
     ],
-    flowKicker: 'Flujo rapido',
+    flowKicker: 'Flujo rápido',
     flowH2: 'Desde la terminal al panel visual sin cambiar de herramienta',
     flowItems: [
       {
@@ -149,10 +149,10 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
       },
       {
         title: 'omnimon-memory-guard prove',
-        description: 'Contrato del clasificador: leftovers si, falsos positivos no.',
+        description: 'Contrato del clasificador: leftovers sí, falsos positivos no.',
       },
     ],
-    tutorialKicker: 'Tutorial basico',
+    tutorialKicker: 'Tutorial básico',
     tutorialH2: 'Primeros pasos para usar OmniMon sin perderte',
     tutorialLead:
       'Si es tu primera vez, este recorrido corto te lleva desde el dashboard hasta validar una descarga.',
@@ -160,12 +160,12 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
       {
         step: '1',
         title: 'Abre OmniMon y revisa el dashboard',
-        description: 'CPU, RAM, red y procesos para ver si el equipo esta estable.',
+        description: 'CPU, RAM, red y procesos para ver si el equipo está estable.',
       },
       {
         step: '2',
         title: 'Filtra el ruido y enfoca el problema',
-        description: 'Busqueda y tablas para aislar la app, host o pico que te interesa.',
+        description: 'Búsqueda y tablas para aislar la app, host o pico que te interesa.',
       },
       {
         step: '3',
@@ -178,34 +178,34 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
         description: 'Valida el artefacto contra SHA256SUMS.txt y la firma del release.',
       },
     ],
-    downloadKicker: 'Descarga e instalacion',
+    downloadKicker: 'Descarga e instalación',
     downloadH2: 'Instala OmniMon en minutos',
-    downloadLead: `Descargas del ultimo release publicado (v${PUBLISHED_VERSION}), Homebrew o el instalador web. Valida siempre el checksum publicado.`,
+    downloadLead: `Descargas del último release publicado (v${PUBLISHED_VERSION}), Homebrew o el instalador web. Valida siempre el checksum publicado.`,
     artifacts: [
       {
         platform: 'macOS',
         name: 'Universal DMG',
-        description: 'Descarga el release mas reciente para Apple Silicon e Intel desde GitHub Releases.',
+        description: 'Descarga el release más reciente para Apple Silicon e Intel desde GitHub Releases.',
         accent: 'text-orange-200',
         sha256: 'Disponible en SHA256SUMS.txt del release oficial',
       },
       {
         platform: 'Windows',
         name: 'MSI oficial',
-        description: 'Instala OmniMon desde el paquete MSI publicado en el ultimo release oficial.',
+        description: 'Instala OmniMon desde el paquete MSI publicado en el último release oficial.',
         accent: 'text-sky-200',
         sha256: 'Verifica el MSI con SHA256SUMS.txt antes de instalar',
       },
       {
         platform: 'Linux',
         name: 'Script + paquetes',
-        description: 'Usa el instalador web o descarga .deb, .rpm y .AppImage desde el release mas reciente.',
+        description: 'Usa el instalador web o descarga .deb, .rpm y .AppImage desde el release más reciente.',
         accent: 'text-emerald-200',
         sha256: 'Checksums SHA-256 publicados junto al .deb, .rpm y .AppImage',
       },
     ],
     brewKicker: 'Homebrew',
-    shaKicker: 'Verificacion SHA-256',
+    shaKicker: 'Verificación SHA-256',
     sponsorsTitle: 'GitHub Sponsors',
     sponsorsBody:
       'Si OmniMon te ahorra tiempo, puedes sostener el proyecto desde GitHub Sponsors.',
@@ -214,20 +214,20 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     faqH2: 'Preguntas frecuentes',
     faqs: [
       {
-        question: `Que incluye la version ${v}?`,
+        question: `¿Qué incluye la versión ${v}?`,
         answer:
           'Memory Guard para macOS, Zombie Killer, modo privacidad para IA, presupuesto diario de IA y hardening del keyring.',
       },
       {
-        question: 'En que plataformas funciona OmniMon?',
+        question: '¿En qué plataformas funciona OmniMon?',
         answer: 'macOS, Windows y Linux, con app de escritorio, CLI y TUI.',
       },
       {
-        question: 'La IA es obligatoria?',
+        question: '¿La IA es obligatoria?',
         answer: 'No. Puedes usarlo como monitor sin IA, o activar proveedores cuando los necesites.',
       },
       {
-        question: 'Como verifico una descarga?',
+        question: '¿Cómo verifico una descarga?',
         answer: 'Compara el hash con SHA256SUMS.txt y, si quieres, valida la firma del release.',
       },
     ],
@@ -235,7 +235,7 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     navBlog: 'Blog',
     navDocs: 'Docs',
     navDownload: 'Descargar',
-    screenshotAlt: `OmniMon ${v} - captura de la aplicacion de escritorio`,
+    screenshotAlt: `OmniMon ${v} - captura de la aplicación de escritorio`,
   },
   en: {
     lang: 'en',

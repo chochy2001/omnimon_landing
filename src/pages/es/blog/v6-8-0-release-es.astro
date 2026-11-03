@@ -26,15 +26,15 @@ const releaseUrl = 'https://github.com/CAPDESIS/omnimon/releases/latest';
 
 			<section class="space-y-6 text-lg leading-8 text-slate-300">
 				<p>
-					La version 6.8.0 anade <strong class="text-white">Memory Guard</strong>, un LaunchAgent opcional de macOS en <code>tools/macos-memory-guard/</code>, bajo licencia MIT, que complementa el Zombie Killer de la app.
+					La versión 6.8.0 añade <strong class="text-white">Memory Guard</strong>, un LaunchAgent opcional de macOS en <code>tools/macos-memory-guard/</code>, bajo licencia MIT, que complementa el Zombie Killer de la app.
 				</p>
 				<ul class="list-disc space-y-2 pl-6">
-					<li>Solo leftovers idle huerfanos (padre 1, CPU quieta, al menos 1 hora).</li>
+					<li>Solo leftovers idle huérfanos (padre 1, CPU quieta, al menos 1 hora).</li>
 					<li>Nunca Warp, Chrome, Cursor, agentes con padre vivo, MCP ni <code>fseventsd</code>.</li>
-					<li>Un proceso, muestreo cada 15 s, sin dialogos en el loop. <code>omnimon-memory-guard prove</code> es el contrato.</li>
+					<li>Un proceso, muestreo cada 15 s, sin diálogos en el loop. <code>omnimon-memory-guard prove</code> es el contrato.</li>
 				</ul>
 				<p>
-					Instalar Memory Guard: <code>bash tools/macos-memory-guard/install-memory-guard.sh</code> y verificar con <code>omnimon-memory-guard prove</code>. Los kills identificados (confirmacion de Zombie Killer y automatizaciones) usan <code>(pid, start_time)</code> para rechazar un PID reciclado. El release publicado v6.8.0 en GitHub incluye instaladores firmados para macOS (<code>OmniMon-6.8.0-macOS-Universal.dmg</code>), Windows (<code>OmniMon-6.8.0-Windows.msi</code>) y Linux (<code>.AppImage</code>, <code>.deb</code>, <code>.rpm</code>), junto con <code>SHA256SUMS.txt</code>.
+					Instalar Memory Guard: <code>bash tools/macos-memory-guard/install-memory-guard.sh</code> y verificar con <code>omnimon-memory-guard prove</code>. Los kills identificados (confirmación de Zombie Killer y automatizaciones) usan <code>(pid, start_time)</code> para rechazar un PID reciclado. El release publicado v6.8.0 en GitHub incluye instaladores firmados para macOS (<code>OmniMon-6.8.0-macOS-Universal.dmg</code>), Windows (<code>OmniMon-6.8.0-Windows.msi</code>) y Linux (<code>.AppImage</code>, <code>.deb</code>, <code>.rpm</code>), junto con <code>SHA256SUMS.txt</code>.
 				</p>
 				<p><a class="text-sky-300 hover:text-white" href={releaseUrl}>Releases en GitHub</a></p>
 			</section>

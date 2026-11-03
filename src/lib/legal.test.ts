@@ -28,7 +28,7 @@ describe('legal copy', () => {
     const en = resolveLegalStrings('en');
     expect(es.privacyTitle.toLowerCase()).toContain('privacidad');
     expect(en.privacyTitle).toContain('Privacy');
-    expect(es.termsTitle).toContain('Terminos');
+    expect(es.termsTitle).toContain('Términos');
     expect(en.termsTitle).toContain('Terms');
     expect(es.cookiesTitle.toLowerCase()).toContain('cookies');
     expect(en.cookiesTitle).toContain('Cookie');
@@ -39,7 +39,7 @@ describe('legal copy', () => {
   test('banner labels stay locale-specific', () => {
     expect(legalLinkLabel('es', 'privacy')).toContain('privacidad');
     expect(legalLinkLabel('en', 'privacy')).toContain('Privacy');
-    expect(legalLinkLabel('es', 'terms')).toContain('Terminos');
+    expect(legalLinkLabel('es', 'terms')).toContain('Términos');
     expect(legalLinkLabel('en', 'terms')).toContain('Terms');
     expect(legalLinkLabel('es', 'cookies')).toContain('cookies');
     expect(legalLinkLabel('en', 'cookies')).toContain('Cookie');
