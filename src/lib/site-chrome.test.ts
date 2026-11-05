@@ -129,17 +129,20 @@ describe('release and preview blog post framing', () => {
     ['pages/es/blog/v6-4-1-release-es.astro', 'v6.4.1', '>Versión histórica<'],
   ] as const;
 
-  test('posts older than v6.8.0 are labeled historical and say the buttons download v6.8.0', () => {
+  test('historical posts say the buttons download the published release, not that post', () => {
     for (const [rel, version, badge] of historical) {
       const body = src(rel);
       expect(body).not.toContain('>New release<');
       expect(body).not.toContain('>Nuevo release<');
       expect(body).toContain(badge);
-      expect(body).toContain(version);
-      expect(body).toContain('{PUBLISHED_VERSION}');
-      expect(body.includes('currently v{PUBLISHED_VERSION}') || body.includes('hoy v{PUBLISHED_VERSION}')).toBe(true);
-      expect(body).not.toContain('currently v6.8.0');
-      expect(body).not.toContain('hoy v6.8.0');
+      expect(
+        body.includes(
+          `download the latest published release (currently v{PUBLISHED_VERSION}), not the ${version} installers`,
+        ) ||
+          body.includes(
+            `descargan la versión publicada más reciente (hoy v{PUBLISHED_VERSION}), no los instaladores de ${version}`,
+          ),
+      ).toBe(true);
       expect(body).toContain('releases/latest');
     }
   });
