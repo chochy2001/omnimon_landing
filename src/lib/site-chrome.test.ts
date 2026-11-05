@@ -119,4 +119,31 @@ describe('release and preview blog post framing', () => {
       expect(src(rel)).not.toContain('v6.6.6');
     }
   });
+
+  const historical = [
+    ['pages/blog/v6-6-0-release.astro', 'v6.6.0', '>Historical release<'],
+    ['pages/blog/v6-5-0-release.astro', 'v6.5.0', '>Historical release<'],
+    ['pages/blog/v6-4-1-release.astro', 'v6.4.1', '>Historical release<'],
+    ['pages/es/blog/v6-6-0-release-es.astro', 'v6.6.0', '>Versión histórica<'],
+    ['pages/es/blog/v6-5-0-release-es.astro', 'v6.5.0', '>Versión histórica<'],
+    ['pages/es/blog/v6-4-1-release-es.astro', 'v6.4.1', '>Versión histórica<'],
+  ] as const;
+
+  test('historical posts say the buttons download the published release, not that post', () => {
+    for (const [rel, version, badge] of historical) {
+      const body = src(rel);
+      expect(body).not.toContain('>New release<');
+      expect(body).not.toContain('>Nuevo release<');
+      expect(body).toContain(badge);
+      expect(
+        body.includes(
+          `download the latest published release (currently v{PUBLISHED_VERSION}), not the ${version} installers`,
+        ) ||
+          body.includes(
+            `descargan la versión publicada más reciente (hoy v{PUBLISHED_VERSION}), no los instaladores de ${version}`,
+          ),
+      ).toBe(true);
+      expect(body).toContain('releases/latest');
+    }
+  });
 });
