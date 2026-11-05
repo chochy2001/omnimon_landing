@@ -136,7 +136,10 @@ describe('release and preview blog post framing', () => {
       expect(body).not.toContain('>Nuevo release<');
       expect(body).toContain(badge);
       expect(body).toContain(version);
-      expect(body.includes('currently v6.8.0') || body.includes('hoy v6.8.0')).toBe(true);
+      expect(body).toContain('{PUBLISHED_VERSION}');
+      expect(body.includes('currently v{PUBLISHED_VERSION}') || body.includes('hoy v{PUBLISHED_VERSION}')).toBe(true);
+      expect(body).not.toContain('currently v6.8.0');
+      expect(body).not.toContain('hoy v6.8.0');
       expect(body).toContain('releases/latest');
     }
   });

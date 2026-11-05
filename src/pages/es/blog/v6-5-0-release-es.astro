@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
+import { PUBLISHED_VERSION } from '../../../consts';
 
 const releaseUrl = 'https://github.com/CAPDESIS/omnimon/releases/latest';
 const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/main/scripts/install-web.sh';
@@ -74,7 +75,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 					</a>
 				</div>
 				<p class="text-sm text-slate-400">Siempre verifica las descargas contra <code>SHA256SUMS.txt</code> publicado en el release de GitHub.</p>
-				<p class="text-sm text-slate-400">Estos botones descargan la versión publicada más reciente (hoy v6.8.0), no los instaladores de v6.5.0 descritos arriba.</p>
+				<p class="text-sm text-slate-400">Estos botones descargan la versión publicada más reciente (hoy v{PUBLISHED_VERSION}), no los instaladores de v6.5.0 descritos arriba.</p>
 
 				<div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-5">
 					<p class="text-sm uppercase tracking-[0.24em] text-slate-500">Homebrew</p>
