@@ -119,4 +119,25 @@ describe('release and preview blog post framing', () => {
       expect(src(rel)).not.toContain('v6.6.6');
     }
   });
+
+  const historical = [
+    ['pages/blog/v6-6-0-release.astro', 'v6.6.0', '>Historical release<'],
+    ['pages/blog/v6-5-0-release.astro', 'v6.5.0', '>Historical release<'],
+    ['pages/blog/v6-4-1-release.astro', 'v6.4.1', '>Historical release<'],
+    ['pages/es/blog/v6-6-0-release-es.astro', 'v6.6.0', '>Versión histórica<'],
+    ['pages/es/blog/v6-5-0-release-es.astro', 'v6.5.0', '>Versión histórica<'],
+    ['pages/es/blog/v6-4-1-release-es.astro', 'v6.4.1', '>Versión histórica<'],
+  ] as const;
+
+  test('posts older than v6.8.0 are labeled historical and say the buttons download v6.8.0', () => {
+    for (const [rel, version, badge] of historical) {
+      const body = src(rel);
+      expect(body).not.toContain('>New release<');
+      expect(body).not.toContain('>Nuevo release<');
+      expect(body).toContain(badge);
+      expect(body).toContain(version);
+      expect(body.includes('currently v6.8.0') || body.includes('hoy v6.8.0')).toBe(true);
+      expect(body).toContain('releases/latest');
+    }
+  });
 });
