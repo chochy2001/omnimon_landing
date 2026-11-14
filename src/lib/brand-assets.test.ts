@@ -19,6 +19,15 @@ describe('brand assets', () => {
     expect(Array.from(ico.subarray(0, 4))).toEqual([0, 0, 1, 0]);
   });
 
+  test('apple-touch-icon.png is an opaque 180x180 PNG without alpha', () => {
+    const png = readFileSync(join(publicDir, 'apple-touch-icon.png'));
+    expect(Array.from(png.subarray(0, 8))).toEqual([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    expect(png.readUInt32BE(16)).toBe(180);
+    expect(png.readUInt32BE(20)).toBe(180);
+    // IHDR color type 2 = truecolor RGB (no alpha channel; 4 and 6 carry alpha).
+    expect(png[25]).toBe(2);
+  });
+
   test('Layout.astro cache-busts favicons with the build SHA query', () => {
     const layout = readFileSync(join(import.meta.dir, '../layouts/Layout.astro'), 'utf8');
     expect(layout).toContain('favicon.svg?v=');

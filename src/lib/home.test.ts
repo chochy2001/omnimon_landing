@@ -17,14 +17,14 @@ describe('home copy', () => {
     expect(homeCopy.es.navDownload).toBe('Descargar');
   });
 
-  test('download CTA and checksum example match the published 6.8.0 DMG', () => {
+  test('download CTA and checksum example match the published 6.8.1 DMG', () => {
     const page = readFileSync(join(import.meta.dir, '../components/HomePage.astro'), 'utf8');
-    expect(OMNIMON_VERSION).toBe('6.8.0');
-    expect(PUBLISHED_VERSION).toBe('6.8.0');
-    expect(homeCopy.en.ctaDownload).not.toMatch(/6\.8\.0/);
-    expect(homeCopy.es.ctaDownload).not.toMatch(/6\.8\.0/);
+    expect(OMNIMON_VERSION).toBe('6.8.1');
+    expect(PUBLISHED_VERSION).toBe('6.8.1');
+    expect(homeCopy.en.ctaDownload).not.toMatch(/6\.8\.1/);
+    expect(homeCopy.es.ctaDownload).not.toMatch(/6\.8\.1/);
     expect(page).toContain(`OmniMon-${PUBLISHED_VERSION}-macOS-Universal.dmg`);
-    expect(page).toContain('OmniMon-6.8.0-macOS-Universal.dmg');
+    expect(page).toContain('OmniMon-6.8.1-macOS-Universal.dmg');
     expect(page).not.toContain('OmniMon-6.6.6-macOS-Universal.dmg');
   });
 
@@ -38,11 +38,11 @@ describe('home copy', () => {
     expect(homeCopy.en.highlights[0]?.title.toLowerCase()).toContain('memory guard');
   });
 
-  test('published 6.8.0 release is framed as shipped, never as an unreleased preview', () => {
+  test('published 6.8.1 release is framed as shipped, never as an unreleased preview', () => {
     for (const copy of [homeCopy.en, homeCopy.es]) {
       expect(copy.releaseWord).toBe('Release');
       expect(copy.releaseKicker).toBe(`Release ${OMNIMON_VERSION}`);
-      expect(copy.releaseDate).toBe('26 Oct 2026');
+      expect(copy.releaseDate).toBe('5 Nov 2026');
       expect(copy.lead.toLowerCase()).not.toContain('pre-release');
       expect(copy.description.toLowerCase()).not.toContain('pre-release');
       expect(copy.releaseH2.toLowerCase()).not.toContain('pre-release');

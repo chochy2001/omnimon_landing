@@ -1,0 +1,44 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const releaseUrl = 'https://github.com/CAPDESIS/omnimon/releases/latest';
+---
+
+<Layout
+	title="OmniMon v6.8.1: Correcciones de Ortografía y Parche | Blog"
+	description="OmniMon v6.8.1 recompila los instaladores firmados para macOS, Windows y Linux con correcciones de ortografía en español en la UI y alertas de red, dependencias actualizadas en Cargo y desktop, y checks más estrictos en CI."
+	lang="es"
+>
+	<main class="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+		<article class="space-y-10">
+			<header class="space-y-4">
+				<div class="flex flex-wrap items-center gap-3 text-sm text-slate-400">
+					<a href="/es/blog/" class="transition hover:text-white">&larr; Blog</a>
+					<span>|</span>
+					<a href="/blog/v6-8-1-release/" class="transition hover:text-sky-300">Read in English</a>
+				</div>
+				<h1 class="section-title text-4xl font-black tracking-tight text-white sm:text-5xl">OmniMon v6.8.1: Correcciones de Ortografía y Parche</h1>
+				<div class="flex items-center gap-4 text-sm text-slate-400">
+					<time>5 Nov 2026</time>
+					<span class="rounded-full bg-orange-500/20 px-3 py-1 text-orange-200">Nuevo release</span>
+				</div>
+			</header>
+
+			<section class="space-y-6 text-lg leading-8 text-slate-300">
+				<p>
+					La versión 6.8.1 es un release de parche sobre la línea 6.8 que recompila los instaladores multiplataforma publicados para incluir las correcciones y actualizaciones que aterrizaron después del tag <code>v6.8.0</code>.
+				</p>
+				<h2 class="text-2xl font-bold text-white">Qué cambió</h2>
+				<ul class="list-disc space-y-2 pl-6">
+					<li><strong class="text-white">Ortografía en español en la UI y alertas.</strong> Se corrigieron cadenas sin acentos en el archivo de idioma del escritorio (<code>es.json</code>), el store de alertas y los mensajes compilados en Rust (<code>network_alerts.rs</code>), cubiertos por una prueba de regresión ortográfica.</li>
+					<li><strong class="text-white">Actualización de dependencias.</strong> Se actualizaron crates en <code>Cargo.lock</code> (incluidos los crates de Tauri en la línea 6.8) y dependencias JS del escritorio (<code>happy-dom</code> y <code>undici</code>) dentro de los rangos existentes.</li>
+					<li><strong class="text-white">Mejoras en CI y scripts.</strong> Clippy en CI ahora analiza también los tests con <code>--all-targets</code>, se agregó el script <code>typecheck</code> en el paquete desktop y el reúso del servidor de Playwright pasó a ser opt-in.</li>
+				</ul>
+				<p>
+					El release publicado v6.8.1 en GitHub incluye instaladores firmados para macOS (<code>OmniMon-6.8.1-macOS-Universal.dmg</code>), Windows (<code>OmniMon-6.8.1-Windows.msi</code>) y Linux (<code>.AppImage</code>, <code>.deb</code>, <code>.rpm</code>), junto con <code>releases.json</code> y <code>SHA256SUMS.txt</code>.
+				</p>
+				<p><a class="text-sky-300 hover:text-white" href={releaseUrl}>Releases en GitHub</a></p>
+			</section>
+		</article>
+	</main>
+</Layout>

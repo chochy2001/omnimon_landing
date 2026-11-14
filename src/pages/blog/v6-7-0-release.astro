@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { PUBLISHED_VERSION } from '../../consts';
 
 const releaseUrl = 'https://github.com/CAPDESIS/omnimon/releases/latest';
 const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/main/scripts/install-web.sh';
@@ -83,7 +84,7 @@ let alerts = evaluate_network_alerts(&amp;snap, prev, &amp;rules, &amp;history, 
 
 				<h2 class="text-2xl font-bold text-white">Download the latest published release</h2>
 				<p class="text-slate-400">
-					These buttons serve the latest published GitHub release (currently v6.8.0, which ships every 6.7.0 change above); v6.7.0 was a preview milestone without a standalone GitHub tag.
+					These buttons serve the latest published GitHub release (currently v{PUBLISHED_VERSION}, which ships every 6.7.0 change above); v6.7.0 was a preview milestone without a standalone GitHub tag.
 				</p>
 				<div class="grid gap-4 sm:grid-cols-3">
 					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-2xl border border-slate-700 bg-slate-900/40 p-5 text-center transition hover:border-orange-400/50">
