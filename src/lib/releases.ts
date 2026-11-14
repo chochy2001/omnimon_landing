@@ -14,22 +14,29 @@ export function buildReleaseSlug(version: string, locale: 'en' | 'es' = 'en'): s
 
 export const latestReleasePost: BlogPostPreview = {
   slug: buildReleaseSlug(OMNIMON_VERSION),
-  title: `OmniMon v${OMNIMON_VERSION}: Memory Guard for macOS`,
+  title: `OmniMon v${OMNIMON_VERSION}: Spanish UI Fixes & Patch Release`,
   date: RELEASE_DATE,
   summary:
-    'Optional LaunchAgent that reaps idle leftover processes without touching Warp, Chrome, agent sessions, or Apple fseventsd. Complements the in-app Zombie Killer. Deterministic classifier with a prove table.',
+    'Rebuilt multiplatform installers carrying Spanish UI and network-alert orthography fixes, updated Cargo and desktop dependencies, and stricter CI Clippy and typecheck checks.',
 };
 
 export const latestReleasePostEs: BlogPostPreview = {
   slug: buildReleaseSlug(OMNIMON_VERSION, 'es'),
-  title: `OmniMon v${OMNIMON_VERSION}: Memory Guard para macOS`,
+  title: `OmniMon v${OMNIMON_VERSION}: Correcciones de Ortografía y Parche`,
   date: RELEASE_DATE_ES,
   summary:
-    'LaunchAgent opcional que cierra leftovers idle sin tocar Warp, Chrome, sesiones de agentes ni fseventsd de Apple. Complementa el Zombie Killer de la app. Clasificador determinista con tabla prove.',
+    'Instaladores multiplataforma recompilados con correcciones de ortografía en español en la UI y alertas de red, dependencias actualizadas en Cargo y desktop, y checks más estrictos en CI.',
 };
 
 const publishedEnglishPosts: BlogPostPreview[] = [
   latestReleasePost,
+  {
+    slug: 'v6-8-0-release',
+    title: 'OmniMon v6.8.0: Memory Guard for macOS',
+    date: '26 Oct 2026',
+    summary:
+      'Optional LaunchAgent that reaps idle leftover processes without touching Warp, Chrome, agent sessions, or Apple fseventsd. Complements the in-app Zombie Killer. Deterministic classifier with a prove table.',
+  },
   {
     slug: 'v6-7-0-release',
     title: 'OmniMon v6.7.0: Zombie Killer & AI Safety Hardening',
@@ -62,6 +69,13 @@ const publishedEnglishPosts: BlogPostPreview[] = [
 
 const publishedSpanishPosts: BlogPostPreview[] = [
   latestReleasePostEs,
+  {
+    slug: 'v6-8-0-release-es',
+    title: 'OmniMon v6.8.0: Memory Guard para macOS',
+    date: '26 Oct 2026',
+    summary:
+      'LaunchAgent opcional que cierra leftovers idle sin tocar Warp, Chrome, sesiones de agentes ni fseventsd de Apple. Complementa el Zombie Killer de la app. Clasificador determinista con tabla prove.',
+  },
   {
     slug: 'v6-7-0-release-es',
     title: 'OmniMon v6.7.0: Zombie Killer y Endurecimiento de IA',

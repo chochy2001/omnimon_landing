@@ -29,10 +29,10 @@ Live origin tracks `origin/main` via GitHub CD: every merge to `main` with green
 | `/en` `/en/` | 301 → `/` |
 | Unknown path | 404 **product** page (`ErrorDocument 404 /404.html`) |
 | Favicon | OmniMon gear+cyan SVG + app ICO (not Astro starter `M50.4 78.5`) |
-| Blog index | Only posts that exist as Astro pages (v6.4.1-v6.8.0 EN/ES) |
+| Blog index | Only posts that exist as Astro pages (v6.4.1-v6.8.1 EN/ES) |
 | Legal | `/privacy` `/terms` `/es/privacy` `/es/terms` |
 
-`src/consts.ts` pins **6.8.0** (`26 Oct 2026`), matching the latest published GitHub release **`v6.8.0`** on `CAPDESIS/omnimon` (`OmniMon-6.8.0-macOS-Universal.dmg`, `OmniMon-6.8.0-Windows.msi`, Linux `.AppImage`/`.deb`/`.rpm`, `releases.json`, and `SHA256SUMS.txt`). Download CTAs say "Download latest" / "Descargar ultima version" and point at `releases/latest`. Spanish blog slugs end with `-es` (example: `/es/blog/v6-8-0-release-es/`).
+`src/consts.ts` pins **6.8.1** (`5 Nov 2026`), matching the latest published GitHub release **`v6.8.1`** on `CAPDESIS/omnimon` (`OmniMon-6.8.1-macOS-Universal.dmg`, `OmniMon-6.8.1-Windows.msi`, Linux `.AppImage`/`.deb`/`.rpm`, `releases.json`, and `SHA256SUMS.txt`). Download CTAs say "Download latest" / "Descargar ultima version" and point at `releases/latest`. Spanish blog slugs end with `-es` (example: `/es/blog/v6-8-1-release-es/`).
 
 ## Deploy
 
@@ -43,4 +43,4 @@ GitHub CD is live: every push to `main` with green CI promotes that exact SHA to
 
 ## Release Sync
 
-- Latest published desktop tag on `CAPDESIS/omnimon` is **v6.8.0** (`2026-10-26`). Bump `OMNIMON_VERSION`, `PUBLISHED_VERSION`, and `RELEASE_DATE` in `src/consts.ts` when a new GitHub release is cut.
+- Latest published desktop tag on `CAPDESIS/omnimon` is **v6.8.1** (`2026-11-05`). Bump `OMNIMON_VERSION`, `PUBLISHED_VERSION`, and `RELEASE_DATE` in `src/consts.ts` when a new GitHub release is cut.

@@ -89,9 +89,9 @@ describe('terminal contrast exemption', () => {
 });
 
 describe('release and preview blog post framing', () => {
-  test('v6.8.0 blog posts carry a release badge, not an unreleased preview badge', () => {
-    const en = src('pages/blog/v6-8-0-release.astro');
-    const es = src('pages/es/blog/v6-8-0-release-es.astro');
+  test('v6.8.1 blog posts carry a release badge, not an unreleased preview badge', () => {
+    const en = src('pages/blog/v6-8-1-release.astro');
+    const es = src('pages/es/blog/v6-8-1-release-es.astro');
     expect(en).toContain('>New release<');
     expect(en).not.toContain('>Preview<');
     expect(es).toContain('>Nuevo release<');
@@ -113,17 +113,19 @@ describe('release and preview blog post framing', () => {
     });
   }
 
-  test('6.7.0 download sections name the current published tag v6.8.0, not v6.6.6', () => {
+  test('6.7.0 download sections name the current published tag constant, not v6.6.6', () => {
     for (const rel of previews) {
-      expect(src(rel)).toContain('v6.8.0');
+      expect(src(rel)).toContain('v{PUBLISHED_VERSION}');
       expect(src(rel)).not.toContain('v6.6.6');
     }
   });
 
   const historical = [
+    ['pages/blog/v6-8-0-release.astro', 'v6.8.0', '>Historical release<'],
     ['pages/blog/v6-6-0-release.astro', 'v6.6.0', '>Historical release<'],
     ['pages/blog/v6-5-0-release.astro', 'v6.5.0', '>Historical release<'],
     ['pages/blog/v6-4-1-release.astro', 'v6.4.1', '>Historical release<'],
+    ['pages/es/blog/v6-8-0-release-es.astro', 'v6.8.0', '>Versión histórica<'],
     ['pages/es/blog/v6-6-0-release-es.astro', 'v6.6.0', '>Versión histórica<'],
     ['pages/es/blog/v6-5-0-release-es.astro', 'v6.5.0', '>Versión histórica<'],
     ['pages/es/blog/v6-4-1-release-es.astro', 'v6.4.1', '>Versión histórica<'],

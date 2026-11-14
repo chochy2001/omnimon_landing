@@ -42,6 +42,9 @@ afterAll(async () => {
   await stopPreview.exited;
 }, 30_000);
 
+const ROUTES = ['/', '/es/', '/privacy/', '/es/privacy/', '/blog/', '/404.html'] as const;
+const WIDTHS = [320, 390, 768, 1280, 1440, 2560] as const;
+
 test('home fits narrow and desktop viewports without document overflow', async () => {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
   try {
@@ -50,10 +53,37 @@ test('home fits narrow and desktop viewports without document overflow', async (
 
     for (const width of [375, 768, 1280]) {
       await page.setViewportSize({ width, height: 812 });
-      const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-      expect(documentWidth).toBeLessThanOrEqual(width);
+      const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+      }));
+      expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
+      expect(scrollWidth).toBeLessThanOrEqual(width);
     }
   } finally {
     await page.close();
   }
 });
+
+test('key routes fit mobile through ultrawide viewports without horizontal overflow', async () => {
+  const page = await browser.newPage({ viewport: { width: 320, height: 812 } });
+  try {
+    for (const route of ROUTES) {
+      const response = await page.goto(`${origin}${route}`, { waitUntil: 'domcontentloaded' });
+      const expectedStatus = route === '/404.html' ? 404 : 200;
+      const status = response?.status();
+      expect(status === 200 || status === expectedStatus, `${route} returned ${status}`).toBe(true);
+
+      for (const width of WIDTHS) {
+        await page.setViewportSize({ width, height: 812 });
+        const { scrollWidth, clientWidth } = await page.evaluate(() => ({
+          scrollWidth: document.documentElement.scrollWidth,
+          clientWidth: document.documentElement.clientWidth,
+        }));
+        expect(scrollWidth, `${route} at ${width}px`).toBeLessThanOrEqual(clientWidth);
+      }
+    }
+  } finally {
+    await page.close();
+  }
+}, 60_000);

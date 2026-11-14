@@ -10,11 +10,11 @@ import {
 } from './releases';
 
 describe('release metadata', () => {
-  test('pins published release v6.8.0 on 26 Oct 2026', () => {
-    expect(OMNIMON_VERSION).toBe('6.8.0');
-    expect(PUBLISHED_VERSION).toBe('6.8.0');
-    expect(RELEASE_DATE).toBe('26 Oct 2026');
-    expect(RELEASE_DATE_ES).toBe('26 Oct 2026');
+  test('pins published release v6.8.1 on 5 Nov 2026', () => {
+    expect(OMNIMON_VERSION).toBe('6.8.1');
+    expect(PUBLISHED_VERSION).toBe('6.8.1');
+    expect(RELEASE_DATE).toBe('5 Nov 2026');
+    expect(RELEASE_DATE_ES).toBe('5 Nov 2026');
   });
 
   test('builds locale-aware release slugs from the central version', () => {
@@ -47,6 +47,7 @@ describe('release metadata', () => {
       expect(existsSync(join(pages, 'es/blog', `${post.slug}.astro`))).toBe(true);
     }
     expect(publishedPosts('en').map((post) => post.slug)).toEqual([
+      'v6-8-1-release',
       'v6-8-0-release',
       'v6-7-0-release',
       'v6-6-0-release',
@@ -54,12 +55,32 @@ describe('release metadata', () => {
       'v6-4-1-release',
     ]);
     expect(publishedPosts('es').map((post) => post.slug)).toEqual([
+      'v6-8-1-release-es',
       'v6-8-0-release-es',
       'v6-7-0-release-es',
       'v6-6-0-release-es',
       'v6-5-0-release-es',
       'v6-4-1-release-es',
     ]);
+  });
+
+  test('v6.8.1 posts document Spanish orthography fixes and published v6.8.1 installers', () => {
+    const en = readFileSync(
+      join(import.meta.dir, '../pages/blog/v6-8-1-release.astro'),
+      'utf8',
+    );
+    const es = readFileSync(
+      join(import.meta.dir, '../pages/es/blog/v6-8-1-release-es.astro'),
+      'utf8',
+    );
+    for (const body of [en, es]) {
+      expect(body).toContain('5 Nov 2026');
+      expect(body).toContain('v6.8.1');
+      expect(body).toContain('OmniMon-6.8.1-macOS-Universal.dmg');
+      expect(body).toContain('OmniMon-6.8.1-Windows.msi');
+      expect(body).not.toContain('6.6.6');
+      expect(body.toLowerCase()).not.toContain('pre-release');
+    }
   });
 
   test('v6.8.0 posts document pid+start_time kill identity and published v6.8.0 installers', () => {

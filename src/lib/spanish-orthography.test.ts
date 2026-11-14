@@ -35,6 +35,7 @@ const BANNED = [
   'ejecucion',
   'eleccion',
   'energia',
+  'espanol',
   'fisica',
   'fisico',
   'funcion',
@@ -79,7 +80,9 @@ const SCANNED = [
   'src/pages/es/blog/v6-6-0-release-es.astro',
   'src/pages/es/blog/v6-7-0-release-es.astro',
   'src/pages/es/blog/v6-8-0-release-es.astro',
+  'src/pages/es/blog/v6-8-1-release-es.astro',
   'src/pages/es/blog/index.astro',
+  'src/components/LegalDoc.astro',
   'src/components/ui/CookieBanner.astro',
   'src/pages/404.astro',
   'src/lib/home.ts',
@@ -92,6 +95,7 @@ const SCANNED = [
   'src/pages/blog/v6-6-0-release.astro',
   'src/pages/blog/v6-7-0-release.astro',
   'src/pages/blog/v6-8-0-release.astro',
+  'src/pages/blog/v6-8-1-release.astro',
 ];
 
 // Legitimate unaccented occurrences (English copy or identifiers), stripped
@@ -155,7 +159,7 @@ describe('spanish orthography', () => {
 
   test('english posts link to the Spanish version with accent', () => {
     const root = join(import.meta.dir, '..', '..');
-    for (const slug of ['v6-4-1', 'v6-5-0', 'v6-6-0', 'v6-7-0', 'v6-8-0']) {
+    for (const slug of ['v6-4-1', 'v6-5-0', 'v6-6-0', 'v6-7-0', 'v6-8-0', 'v6-8-1']) {
       const page = readFileSync(join(root, 'src/pages/blog', `${slug}-release.astro`), 'utf8');
       expect(page).toContain('Leer en español');
       expect(page).not.toContain('Leer en espanol');
