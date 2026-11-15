@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { OMNIMON_VERSION, PUBLISHED_VERSION } from '../consts';
 import type { ConsentLocale } from '../lib/consent';
-import { homeCopy } from '../lib/home';
+import { HOME_SCREENSHOT_VERSION, homeCopy } from '../lib/home';
 
 interface Props {
 	locale: ConsentLocale;
@@ -18,9 +18,9 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 
 <Layout title={copy.title} description={copy.description} lang={locale}>
 	<main class="mx-auto flex w-full max-w-7xl flex-col gap-20 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-		<section class="grid-noise glass-panel relative overflow-hidden rounded-[2rem] px-6 py-12 sm:px-10 lg:px-12">
+		<section class="grid-noise glass-panel relative overflow-hidden rounded-[2rem] px-5 py-10 sm:px-10 sm:py-14 lg:px-12 lg:py-16">
 			<div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/50 to-transparent"></div>
-			<div class="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+			<div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-12">
 				<div class="space-y-8">
 					<div class="inline-flex max-w-full flex-wrap items-center gap-3 rounded-full border border-cyan-400/20 bg-[color-mix(in_srgb,var(--bg-base)_55%,transparent)] px-4 py-2 text-sm" style="color: var(--text-soft)">
 						<span class="rounded-full bg-orange-500/20 px-2 py-1 text-orange-500 dark:text-orange-200">{copy.badgeNew}</span>
@@ -30,7 +30,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 					</div>
 
 					<div class="space-y-5">
-						<h1 class="section-title max-w-4xl text-4xl font-black tracking-tight sm:text-6xl lg:text-7xl">
+						<h1 class="section-title max-w-3xl text-4xl font-black leading-[1.08] tracking-tight sm:text-5xl xl:text-6xl">
 							{copy.h1}
 						</h1>
 						<p class="muted max-w-2xl text-lg leading-8 sm:text-xl">
@@ -66,50 +66,53 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 					</div>
 				</div>
 
-				<div class="glass-panel rounded-[1.75rem] p-5">
-					<div class="mb-4 flex items-center justify-between gap-3">
-						<div>
-							<p class="text-xs uppercase tracking-[0.28em] kicker">{copy.snapshotKicker}</p>
-							<h2 class="mt-2 text-2xl font-bold">OmniMon {OMNIMON_VERSION}</h2>
-						</div>
-						<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-full border border-cyan-400/20 px-3 py-1 text-sm text-cyan-700 transition hover:border-cyan-400/40 dark:text-cyan-200">{copy.snapshotCta}</a>
-					</div>
-					<div class="terminal-panel space-y-4 rounded-2xl p-4 font-mono text-sm">
-						<p><span class="text-emerald-300">$</span> omnimon status --format json</p>
-						<p class="text-cyan-300">{copy.snapshotLine2}</p>
-						<p class="text-slate-400">{copy.snapshotLine3}</p>
-						<p class="text-slate-400">{copy.snapshotLine4}</p>
-						<p class="text-slate-400">{copy.snapshotLine5}</p>
-						<p class="text-orange-300">version: {PUBLISHED_VERSION}</p>
-					</div>
-					<div class="mt-5 grid gap-3 text-sm sm:grid-cols-2" style="color: var(--text-soft)">
-						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border)">
-							<p style="color: var(--text-main)">{copy.qaTitle}</p>
-							<p class="mt-1">{copy.qaBody}</p>
-						</div>
-						<div class="rounded-2xl border p-4" style="border-color: var(--surface-border)">
-							<p style="color: var(--text-main)">{copy.cliTitle}</p>
-							<p class="mt-1">{copy.cliBody}</p>
-						</div>
-					</div>
+				<figure class="min-w-0">
+				<div class="screenshot-frame">
+					<picture>
+					<source srcset="/omnimon-screenshot.avif" type="image/avif" />
+						<source srcset="/omnimon-screenshot.webp" type="image/webp" />
+						<img
+							src="/omnimon-screenshot.png"
+							alt={copy.screenshotAlt}
+							width="1728"
+							height="1011"
+							loading="eager"
+							decoding="async"
+						/>
+					</picture>
 				</div>
+				<figcaption class="muted mt-3 text-sm">{locale === 'es' ? `Interfaz de escritorio, versión ${HOME_SCREENSHOT_VERSION}` : `Desktop interface, version ${HOME_SCREENSHOT_VERSION}`}</figcaption>
+				</figure>
 			</div>
 		</section>
 
-		<section aria-label={copy.screenshotAlt}>
-			<div class="screenshot-frame">
-				<picture>
-					<source srcset="/omnimon-screenshot.avif" type="image/avif" />
-					<source srcset="/omnimon-screenshot.webp" type="image/webp" />
-					<img
-						src="/omnimon-screenshot.png"
-						alt={copy.screenshotAlt}
-						width="1728"
-						height="1011"
-						loading="eager"
-						decoding="async"
-					/>
-				</picture>
+		<section aria-label={copy.snapshotKicker} class="mx-auto w-full max-w-4xl">
+			<div class="glass-panel rounded-[1.75rem] p-5">
+				<div class="mb-4 flex items-center justify-between gap-3">
+					<div>
+						<p class="text-xs uppercase tracking-[0.28em] kicker">{copy.snapshotKicker}</p>
+						<h2 class="mt-2 text-2xl font-bold">OmniMon {OMNIMON_VERSION}</h2>
+					</div>
+					<a href={releaseUrl} target="_blank" rel="noreferrer" class="rounded-full border border-cyan-400/20 px-3 py-1 text-sm text-cyan-700 transition hover:border-cyan-400/40 dark:text-cyan-200">{copy.snapshotCta}</a>
+				</div>
+				<div class="terminal-panel space-y-4 rounded-2xl p-4 font-mono text-sm">
+					<p><span class="text-emerald-300">$</span> omnimon status --format json</p>
+					<p class="text-cyan-300">{copy.snapshotLine2}</p>
+					<p class="text-slate-400">{copy.snapshotLine3}</p>
+					<p class="text-slate-400">{copy.snapshotLine4}</p>
+					<p class="text-slate-400">{copy.snapshotLine5}</p>
+					<p class="text-orange-300">version: {PUBLISHED_VERSION}</p>
+				</div>
+				<div class="mt-5 grid gap-3 text-sm sm:grid-cols-2" style="color: var(--text-soft)">
+					<div class="rounded-2xl border p-4" style="border-color: var(--surface-border)">
+						<p style="color: var(--text-main)">{copy.qaTitle}</p>
+						<p class="mt-1">{copy.qaBody}</p>
+					</div>
+					<div class="rounded-2xl border p-4" style="border-color: var(--surface-border)">
+						<p style="color: var(--text-main)">{copy.cliTitle}</p>
+						<p class="mt-1">{copy.cliBody}</p>
+					</div>
+				</div>
 			</div>
 		</section>
 

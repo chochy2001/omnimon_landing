@@ -1,6 +1,9 @@
 import { OMNIMON_VERSION, PUBLISHED_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
 import type { ConsentLocale } from './consent';
 
+/** Version shown in the bundled desktop screenshot. Update together with public/omnimon-screenshot.png. */
+export const HOME_SCREENSHOT_VERSION = '6.5.0';
+
 export type HomeCopy = {
   lang: ConsentLocale;
   title: string;
@@ -235,7 +238,7 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     navBlog: 'Blog',
     navDocs: 'Docs',
     navDownload: 'Descargar',
-    screenshotAlt: `OmniMon ${v} - captura de la aplicación de escritorio`,
+    screenshotAlt: `OmniMon ${HOME_SCREENSHOT_VERSION} - captura de la aplicación de escritorio`,
   },
   en: {
     lang: 'en',
@@ -406,6 +409,6 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     navBlog: 'Blog',
     navDocs: 'Docs',
     navDownload: 'Download',
-    screenshotAlt: `OmniMon ${v} - desktop app screenshot`,
+    screenshotAlt: `OmniMon ${HOME_SCREENSHOT_VERSION} - desktop app screenshot`,
   },
 };
