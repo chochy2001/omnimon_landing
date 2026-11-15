@@ -1,8 +1,23 @@
 import { OMNIMON_VERSION, PUBLISHED_VERSION, RELEASE_DATE, RELEASE_DATE_ES } from '../consts';
 import type { ConsentLocale } from './consent';
 
-/** Version shown in the bundled desktop screenshot. Update together with public/omnimon-screenshot.png. */
-export const HOME_SCREENSHOT_VERSION = '6.5.0';
+/** Version captured from the native desktop app with synthetic development data. */
+export const HOME_SCREENSHOT_VERSION = '6.8.1';
+
+export const HOME_SCREENSHOTS = [
+  { id: 'overview', src: '/omnimon-screenshot.png', width: 2560, height: 1720,
+    es: { alt: 'Panel general de OmniMon 6.8.1 con CPU, memoria y procesos ficticios', caption: 'Panel general: CPU, memoria y actividad del sistema.' },
+    en: { alt: 'OmniMon 6.8.1 overview with CPU, memory and fictional processes', caption: 'Overview: CPU, memory and system activity.' } },
+  { id: 'processes', src: '/screenshots/processes.webp', width: 2560, height: 1720,
+    es: { alt: 'Tabla de procesos de OmniMon 6.8.1 con Safari, Xcode, Docker y node ficticios', caption: 'Procesos: consumo de recursos y agrupación por aplicación.' },
+    en: { alt: 'OmniMon 6.8.1 process table with fictional Safari, Xcode, Docker and node entries', caption: 'Processes: resource use and grouping by application.' } },
+  { id: 'network', src: '/screenshots/network.webp', width: 2560, height: 1720,
+    es: { alt: 'Mapa de red de OmniMon 6.8.1 con conexiones ficticias e IPs de documentación', caption: 'Red: conexiones simuladas, sin captura de paquetes.' },
+    en: { alt: 'OmniMon 6.8.1 network map with fictional connections and documentation IPs', caption: 'Network: simulated connections, with no packet capture.' } },
+  { id: 'zombie-killer', src: '/screenshots/zombie-killer.webp', width: 2560, height: 1720,
+    es: { alt: 'Zombie Killer de OmniMon 6.8.1 con un candidato ficticio y confirmación manual', caption: 'Zombie Killer: umbrales, lista protegida y confirmación manual.' },
+    en: { alt: 'OmniMon 6.8.1 Zombie Killer with a fictional candidate and manual confirmation', caption: 'Zombie Killer: thresholds, protected list and manual confirmation.' } },
+] as const;
 
 export type HomeCopy = {
   lang: ConsentLocale;
@@ -238,7 +253,7 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     navBlog: 'Blog',
     navDocs: 'Docs',
     navDownload: 'Descargar',
-    screenshotAlt: `OmniMon ${HOME_SCREENSHOT_VERSION} - captura de la aplicación de escritorio`,
+    screenshotAlt: HOME_SCREENSHOTS[0].es.alt,
   },
   en: {
     lang: 'en',
@@ -409,6 +424,6 @@ export const homeCopy: Record<ConsentLocale, HomeCopy> = {
     navBlog: 'Blog',
     navDocs: 'Docs',
     navDownload: 'Download',
-    screenshotAlt: `OmniMon ${HOME_SCREENSHOT_VERSION} - desktop app screenshot`,
+    screenshotAlt: HOME_SCREENSHOTS[0].en.alt,
   },
 };

@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { OMNIMON_VERSION, PUBLISHED_VERSION } from '../consts';
 import type { ConsentLocale } from '../lib/consent';
-import { HOME_SCREENSHOT_VERSION, homeCopy } from '../lib/home';
+import { HOME_SCREENSHOTS, HOME_SCREENSHOT_VERSION, homeCopy } from '../lib/home';
 
 interface Props {
 	locale: ConsentLocale;
@@ -74,15 +74,32 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 						<img
 							src="/omnimon-screenshot.png"
 							alt={copy.screenshotAlt}
-							width="1728"
-							height="1011"
+							width={HOME_SCREENSHOTS[0].width}
+							height={HOME_SCREENSHOTS[0].height}
 							loading="eager"
 							decoding="async"
 						/>
 					</picture>
 				</div>
-				<figcaption class="muted mt-3 text-sm">{locale === 'es' ? `Interfaz de escritorio, versión ${HOME_SCREENSHOT_VERSION}` : `Desktop interface, version ${HOME_SCREENSHOT_VERSION}`}</figcaption>
+				<figcaption class="muted mt-3 text-sm">{locale === 'es' ? `OmniMon ${HOME_SCREENSHOT_VERSION}. App real, datos ficticios de demostración.` : `OmniMon ${HOME_SCREENSHOT_VERSION}. Real app, fictional demo data.`}</figcaption>
 				</figure>
+			</div>
+		</section>
+
+		<section aria-labelledby="screenshots-title" class="min-w-0 space-y-6">
+			<div class="space-y-3">
+				<h2 id="screenshots-title" class="section-title text-3xl font-bold">{locale === 'es' ? `Dentro de OmniMon ${HOME_SCREENSHOT_VERSION}` : `Inside OmniMon ${HOME_SCREENSHOT_VERSION}`}</h2>
+				<p class="muted">{locale === 'es' ? 'Capturas de la app nativa en macOS. Todos los datos son ficticios; no se capturaron paquetes ni se ejecutaron acciones sobre procesos.' : 'Native macOS app screenshots. All data is fictional; no packets were captured and no process actions were executed.'}</p>
+			</div>
+			<div class="grid min-w-0 gap-6 lg:grid-cols-2">
+				{HOME_SCREENSHOTS.slice(1).map((shot) => (
+					<figure class="min-w-0 space-y-3">
+						<a href={shot.src} class="screenshot-frame block" aria-label={shot[locale].alt}>
+							<img src={shot.src} alt={shot[locale].alt} width={shot.width} height={shot.height} loading="lazy" decoding="async" />
+						</a>
+						<figcaption class="muted text-sm">{shot[locale].caption}</figcaption>
+					</figure>
+				))}
 			</div>
 		</section>
 

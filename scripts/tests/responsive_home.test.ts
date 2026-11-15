@@ -43,7 +43,7 @@ afterAll(async () => {
 }, 30_000);
 
 const ROUTES = ['/', '/es/', '/privacy/', '/es/privacy/', '/blog/', '/404.html'] as const;
-const WIDTHS = [320, 390, 768, 1280, 1440, 2560] as const;
+const WIDTHS = [320, 360, 390, 768, 1280, 1440, 2560] as const;
 
 test('home fits narrow and desktop viewports without document overflow', async () => {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
@@ -85,5 +85,34 @@ test('key routes fit mobile through ultrawide viewports without horizontal overf
     }
   } finally {
     await page.close();
+  }
+}, 60_000);
+
+
+test('native screenshot gallery loads in both themes and locales at 360 and 1280', async () => {
+  for (const scheme of ['light', 'dark'] as const) {
+    for (const width of [360, 1280]) {
+      for (const route of ['/', '/es/']) {
+        const page = await browser.newPage({ viewport: { width, height: 900 }, colorScheme: scheme });
+        try {
+          await page.addInitScript((theme) => localStorage.setItem('omnimon-theme', theme), scheme);
+          await page.goto(`${origin}${route}`);
+          const shots = page.locator('img[src*="screenshot"]');
+          expect(await shots.count()).toBe(4);
+          for (const shot of await shots.all()) {
+            await shot.scrollIntoViewIfNeeded();
+            await shot.evaluate((img: HTMLImageElement) => img.decode());
+            expect(await shot.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(1000);
+          }
+          expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+          expect(await page.locator('html').evaluate((el) => el.classList.contains('dark'))).toBe(scheme === 'dark');
+          if (process.env.OMNIMON_CAPTURE_EVIDENCE) {
+            await page.screenshot({ path: `${process.env.OMNIMON_CAPTURE_EVIDENCE}/landing-${route === '/' ? 'en' : 'es'}-${width}-${scheme}.png`, fullPage: true });
+          }
+        } finally {
+          await page.close();
+        }
+      }
+    }
   }
 }, 60_000);

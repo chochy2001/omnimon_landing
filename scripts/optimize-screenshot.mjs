@@ -1,27 +1,25 @@
-/**
- * Generates optimized WebP/AVIF variants of public/omnimon-screenshot.png.
- * Keeps the PNG as fallback for <picture>. Run: bun run optimize:screenshot
- * Uses sharp (already a devDependency for generate-og.mjs).
- */
+/** Optimize native screenshots. Optional argument: directory of original PNGs. */
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { statSync } from 'node:fs';
+import { mkdirSync, statSync } from 'node:fs';
 import sharp from 'sharp';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const publicDir = resolve(__dirname, '..', 'public');
-const src = resolve(publicDir, 'omnimon-screenshot.png');
-
-const meta = await sharp(src).metadata();
-console.log(`Source: ${meta.width}x${meta.height} ${meta.format} ${(statSync(src).size / 1024).toFixed(0)}KB`);
-
-const webpPath = resolve(publicDir, 'omnimon-screenshot.webp');
-const avifPath = resolve(publicDir, 'omnimon-screenshot.avif');
-
-await sharp(src).webp({ quality: 82, effort: 6 }).toFile(webpPath);
-await sharp(src).avif({ quality: 65, effort: 6 }).toFile(avifPath);
-
-for (const p of [webpPath, avifPath]) {
-  const m = await sharp(p).metadata();
-  console.log(`Generated ${p.split('/').pop()}: ${m.width}x${m.height} ${m.format} ${(statSync(p).size / 1024).toFixed(1)}KB`);
+const publicDir = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'public');
+const originals = process.argv[2];
+if (originals) {
+  await sharp(resolve(originals, 'overview.png')).png().toFile(resolve(publicDir, 'omnimon-screenshot.png'));
+  mkdirSync(resolve(publicDir, 'screenshots'), { recursive: true });
+  for (const name of ['processes', 'network', 'zombie-killer']) {
+    await sharp(resolve(originals, `${name}.png`)).webp({ quality: 90, effort: 6 }).toFile(resolve(publicDir, `screenshots/${name}.webp`));
+  }
+  // Downscaled structural-comparison fixture used by the FTPS gate tests.
+  await sharp(resolve(originals, 'overview.png')).resize({ width: 1280 }).png().toFile(resolve(publicDir, '../scripts/tests/testdata/served-omnimon-screenshot.png'));
+}
+const source = resolve(publicDir, 'omnimon-screenshot.png');
+for (const format of ['webp', 'avif']) {
+  const dest = resolve(publicDir, `omnimon-screenshot.${format}`);
+  const pipeline = sharp(source);
+  await (format === 'webp' ? pipeline.webp({ quality: 90, effort: 6 }) : pipeline.avif({ quality: 75, effort: 6 })).toFile(dest);
+  const meta = await sharp(dest).metadata();
+  console.log(`${dest.split('/').pop()}: ${meta.width}x${meta.height}, ${statSync(dest).size} bytes`);
 }
