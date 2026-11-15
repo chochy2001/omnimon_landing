@@ -1,46 +1,84 @@
 # OmniMon Landing
 
-Public Astro site for [omnimon.com.mx](https://omnimon.com.mx/).
-Git: `chochy2001/omnimon_landing`. Nested under `omnimon_apps/macmon/omnimon_landing` and gitignored by the parent `CAPDESIS/omnimon` repo.
+Public Astro static site for [omnimon.com.mx](https://omnimon.com.mx/) (`chochy2001/omnimon_landing`).
+Nested locally under `omnimon_apps/macmon/omnimon_landing` and gitignored by both `CAPDESIS/omnimon_apps` and `CAPDESIS/omnimon`.
 
 ## Stack
 
-- Astro 7 + Tailwind 4 + Bun
-- Site URL: `https://omnimon.com.mx` (`astro.config.mjs`)
-- Analytics: PostHog only after the cookie banner
+- **Framework:** Astro `7.4.7` (static site generation, `site: 'https://omnimon.com.mx'` in [`astro.config.mjs`](astro.config.mjs))
+- **Styling:** Tailwind CSS `^4.3.3` via `@tailwindcss/vite`
+- **Runtime / Package Manager:** Bun `1.3.14` (pinned in [`.github/workflows/ci.yml`](.github/workflows/ci.yml)), TypeScript `^6.0.3`
+- **Testing & Quality:** `@astrojs/check` `^0.9.12`, `bun test`, Playwright `1.63.0`, `axe-core` `4.11.0`, `sharp` `^0.35.5`
+- **Analytics:** PostHog (`posthog-js ^1.442.1`) loaded only after explicit consent in the cookie banner
 
-## Commands
+## Scripts & Local Validation
 
 ```bash
-bun install
-bun run test      # bun test src/lib
-bun run build
-bun run preview
+bun install --frozen-lockfile
+bun run check                 # Typecheck and Astro diagnostics (astro check)
+bun run lint                  # Alias for astro check
+bun run build                 # Generates OG images (scripts/generate-og.mjs) + astro build
+bun run test                  # Unit tests (src/lib) + Playwright responsive, repo_links, and legal_a11y suites
+bun run test:coverage         # Unit coverage on src/lib
+bun run dev                   # Local Astro dev server
+bun run preview               # Preview built static output
+bun run generate:og           # Regenerate Open Graph images
+bun run optimize:screenshot   # Optimize hero desktop screenshot assets
 ```
 
-## Verified 2026-09-25 UTC
+Full CI parity also runs the FTPS and deploy-contract bash tests:
 
-Live origin tracks `origin/main` via GitHub CD: every merge to `main` with green CI is promoted and read back (fingerprint, smoke, assets). First pipeline deploy 2026-09-25: `c4b9cc7` via run 36163409304 (42 files, 20 fingerprinted pages, 19 assets, 0 console errors in headless Chrome); before it, the origin served `2ca253f9` from a manual FTPS upload. Leftover Hostinger blog HTML (v6.3.0 and older) was deleted; those URLs now serve the product 404.
+```bash
+bash scripts/tests/ftps_identity_test.sh
+bash scripts/tests/png_compare_test.sh
+bash scripts/tests/robots_check_test.sh
+bash scripts/tests/deploy_asset_gate_test.sh
+bash scripts/tests/deploy_strict_contract_test.sh
+bash scripts/tests/version_json_test.sh
+```
 
-| Surface | Status |
-|---------|--------|
-| `/` English home | 200, Layout, EN\|ES, theme, screenshot |
-| `/es/` Spanish home | 200 full page (not a 301) |
-| `/en` `/en/` | 301 → `/` |
-| Unknown path | 404 **product** page (`ErrorDocument 404 /404.html`) |
-| Favicon | OmniMon gear+cyan SVG + app ICO (not Astro starter `M50.4 78.5`) |
-| Blog index | Only posts that exist as Astro pages (v6.4.1-v6.8.1 EN/ES) |
-| Legal | `/privacy` `/terms` `/es/privacy` `/es/terms` |
+## Project Structure
 
-`src/consts.ts` pins **6.8.1** (`5 Nov 2026`), matching the latest published GitHub release **`v6.8.1`** on `CAPDESIS/omnimon` (`OmniMon-6.8.1-macOS-Universal.dmg`, `OmniMon-6.8.1-Windows.msi`, Linux `.AppImage`/`.deb`/`.rpm`, `releases.json`, and `SHA256SUMS.txt`). Download CTAs say "Download latest" / "Descargar ultima version" and point at `releases/latest`. Spanish blog slugs end with `-es` (example: `/es/blog/v6-8-1-release-es/`).
+```
+omnimon_landing/
+├── astro.config.mjs                # Astro + @tailwindcss/vite config (omnimon.com.mx)
+├── package.json                    # Scripts and dependencies (Astro 7.4.7, Tailwind 4.3.3)
+├── public/                         # Static assets (favicon, fonts, images, .htaccess, robots.txt)
+├── src/
+│   ├── consts.ts                   # OMNIMON_VERSION, PUBLISHED_VERSION, RELEASE_DATE ('6.8.1', '5 Nov 2026')
+│   ├── layouts/Layout.astro        # Shared layout, SEO meta, <meta name="omnimon-build"> fingerprint
+│   ├── components/                 # HomePage, LanguageSwitcher, LegalDoc, ThemeToggle, CookieBanner, PostHogInit
+│   ├── lib/                        # Locale, release index, legal, consent, theme helpers + *.test.ts unit suites
+│   ├── styles/global.css           # Tailwind CSS 4 theme & tokens
+│   └── pages/
+│       ├── index.astro             # English home (/)
+│       ├── en/index.astro          # Redirects /en/ -> /
+│       ├── es/index.astro          # Spanish home (/es/)
+│       ├── privacy.astro / terms.astro / cookies.astro (+ /es/*)
+│       ├── blog/                   # Release posts v6.4.1 .. v6.8.1 (EN)
+│       ├── es/blog/                # Release posts v6.4.1 .. v6.8.1 (ES, *-es)
+│       └── 404.astro               # Branded 404 page
+├── scripts/                        # OG generator, screenshot optimizer, FTPS/PNG/robots/version.json helpers
+│   └── tests/                      # Playwright TS suites + 6 bash deploy contract tests
+└── .github/
+    ├── DEPLOYMENT.md               # Detailed Hostinger FTPS & parity verification runbook
+    └── workflows/
+        ├── ci.yml                  # Landing CI (ubuntu-latest)
+        └── deploy-hostinger.yml    # Deploy landing (Hostinger FTP)
+```
 
-## Deploy
+## Release Sync (`CAPDESIS/omnimon` `v6.8.1`)
 
-GitHub Actions: `.github/workflows/deploy-hostinger.yml` (GitHub-hosted, FTPS strict).
-Operator secrets: `HOSTINGER_FTPS_HOST` (TLS name under `*.hstgr.io`, **not** the IP, need not resolve), `FTP_HOST` (TCP address, the pool IP), `FTP_USER`, `FTP_PASSWORD`. Variables: `FTP_PORT=21`, `FTP_REMOTE_DIR=./` (measured 2026-09-25: the FTP account is jailed at the domain root).
+- [`src/consts.ts`](src/consts.ts) pins `OMNIMON_VERSION = '6.8.1'`, `PUBLISHED_VERSION = '6.8.1'`, and `RELEASE_DATE = '5 Nov 2026'`, matching the `v6.8.1` GitHub Release published `2026-11-05` on `CAPDESIS/omnimon` (`OmniMon-6.8.1-macOS-Universal.dmg`, `OmniMon-6.8.1-Windows.msi`, Linux `.AppImage`/`.deb`/`.rpm`, `releases.json`, `SHA256SUMS.txt`).
+- [`src/lib/releases.ts`](src/lib/releases.ts) and the EN/ES blog pages list published releases newest-first (`v6.8.1` down to `v6.4.1`; Spanish slugs end in `-es`).
+- Repository links on served pages must point to `CAPDESIS/omnimon` (enforced by [`scripts/tests/repo_links.test.ts`](scripts/tests/repo_links.test.ts)), while the macOS Homebrew tap command remains `brew tap chochy2001/omnimon` (`chochy2001/homebrew-omnimon`).
 
-GitHub CD is live: every push to `main` with green CI promotes that exact SHA to the origin and reads it back (fingerprint, smoke, assets). Details: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
+## CI & Live Deploy (`https://omnimon.com.mx`)
 
-## Release Sync
-
-- Latest published desktop tag on `CAPDESIS/omnimon` is **v6.8.1** (`2026-11-05`). Bump `OMNIMON_VERSION`, `PUBLISHED_VERSION`, and `RELEASE_DATE` in `src/consts.ts` when a new GitHub release is cut.
+- **CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml))**: Runs on GitHub-hosted `ubuntu-latest` (`bun install --frozen-lockfile`, `bun audit`, `bun run build`, Playwright Chromium install, `bun run test`, and all 6 `scripts/tests/*_test.sh` contract suites).
+- **CD ([`.github/workflows/deploy-hostinger.yml`](.github/workflows/deploy-hostinger.yml))**: Runs on GitHub-hosted `ubuntu-latest` (`environment: production`), triggered automatically via `workflow_run` when `Landing CI` succeeds on a push to `main` (or manually via `workflow_dispatch` with a 40-char `release_sha`).
+- **Verification guarantees**:
+  - Strict FTPS TLS hostname verification (`HOSTINGER_FTPS_HOST` under `*.hstgr.io` via `--connect-to` to `FTP_HOST`, `scripts/ftps_identity.sh`) before sending credentials.
+  - Anti-rollback check against live `<meta name="omnimon-build">` before uploading.
+  - Post-upload verification of `<meta name="omnimon-build">`, `/version.json`, route status codes (`200` on built pages, `404` on missing paths, `403`/`404` on dotfiles), byte-for-byte SHA-256 asset checks, PNG structural checks (`scripts/png_compare.sh`), and Cloudflare-managed `/robots.txt` directive checks (`scripts/robots_check.sh`).
+- Full operator secrets/variables and runbook: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).

@@ -12,7 +12,7 @@ produccion detras de `main` sin que nadie pudiera medir cuanto. Lo medido ese
 dia contra el origen publico:
 
 - `https://omnimon.com.mx/` servia `OmniMon 6.3.0`, mientras `src/consts.ts` en
-  `main` declara `6.7.0`.
+  `main` ya declaraba una version posterior (actualmente `6.8.1`).
 - `/privacy/`, `/terms/`, `/es/privacy/` y `/es/terms/` respondian `404` aunque
   existen en `main` desde `ed56bcc`.
 - `/blog/v6-6-0-release/` y `/blog/v6-7-0-release/` respondian `404`, igual que
