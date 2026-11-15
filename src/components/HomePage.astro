@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { OMNIMON_VERSION, PUBLISHED_VERSION } from '../consts';
 import type { ConsentLocale } from '../lib/consent';
 import { HOME_SCREENSHOTS, HOME_SCREENSHOT_VERSION, homeCopy } from '../lib/home';
+import { assetToken } from '../lib/asset-token';
 
 interface Props {
 	locale: ConsentLocale;
@@ -69,10 +70,10 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 				<figure class="min-w-0">
 				<div class="screenshot-frame">
 					<picture>
-					<source srcset="/omnimon-screenshot.avif" type="image/avif" />
-						<source srcset="/omnimon-screenshot.webp" type="image/webp" />
+					<source srcset={`/omnimon-screenshot.avif?v=${assetToken('omnimon-screenshot.avif')}`} type="image/avif" />
+						<source srcset={`/omnimon-screenshot.webp?v=${assetToken('omnimon-screenshot.webp')}`} type="image/webp" />
 						<img
-							src="/omnimon-screenshot.png"
+							src={`/omnimon-screenshot.png?v=${assetToken('omnimon-screenshot.png')}`}
 							alt={copy.screenshotAlt}
 							width={HOME_SCREENSHOTS[0].width}
 							height={HOME_SCREENSHOTS[0].height}

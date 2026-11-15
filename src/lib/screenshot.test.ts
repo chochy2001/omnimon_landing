@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
 import sharp from 'sharp';
 import { HOME_SCREENSHOTS, HOME_SCREENSHOT_VERSION } from './home';
+import { assetToken } from './asset-token';
 
 const root = join(import.meta.dir, '../..');
 const assets = ['omnimon-screenshot.png', 'omnimon-screenshot.webp', 'omnimon-screenshot.avif', ...HOME_SCREENSHOTS.slice(1).map((shot) => shot.src.slice(1))].sort();
@@ -38,8 +39,15 @@ describe('native screenshot delivery contract', () => {
     test(`${locale}: rendered images match decoded pixels and optimized assets`, async () => {
       const { images, sources } = await renderedImages(locale);
       expect(images).toHaveLength(4);
-      expect(sources).toEqual(['/omnimon-screenshot.avif', '/omnimon-screenshot.webp']);
-      expect([...images.map((img) => img.src.slice(1)), ...sources.map((src) => src.slice(1))].sort()).toEqual(assets);
+      // Hero captures keep fixed names, so each URL must carry the content hash of its file.
+      for (const url of [...sources, images[0].src]) {
+        const [path, query] = url.split('?');
+        expect(query).toBe(`v=${assetToken(path.slice(1), root)}`);
+      }
+      for (const img of images) img.src = img.src.split('?')[0];
+      const plainSources = sources.map((src) => src.split('?')[0]);
+      expect(plainSources).toEqual(['/omnimon-screenshot.avif', '/omnimon-screenshot.webp']);
+      expect([...images.map((img) => img.src.slice(1)), ...plainSources.map((src) => src.slice(1))].sort()).toEqual(assets);
       for (const [index, shot] of HOME_SCREENSHOTS.entries()) {
         const img = images[index];
         const file = join(root, 'dist', shot.src);
