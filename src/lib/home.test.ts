@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, test } from 'bun:test';
 import { OMNIMON_VERSION, PUBLISHED_VERSION } from '../consts';
-import { homeCopy } from './home';
+import { HOME_SCREENSHOT_VERSION, homeCopy } from './home';
 
 describe('home copy', () => {
   test('english and spanish homes are distinct documents', () => {
@@ -33,6 +33,9 @@ describe('home copy', () => {
     expect(homeCopy.es.title).toContain(OMNIMON_VERSION);
     expect(homeCopy.en.screenshotAlt.toLowerCase()).toContain('omnimon');
     expect(homeCopy.es.screenshotAlt.toLowerCase()).toContain('omnimon');
+    // The alt must name the version the bundled screenshot actually shows, not the current release.
+    expect(homeCopy.en.screenshotAlt).toContain(HOME_SCREENSHOT_VERSION);
+    expect(homeCopy.es.screenshotAlt).toContain(HOME_SCREENSHOT_VERSION);
     expect(homeCopy.en.highlights).toHaveLength(4);
     expect(homeCopy.es.highlights).toHaveLength(4);
     expect(homeCopy.en.highlights[0]?.title.toLowerCase()).toContain('memory guard');

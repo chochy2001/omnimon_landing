@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { OMNIMON_VERSION, PUBLISHED_VERSION } from '../consts';
 import type { ConsentLocale } from '../lib/consent';
-import { homeCopy } from '../lib/home';
+import { HOME_SCREENSHOT_VERSION, homeCopy } from '../lib/home';
 
 interface Props {
 	locale: ConsentLocale;
@@ -81,7 +81,7 @@ const installScriptUrl = 'https://raw.githubusercontent.com/CAPDESIS/omnimon/mai
 						/>
 					</picture>
 				</div>
-				<figcaption class="muted mt-3 text-sm">{locale === 'es' ? 'Interfaz de escritorio, versión 6.5.0' : 'Desktop interface, version 6.5.0'}</figcaption>
+				<figcaption class="muted mt-3 text-sm">{locale === 'es' ? `Interfaz de escritorio, versión ${HOME_SCREENSHOT_VERSION}` : `Desktop interface, version ${HOME_SCREENSHOT_VERSION}`}</figcaption>
 				</figure>
 			</div>
 		</section>
