@@ -82,3 +82,33 @@ omnimon_landing/
   - Anti-rollback check against live `<meta name="omnimon-build">` before uploading.
   - Post-upload verification of `<meta name="omnimon-build">`, `/version.json`, route status codes (`200` on built pages, `404` on missing paths, `403`/`404` on dotfiles), byte-for-byte SHA-256 asset checks, PNG structural checks (`scripts/png_compare.sh`), and Cloudflare-managed `/robots.txt` directive checks (`scripts/robots_check.sh`).
 - Full operator secrets/variables and runbook: [`.github/DEPLOYMENT.md`](.github/DEPLOYMENT.md).
+
+## Native screenshots
+
+The native capture host is tracked in [OmniMon PR #111](https://github.com/CAPDESIS/omnimon/pull/111).
+
+The homepage shows the real OmniMon 6.8.1 macOS interface with fixed fictional
+data from its development-only screenshot host. The overview, process table,
+network map and Zombie Killer are native app captures, not mockups. No packet
+capture or process actions were used. Captions disclose the demo data in both
+languages.
+
+To replace them, capture `overview.png`, `processes.png`, `network.png` and
+`zombie-killer.png` from the isolated native host, inspect every original at
+full resolution, then run `bun run optimize:screenshot -- /path/to/originals`.
+Update the dimensions and bilingual copy in `src/lib/home.ts`, then run
+`bun run build` before `bun run test`. The delivery contract decodes the built
+assets and rejects missing files, unreferenced captures, wrong dimensions and
+incorrect loading attributes. Original PNG evidence stays outside this repo;
+the hero PNG remains the rendered fallback. All gallery captures use WebP.
+
+Capture checklist: use cursor-free native window capture, remove hover/focus
+from controls, verify all four originals at full resolution, and wait for
+network names to resolve. The fixture has 22 generic processes and eight
+documentation-range connections. For landing evidence, reject the cookie
+banner and scroll to the end so deferred images load before capture.
+The current assets are content crops of the native window: overview/processes
+2560x1640, map and legend 1908x974, and the full Zombie Killer dialog 1520x1240.
+The cursor stays on the excluded title bar. Cropping removes window chrome and
+peripheral panels, without retouching interface pixels. Preserve raw originals
+and crop rectangles with the capture evidence.
