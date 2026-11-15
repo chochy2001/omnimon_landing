@@ -101,3 +101,14 @@ Update the dimensions and bilingual copy in `src/lib/home.ts`, then run
 assets and rejects missing files, unreferenced captures, wrong dimensions and
 incorrect loading attributes. Original PNG evidence stays outside this repo;
 the hero PNG remains the rendered fallback. All gallery captures use WebP.
+
+Capture checklist: use cursor-free native window capture, remove hover/focus
+from controls, verify all four originals at full resolution, and wait for
+network names to resolve. The fixture has 22 generic processes and eight
+documentation-range connections. For landing evidence, reject the cookie
+banner and scroll to the end so deferred images load before capture.
+The current assets are content crops of the native window: overview/processes
+2560x1640, map and legend 1908x974, and the full Zombie Killer dialog 1520x1240.
+The cursor stays on the excluded title bar. Cropping removes window chrome and
+peripheral panels, without retouching interface pixels. Preserve raw originals
+and crop rectangles with the capture evidence.
