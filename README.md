@@ -5,11 +5,11 @@ Nested locally under `omnimon_apps/macmon/omnimon_landing` and gitignored by bot
 
 ## Stack
 
-- **Framework:** Astro `7.4.7` (static site generation, `site: 'https://omnimon.com.mx'` in [`astro.config.mjs`](astro.config.mjs))
-- **Styling:** Tailwind CSS `^4.3.3` via `@tailwindcss/vite`
+- **Framework:** Astro `7.4.12` (static site generation, `site: 'https://omnimon.com.mx'` in [`astro.config.mjs`](astro.config.mjs))
+- **Styling:** Tailwind CSS `^4.3.5` via `@tailwindcss/vite`
 - **Runtime / Package Manager:** Bun `1.3.14` (pinned in [`.github/workflows/ci.yml`](.github/workflows/ci.yml)), TypeScript `^6.0.3`
-- **Testing & Quality:** `@astrojs/check` `^0.9.12`, `bun test`, Playwright `1.63.0`, `axe-core` `4.11.0`, `sharp` `^0.35.5`
-- **Analytics:** PostHog (`posthog-js ^1.442.1`) loaded only after explicit consent in the cookie banner
+- **Testing & Quality:** `@astrojs/check` `^0.9.12`, `bun test`, Playwright `1.65.0`, `axe-core` `4.14.0`, `sharp` `^0.35.5`
+- **Analytics:** PostHog (`posthog-js ^1.450.0`) loaded only after explicit consent in the cookie banner
 
 ## Scripts & Local Validation
 
@@ -42,7 +42,7 @@ bash scripts/tests/version_json_test.sh
 ```
 omnimon_landing/
 ├── astro.config.mjs                # Astro + @tailwindcss/vite config (omnimon.com.mx)
-├── package.json                    # Scripts and dependencies (Astro 7.4.7, Tailwind 4.3.3)
+├── package.json                    # Scripts and dependencies (Astro 7.4.12, Tailwind 4.3.5)
 ├── public/                         # Static assets (favicon, fonts, images, .htaccess, robots.txt)
 ├── src/
 │   ├── consts.ts                   # OMNIMON_VERSION, PUBLISHED_VERSION, RELEASE_DATE ('6.8.1', '5 Nov 2026')
